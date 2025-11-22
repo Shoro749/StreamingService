@@ -26,8 +26,8 @@ namespace StreamingService.Models
         public int UserProfileId { get; set; }
         public UserProfile? UserProfile { get; set; }
 
-        //[Required, Column("video_id")]
-        //public int VideoId { get; set; }
-        //public Video Video { get; set; }
+        [Required, Column("video_id")]
+        public int VideoId { get; set; }
+        public Video Video { get; set; }
     }
 }

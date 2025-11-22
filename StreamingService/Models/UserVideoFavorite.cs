@@ -9,9 +9,9 @@ namespace StreamingService.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id")]
         public int Id { get; set; }
 
-        //[Required, Column("video_id")]
-        //public int VideoId { get; set; }
-        //public Video Video { get; set; }
+        [Required, Column("video_id")]
+        public int VideoId { get; set; }
+        public Video Video { get; set; }
 
         [Required, Column("user_profile_id")]
         public int UserProfileId { get; set; }

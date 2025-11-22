@@ -19,9 +19,9 @@ namespace StreamingService.Models
         [Required, Column("is_fully_watched")]
         public bool IsFullyWatched { get; set; }
 
-        //[Required, Column("video_episodes_id")]
-        //public int VideoEpisodeId { get; set; }
-        //public VideoEpisode VideoEpisode { get; set; }
+        [Required, Column("video_episodes_id")]
+        public int VideoEpisodeId { get; set; }
+        public VideoEpisode VideoEpisode { get; set; }
 
         [Required, Column("user_profile_id")]
         public int UserProfileId { get; set; }

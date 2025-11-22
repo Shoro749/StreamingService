@@ -15,9 +15,9 @@ namespace StreamingService.Models
         [Required, Column("date")]
         public DateTime Date { get; set; }
 
-        //[Required, Column("video_episodes_id")]
-        //public int VideoEpisode Id { get; set; }
-        //public VideoEpisode VideoEpisode { get; set; }
+        [Required, Column("video_episodes_id")]
+        public int VideoEpisodeId { get; set; }
+        public VideoEpisode VideoEpisode { get; set; }
 
     }
 }
