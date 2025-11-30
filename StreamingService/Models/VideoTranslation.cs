@@ -14,21 +14,18 @@ public partial class VideoTranslation
 
 
     [Required, StringLength(8)]
-    public string LocaleCode { get; set; }
-
-
+    public required string LocaleCode { get; set; }
     public bool? IsOriginal { get; set; }
 
-
     [Required, StringLength(256)]
-    public string Title { get; set; }
-
+    public required string Title { get; set; }
 
     [Required, StringLength(4000)]
-    public string Description { get; set; }
+    public required string Description { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.Video))]
+    [Required, ForeignKey(nameof(Video))]
     public int VideoId { get; set; }
-    public Video Video { get; set; }
+    [Required]
+    public required Video Video { get; set; }
 }

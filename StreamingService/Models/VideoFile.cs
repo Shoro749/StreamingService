@@ -14,34 +14,27 @@ public partial class VideoFile
 
 
     [Required, StringLength(32)]
-    public string Resolution { get; set; }
-
+    public required string Resolution { get; set; }
 
     [Required, StringLength(32)]
-    public string VideoCodec { get; set; }
+    public required string VideoCodec { get; set; }
 
-
-    [Required]
     public long SizeBytes { get; set; }
 
-
-    [Required]
     public int BitrateKbps { get; set; }
 
-
-    [Required, StringLength(32)]
-    public string ContentType { get; set; }
-
+    [StringLength(32)]
+    public required string ContentType { get; set; }
 
     [Required, StringLength(256)]
-    public string BlobContainer { get; set; }
-
+    public required string BlobContainer { get; set; }
 
     [Required, StringLength(512)]
-    public string BlobPath { get; set; }
+    public required string BlobPath { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.VideoEpisode))]
+    [Required, ForeignKey(nameof(VideoEpisode))]
     public int VideoEpisodesId { get; set; }
-    public VideoEpisode VideoEpisodes { get; set; }
+    [Required]
+    public required VideoEpisode VideoEpisode { get; set; }
 }

@@ -12,25 +12,21 @@ public partial class VideoEpisode
     [Key]
     public int Id { get; set; }
 
-
     [Required]
     public int Duration { get; set; }
-
 
     [Required]
     public DateOnly ReleaseDate { get; set; }
 
-
     public int? EpisodeNumber { get; set; }
 
-
     [Required, StringLength(32)]
-    public string EpisodeType { get; set; }
+    public required string EpisodeType { get; set; }
 
-
-    [Required, ForeignKey(nameof(Models.VideoSeason))]
+    [ForeignKey(nameof(VideoSeason))]
     public int VideoSeasonId { get; set; }
-    public VideoSeason VideoSeason { get; set; }
+    [Required]
+    public required VideoSeason VideoSeason { get; set; }
 
 
     public List<Audiotrack> Audiotracks { get; set; } = new();

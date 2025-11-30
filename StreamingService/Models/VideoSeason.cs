@@ -15,9 +15,10 @@ public partial class VideoSeason
     public int? NumberOfSeason { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.Video))]
+    [ForeignKey(nameof(Video))]
     public int VideoId { get; set; }
-    public Video Video { get; set; }
+    [Required]
+    public required Video Video { get; set; }
 
     public List<VideoEpisode> Episodes { get; set; } = new();
 }

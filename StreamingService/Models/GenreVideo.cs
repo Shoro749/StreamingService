@@ -9,12 +9,14 @@ public class GenreVideo
     public int Id { get; set; }
 
 
-    [Required, ForeignKey(nameof(Video))]
+    [ForeignKey(nameof(Video))]
     public int VideoId { get; set; }
-    public Video Video { get; set; }
+    [Required]
+    public required Video Video { get; set; }
 
 
-    [Required, ForeignKey(nameof(Genre))]
+    [ForeignKey(nameof(Genre))]
     public int GenreId { get; set; }
-    public Genre Genre { get; set; }
+    [Required]
+    public required Genre Genre { get; set; }
 }
