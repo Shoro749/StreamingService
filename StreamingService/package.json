@@ -1,0 +1,16 @@
+{
+  "name": "streamingservice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/site.css --watch",
+    "css:build": "tailwindcss -i ./Styles/app.css -o ./wwwroot/css/site.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.17"
+  }
+}
