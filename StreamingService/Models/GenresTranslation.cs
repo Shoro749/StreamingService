@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StreamingService.Models;
 
-[Table("genres_translations")]
+[Table("genre_translations")]
 public partial class GenreTranslation
 {
     [Key]

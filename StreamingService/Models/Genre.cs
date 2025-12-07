@@ -18,5 +18,6 @@ public partial class Genre
 
 
     public List<GenreTranslation> GenreTranslations { get; set; } = new();
+    public List<GenreVideo> GenreVideos { get; set; } = new();
     public List<Genre> Genres { get; set; } = new();
 }

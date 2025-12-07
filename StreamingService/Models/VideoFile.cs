@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StreamingService.Models;
 
-[Table("video_file")]
+[Table("video_files")]
 public partial class VideoFile
 {
     [Key]

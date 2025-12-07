@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("genres_videos")]
+[Table("genre_videos")]
 public class GenreVideo
 {
     [Key]
