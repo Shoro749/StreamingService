@@ -1,0 +1,161 @@
+﻿{
+   "CodeGenerationMode": 4,
+   "ContextClassName": "AppDbContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1244",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Data",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "StreamingService",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 4,
+   "SelectedToBeGenerated": 1,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[audiotrack]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[comments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[genres]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[genres_translations]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[genres_videos]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[payments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[person_roles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[persons]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[persons_translations]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[persons_videos]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[subscription_levels]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[subscription_plans]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_comment_like]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_episodes_history]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_profiles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_video_favorite]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_video_rating]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[users_subscriptions]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_episode_daily_stats]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_episode_translations]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_episode_view_timed_log]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_episodes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_file]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_images]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_seasons]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_subtitles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[video_translations]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[videos]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": true
+}
