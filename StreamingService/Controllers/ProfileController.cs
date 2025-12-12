@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.Context;
 using StreamingService.DTO;
@@ -35,6 +38,24 @@ namespace StreamingService.Controllers
             _context.UserProfiles.Add(entity);
             _context.SaveChanges();
             return Redirect("/");
+        }
+
+        [HttpGet("login")]
+        public IActionResult Login()
+        {
+            return Challenge(new AuthenticationProperties
+            {
+                RedirectUri = "/"
+            }, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            return SignOut(new AuthenticationProperties
+            {
+                RedirectUri = "/"
+            }, CookieAuthenticationDefaults.AuthenticationScheme);
         }
     }
 }

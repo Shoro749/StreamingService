@@ -13,13 +13,11 @@ namespace StreamingService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly DataContext _context;
         private readonly HomePageService _service;
 
-        public HomeController(ILogger<HomeController> logger, DataContext context, HomePageService service)
+        public HomeController(ILogger<HomeController> logger, HomePageService service)
         {
             _logger = logger;
-            _context = context;
             _service = service;
         }
 
@@ -35,43 +33,6 @@ namespace StreamingService.Controllers
             };
 
             return View(model);
-        }
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetHomeRecommendations([FromQuery] string locale = "uk")
-        //{
-        //    var slider = await _service.GetSliderAsync(locale);
-        //    var popular = await _service.GetPopularAsync(locale);
-        //    var trending = await _service.GetTrendingAsync(locale);
-        //    var recent = await _service.GetNewReleasesAsync(locale);
-        //    var weekly = await _service.GetWeeklyHitsAsync(locale);
-
-        //    return Ok(new
-        //    {
-        //        Slider = slider,
-        //        Popular = popular,
-        //        Trending = trending,
-        //        NewReleases = recent,
-        //        WeeklyHits = weekly
-        //    });
-        //}
-
-        [HttpGet("login")]
-        public IActionResult Login()
-        {
-            return Challenge(new AuthenticationProperties
-            {
-                RedirectUri = "/"
-            }, GoogleDefaults.AuthenticationScheme);
-        }
-
-        [HttpGet("logout")]
-        public IActionResult Logout()
-        {
-            return SignOut(new AuthenticationProperties
-            {
-                RedirectUri = "/"
-            }, CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         public IActionResult Privacy()

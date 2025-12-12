@@ -8,9 +8,9 @@ namespace StreamingService.Services
     {
         private readonly DataContext _context;
 
-        public HomePageService(DataContext context)
+        public HomePageService()
         {
-            _context = context;
+            _context = new DataContext();
         }
 
         private IQueryable<VideoCardViewModel> ProjectVideos(string locale)
