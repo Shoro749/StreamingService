@@ -13,35 +13,24 @@ public partial class Audiotrack
     [Key]
     public int Id { get; set; }
 
-
     [Required, StringLength(8)]
-    public string LocaleCode { get; set; }
-
+    public required string LocaleCode { get; set; }
 
     [Required, StringLength(32)]
-    public string AudioCodec { get; set; }
-
-
-    [Required]
+    public required string AudioCodec { get; set; }
     public long SizeBytes { get; set; }
-
-    [Required]
     public int BitrateKbps { get; set; }
 
-
     [Required, StringLength(32)]
-    public string ContentType { get; set; }
-
+    public required string ContentType { get; set; }
 
     [Required, StringLength(256)]
-    public string BlobContainer { get; set; }
-
+    public required string BlobContainer { get; set; }
 
     [Required, StringLength(512)]
-    public string BlobPath { get; set; }
+    public required string BlobPath { get; set; }
 
-
-    [Required, ForeignKey(nameof(Models.VideoEpisode))]
+    [Required, ForeignKey(nameof(VideoEpisode))]
     public int VideoEpisodesId { get; set; }
-    public VideoEpisode VideoEpisode { get; set; }
+    public required VideoEpisode VideoEpisode { get; set; }
 }

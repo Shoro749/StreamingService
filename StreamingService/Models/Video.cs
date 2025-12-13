@@ -11,20 +11,14 @@ public partial class Video
 {
     [Key]
     public int Id { get; set; }
-
-
-    [Required]
     public long RatingCount { get; set; }
-
-
-    [Required]
     public long RatingSum { get; set; }
 
 
-    [Required]
     [ForeignKey(nameof(SubscriptionLevel))]
     public int MinAccess { get; set; }
-    public SubscriptionLevel SubscriptionLevel { get; set; }
+    [Required]
+    public required SubscriptionLevel SubscriptionLevel { get; set; }
 
 
     public List<VideoSeason> Seasons { get; set; } = new();

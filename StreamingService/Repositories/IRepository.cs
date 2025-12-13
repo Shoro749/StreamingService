@@ -1,4 +1,5 @@
-﻿namespace StreamingService.Repositories;
+﻿
+namespace StreamingService.Repositories;
 public interface IRepository<T>
 {
     Task<IEnumerable<T>> GetListDataAsync();

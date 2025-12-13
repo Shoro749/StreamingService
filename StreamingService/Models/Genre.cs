@@ -14,9 +14,10 @@ public partial class Genre
 
 
     [Required, StringLength(256)]
-    public string Code { get; set; }
+    public required string Code { get; set; }
 
 
     public List<GenreTranslation> GenreTranslations { get; set; } = new();
+    public List<GenreVideo> GenreVideos { get; set; } = new();
     public List<Genre> Genres { get; set; } = new();
 }

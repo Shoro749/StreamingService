@@ -13,17 +13,19 @@ public partial class PersonVideo
     public int Id { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.Person))]
+    [Required, ForeignKey(nameof(Person))]
     public int PersonId { get; set; }
-    public Person Person { get; set; }
+    public required Person Person { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.PersonRole))]
+    [ForeignKey(nameof(PersonRole))]
     public int PersonRoleId { get; set; }
-    public PersonRole PersonRole { get; set; }
+    [Required]
+    public required PersonRole PersonRole { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.Video))]
+    [ForeignKey(nameof(Video))]
     public int VideoId { get; set; }
-    public Video Video { get; set; }
+    [Required]
+    public required Video Video { get; set; }
 }

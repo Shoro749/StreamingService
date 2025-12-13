@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
+using StreamingService.Data;
 
 
 namespace StreamingService.Repositories;
 public class EFRepository<T> : IRepository<T> where T : class
 {
-    private readonly DbContext _context;
-    public EFRepository(DbContext context)
+    private readonly AppDbContext _context;
+    public EFRepository(AppDbContext context)
     {
         _context = context;
     }

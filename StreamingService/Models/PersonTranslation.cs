@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StreamingService.Models;
 
-[Table("persons_translations")]
+[Table("person_translations")]
 public partial class PersonTranslation
 {
     [Key]
@@ -14,25 +14,21 @@ public partial class PersonTranslation
 
 
     [Required, StringLength(8)]
-    public string LocaleCode { get; set; }
-
+    public required string LocaleCode { get; set; }
 
     public bool? IsOriginal { get; set; }
 
-
     [Required, StringLength(64)]
-    public string Name { get; set; }
-
+    public required string Name { get; set; }
 
     [StringLength(64)]
     public string? LastName { get; set; }
 
-
     [StringLength(64)]
     public string? Patronymic { get; set; }
 
-
-    [Required, ForeignKey(nameof(Models.Person))]
+    [ForeignKey(nameof(Person))]
     public int PersonId { get; set; }
-    public Person Person { get; set; }
+    [Required]
+    public required Person Person { get; set; }
 }

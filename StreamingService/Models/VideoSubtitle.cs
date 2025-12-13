@@ -14,22 +14,20 @@ public partial class VideoSubtitle
 
 
     [Required, StringLength(64)]
-    public string Title { get; set; }
-
+    public required string Title { get; set; }
 
     [Required, StringLength(8)]
-    public string LocaleCode { get; set; }
-
+    public required string LocaleCode { get; set; }
 
     [Required, StringLength(256)]
-    public string BlobContainer { get; set; }
-
+    public required string BlobContainer { get; set; }
 
     [Required, StringLength(512)]
-    public string BlobPath { get; set; }
+    public required string BlobPath { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.VideoEpisode))]
+    [Required, ForeignKey(nameof(VideoEpisode))]
     public int VideoEpisodesId { get; set; }
-    public VideoEpisode VideoEpisodes { get; set; }
+    [Required]
+    public required VideoEpisode VideoEpisodes { get; set; }
 }

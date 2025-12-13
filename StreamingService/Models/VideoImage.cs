@@ -12,20 +12,18 @@ public partial class VideoImage
     [Key]
     public int Id { get; set; }
 
-
     [Required, StringLength(32)]
-    public string Type { get; set; }
-
+    public required string Type { get; set; }
 
     [Required, StringLength(256)]
-    public string BlobContainer { get; set; }
-
+    public required string BlobContainer { get; set; }
 
     [Required, StringLength(512)]
-    public string BlobPath { get; set; }
+    public required string BlobPath { get; set; }
 
 
-    [Required, ForeignKey(nameof(Models.Video))]
+    [ForeignKey(nameof(Video))]
     public int VideoId { get; set; }
-    public Video Video { get; set; }
+    [Required]
+    public required Video Video { get; set; }
 }
