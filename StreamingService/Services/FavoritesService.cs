@@ -1,4 +1,4 @@
-﻿using StreamingService.DTO;
+﻿using StreamingService.DTO.ViewModels;
 using StreamingService.Repositories;
 
 namespace StreamingService.Services

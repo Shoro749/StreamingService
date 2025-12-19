@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
-using StreamingService.DTO;
+using StreamingService.DTO.ViewModels;
 
 namespace StreamingService.Repositories
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StreamingService.DTO
+namespace StreamingService.DTO.ViewModels
 {
     public class UserProfileViewModel
     {

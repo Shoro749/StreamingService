@@ -1,4 +1,4 @@
-﻿namespace StreamingService.DTO
+﻿namespace StreamingService.DTO.ViewModels
 {
     public class VideoCardViewModel
     {
