@@ -1,23 +1,19 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
-using StreamingService.Context;
 using StreamingService.DTO;
-using StreamingService.Models;
+using StreamingService.Services;
 
 namespace StreamingService.Controllers
 {
     public class ProfileController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly DataContext _context;
+        private readonly ProfileService _profileService;
 
-        public ProfileController(IMapper mapper, DataContext context)
+        public ProfileController(IMapper mapper, ProfileService profileService)
         {
             _mapper = mapper;
-            _context = context;
+            _profileService = profileService;
         }
 
         public IActionResult Index()
@@ -25,37 +21,23 @@ namespace StreamingService.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         [HttpPost]
-        public IActionResult Create(UserProfileViewModel model)
+        public async Task<IActionResult> Create(UserProfileViewModel model)
         {
-            var entity = _mapper.Map<UserProfile>(model);
-            _context.UserProfiles.Add(entity);
-            _context.SaveChanges();
-            return Redirect("/");
-        }
-
-        [HttpGet("login")]
-        public IActionResult Login()
-        {
-            return Challenge(new AuthenticationProperties
+            if (!ModelState.IsValid)
             {
-                RedirectUri = "/"
-            }, GoogleDefaults.AuthenticationScheme);
-        }
+                return View(model);
+            }
 
-        [HttpGet("logout")]
-        public IActionResult Logout()
-        {
-            return SignOut(new AuthenticationProperties
+            var (success, errorMessage) = await _profileService.CreateUserProfileAsync(model);
+
+            if (success)
             {
-                RedirectUri = "/"
-            }, CookieAuthenticationDefaults.AuthenticationScheme);
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, errorMessage);
+            return View(model);
         }
     }
 }

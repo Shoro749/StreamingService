@@ -1,48 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StreamingService.Context;
 using StreamingService.DTO;
+using StreamingService.Repositories;
+using StreamingService.Services;
 
 namespace StreamingService.Controllers
 {
+    [Authorize]
     public class FavoritesController : Controller
     {
-        private readonly DataContext _context;
+        private readonly FavoritesService _service;
 
-        public FavoritesController(DataContext context)
+        public FavoritesController(FavoritesService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int userId)
+        public async Task<IActionResult> Index([FromQuery] string locale = "uk")
         {
-            var favorites = await _context.UserVideoFavorites
-                .Where(f => f.UserProfileId == userId)
-                .Select(f => new VideoCardViewModel
-                {
-                    Id = f.Video.Id,
-                    Title = f.Video.Translations
-                        .Where(t => t.LocaleCode == "uk")
-                        .Select(t => t.Title)
-                        .FirstOrDefault(),
-                    PosterUrl = f.Video.Images
-                        .Where(i => i.Type == "poster")
-                        .Select(i => i.BlobContainer + "/" + i.BlobPath)
-                        .FirstOrDefault(),
-                    Rating = f.Video.RatingCount == 0
-                        ? 0
-                        : (double)f.Video.RatingSum / f.Video.RatingCount,
-                    Genres = f.Video.GenreVideos
-                        .Select(g => g.Genre.GenreTranslations
-                            .Where(t => t.LocaleCode == "uk")
-                            .Select(t => t.Name)
-                            .FirstOrDefault())
-                        .ToList()
-                })
-                .ToListAsync();
+            var userProfileIdClaim = User.FindFirst("UserProfileId")?.Value;
+
+            if (userProfileIdClaim == null || !int.TryParse(userProfileIdClaim, out int userProfileId))
+            {
+                return RedirectToAction("Create", "Profile");
+            }
+
+            var favorites = await _service.GetUserFavoritesAsync(userProfileId, locale);
 
             return View(favorites);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavorites(int userProfileId, int videoId)
+        {
+            await _service.AddToFavoritesAsync(userProfileId, videoId);
+            return Ok(new { message = "Video added to favorites" });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemoveFromFavoritesAsync(int userProfileId, int videoId)
+        {
+            await _service.RemoveFromFavoritesAsync(userProfileId, videoId);
+            return Ok(new { message = "Video removed from favorites" });
         }
     }
 }
