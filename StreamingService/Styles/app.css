@@ -1,1 +1,44 @@
 ﻿@import "tailwindcss";
+
+/* 1. Підключення локального шрифту Geist */
+@font-face {
+    font-family: 'Geist';
+    src: url('../fonts/GeistVF.woff2') format('woff2-variations');
+    src: url('../fonts/GeistVF.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+/* 2. Налаштування теми для site.css */
+@theme {
+    /* Перезаписуємо стандартний шрифт sans */
+    --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    /* Додаємо новий шрифт Montserrat */
+    --font-montserrat: "Montserrat", sans-serif;
+    /* Додаємо новий розмір "116" для карток лендігу, який дорівнює 465px */
+    --spacing-116: 465px;
+    /* Тінь для ефекту скла */
+    --shadow-glass: inset 1px 1px 0 0 rgba(255,255,255,0.2), 
+                    inset -1px -1px 0 0 rgba(255,255,255,0.2), 
+                    inset -1px 1px 0 0 rgba(0,0,0,0.5),
+                    inset 1px -1px 0 0 rgba(0,0,0,0.5);
+}
+
+/* 3. Власні компоненти */
+@layer components {
+    .lumeo-container {
+        /* Едині відступи */
+        @apply w-full px-6 md:px-12 xl:px-36 mx-auto;
+        /* mx-auto для екранів ширших за 4k, щоб контент був по центру */
+        max-width: 1920px;
+    }
+    
+    .faq-item {
+        @apply w-full min-h-20 rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300;
+    }
+
+    /* Активний стан (коли відкрито) */
+    .faq-item.active {
+        @apply bg-[#3A3A61]/70;
+    }
+}

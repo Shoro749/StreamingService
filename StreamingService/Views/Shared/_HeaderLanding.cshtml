@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<header class="absolute top-12 left-0 right-0 z-50 flex items-center justify-between lumeo-container">
+
+    <a href="/" class="block hover:opacity-80 transition-opacity">
+        <img src="~/images/ui/Lumeo_logo.svg" alt="Lumeo" class="h-8 w-auto md:h-10" />
+    </a>
+
+    <div class="flex items-center gap-2">
+
+        <button class="group flex items-center gap-2 px-4 py-2.5 rounded-xl
+                       bg-white/4 text-white font-bold text-sm uppercase tracking-wider backdrop-blur-sm
+                       shadow-glass
+                       hover:bg-[#DCF260] hover:text-[#22223A] hover:shadow-none transition-all duration-300">
+
+            <span>UKR</span>
+
+            <img src="~/images/ui/symbols/triangle.svg"
+                 alt="Dropdown"
+                 class="w-2 h-2 brightness-200 group-hover:brightness-0 transition-all duration-300" />
+        </button>
+
+        <a href="/Home/Auth" class="px-8 py-2.5 rounded-xl font-bold text-sm text-[#22223A]
+                                    bg-[#DCF260]/90 backdrop-blur-md
+                                    hover:bg-[#DCF260] hover:scale-105 transition-all duration-300">
+            Увійти
+        </a>
+
+    </div>
+</header>

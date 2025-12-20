@@ -12,12 +12,26 @@ namespace StreamingService.Controllers
         {
             _logger = logger;
         }
-
+        // лендінг 
         public IActionResult Index()
         {
             return View();
         }
-
+        //авторизація
+        public IActionResult Auth()
+        {
+            return View();
+        }
+        
+        //головна сторінка після авторизації
+        public IActionResult Movies()
+        {
+            return View();
+        }
+        public IActionResult Tests()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

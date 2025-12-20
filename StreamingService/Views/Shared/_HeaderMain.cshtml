@@ -1,0 +1,51 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<header class="h-16 min-h-[4rem] flex items-center justify-between px-6 border-b border-gray-800 bg-[#0f1016] z-20">
+
+    <div class="flex items-center w-64">
+        <button class="flex items-center gap-2 text-white font-semibold hover:text-[#D0F260] transition">
+            <span>Фільми</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+    </div>
+
+    <div class="flex-1 max-w-2xl px-4">
+        <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-500 group-focus-within:text-[#D0F260] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <input type="text"
+                   class="block w-full pl-10 pr-10 py-2 border border-gray-700 rounded-full leading-5 bg-gray-900 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-[#D0F260] focus:ring-1 focus:ring-[#D0F260] sm:text-sm transition-all"
+                   placeholder="Фільми, серіали, жанри...">
+
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer hover:text-white text-gray-500">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-5 w-64">
+
+        <button class="relative text-gray-400 hover:text-white transition">
+            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-[#D0F260] ring-2 ring-[#0f1016]"></span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+        </button>
+
+        <div class="flex items-center gap-3 cursor-pointer group">
+            <div class="text-right hidden md:block">
+                <div class="text-sm font-medium text-white group-hover:text-[#D0F260] transition">Maria W.</div>
+                <div class="text-xs text-gray-500">Premium</div>
+            </div>
+            <div class="h-9 w-9 rounded-full bg-gray-700 overflow-hidden border border-gray-600 group-hover:border-[#D0F260] transition">
+                <img src="https://ui-avatars.com/api/?name=Maria+W&background=random&color=fff" alt="Avatar" class="h-full w-full object-cover" />
+            </div>
+        </div>
+    </div>
+</header>
