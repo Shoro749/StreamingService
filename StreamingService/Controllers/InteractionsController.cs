@@ -15,15 +15,15 @@ namespace StreamingService.Controllers
             _ratingService = ratingService;
         }
 
-        [HttpPost("comment")]
+        [HttpPost]
         public async Task<IActionResult> PostComment([FromBody] CommentCreateViewModel request) =>
             await _commentService.AddCommentAsync(request) ? Ok() : BadRequest();
 
-        [HttpPost("comment/like")]
+        [HttpPost]
         public async Task<IActionResult> LikeComment([FromBody] CommentLikeViewModel request) =>
             await _commentService.ToggleLikeAsync(request) ? Ok() : BadRequest();
 
-        [HttpPost("rate")]
+        [HttpPost]
         public async Task<IActionResult> RateVideo([FromBody] VideoRatingViewModel request) =>
             await _ratingService.SetRatingAsync(request) ? Ok() : BadRequest();
     }
