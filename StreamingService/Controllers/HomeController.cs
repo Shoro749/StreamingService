@@ -15,28 +15,26 @@ namespace StreamingService.Controllers
         {
             _logger = logger;
         }
-
+        // ������ 
         public IActionResult Index()
         {
             return View();
         }
 
-        [HttpGet("login")]
-        public IActionResult Login()
+        //�����������
+        public IActionResult Auth()
         {
-            return Challenge(new AuthenticationProperties
-            {
-                RedirectUri = "/"
-            }, GoogleDefaults.AuthenticationScheme);
+            return View();
         }
-
-        [HttpGet("logout")]
-        public IActionResult Logout()
+        
+        //������� ������� ���� �����������
+        public IActionResult Movies()
         {
-            return SignOut(new AuthenticationProperties
-            {
-                RedirectUri = "/"
-            }, CookieAuthenticationDefaults.AuthenticationScheme);
+            return View();
+        }
+        public IActionResult Tests()
+        {
+            return View();
         }
 
         public IActionResult Privacy()
