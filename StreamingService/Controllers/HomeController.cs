@@ -1,6 +1,9 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.Models;
+using System.Diagnostics;
 
 namespace StreamingService.Controllers
 {
@@ -12,18 +15,19 @@ namespace StreamingService.Controllers
         {
             _logger = logger;
         }
-        // лендінг 
+        // пїЅпїЅпїЅпїЅпїЅпїЅ 
         public IActionResult Index()
         {
             return View();
         }
-        //авторизація
+
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         public IActionResult Auth()
         {
             return View();
         }
         
-        //головна сторінка після авторизації
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         public IActionResult Movies()
         {
             return View();
@@ -32,6 +36,7 @@ namespace StreamingService.Controllers
         {
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();
