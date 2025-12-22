@@ -3,11 +3,11 @@ using StreamingService.Repositories;
 
 namespace StreamingService.Services
 {
-    public class HomePageService
+    public class MoviesService
     {
-        private readonly HomeRepository _repository;
+        private readonly MoviesRepository _repository;
 
-        public HomePageService(HomeRepository repository)
+        public MoviesService(MoviesRepository repository)
         {
             _repository = repository;
         }

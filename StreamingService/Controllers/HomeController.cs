@@ -12,26 +12,15 @@ namespace StreamingService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly HomePageService _service;
-
-        public HomeController(ILogger<HomeController> logger, HomePageService service)
+        
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _service = service;
         }
 
-        public async Task<IActionResult> Index([FromQuery] string locale = "uk")
+        public IActionResult Index()
         {
-            var model = new HomePageViewModel
-            {
-                Slider = await _service.GetSliderAsync(locale),
-                Popular = await _service.GetPopularAsync(locale),
-                Trending = await _service.GetTrendingAsync(locale),
-                NewReleases = await _service.GetNewReleasesAsync(locale),
-                WeeklyHits = await _service.GetWeeklyHitsAsync(locale)
-            };
-
-            return View(model);
+            return View();
         }
 
         public IActionResult Privacy()

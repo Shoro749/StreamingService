@@ -4,10 +4,10 @@ using StreamingService.DTO.ViewModels;
 
 namespace StreamingService.Repositories
 {
-    public class HomeRepository
+    public class MoviesRepository
     {
         private readonly AppDbContext _context;
-        public HomeRepository(AppDbContext context)
+        public MoviesRepository(AppDbContext context)
         {
             _context = context;
         }
