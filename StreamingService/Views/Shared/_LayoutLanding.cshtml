@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <partial name="_Head" />
+</head>
+<body class="bg-[#22223A] text-white font-sans antialiased overflow-x-hidden selection:bg-[#DCF260] selection:text-black">
+
+    <partial name="_HeaderLanding" />
+
+    <main class="relative z-0 overflow-visible">
+    @RenderBody()
+    </main>
+
+
+    <partial name="_Footer" />
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

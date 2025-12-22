@@ -17,10 +17,28 @@ namespace StreamingService.Controllers
         {
             _logger = logger;
         }
-
+        // ������ 
         public IActionResult Index()
         {
             return View();
+        }
+
+        //�����������
+        public IActionResult Auth()
+        {
+            return View();
+        }
+        
+        //������� ������� ���� �����������
+        public IActionResult Movies()
+        {
+            return View();
+        }
+        public IActionResult Tests()
+        {
+            return View();
+        }
+
         }
 
         public IActionResult Privacy()
