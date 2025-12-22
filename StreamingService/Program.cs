@@ -1,10 +1,9 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
 using StreamingService.Data.Seeders;
-using StreamingService.Models;
+using StreamingService.Repositories;
 using StreamingService.Services;
 
 namespace StreamingService
@@ -19,6 +18,12 @@ namespace StreamingService
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddAppDbContext(builder.Configuration);
+            builder.Services.AddScoped<MoviesRepository>();
+            builder.Services.AddScoped<MoviesService>();
+            builder.Services.AddScoped<FavoritesRepository>();
+            builder.Services.AddScoped<FavoritesService>();
+            builder.Services.AddScoped<ProfileRepository>();
+            builder.Services.AddScoped<ProfileService>();
             builder.Services.AddAppRepositories();
 
             builder.Services.AddAuthentication(options =>
@@ -58,8 +63,6 @@ namespace StreamingService
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseAuthorization();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(

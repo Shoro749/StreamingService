@@ -25,7 +25,7 @@ namespace StreamingService.Models
         public int UserProfileId { get; set; }
         public UserProfile? UserProfile { get; set; }
 
-        [Required, Column("payment_id")]
+        [Column("payment_id")]
         public int PaymentId { get; set; }
         public Payment? Payment { get; set; }
 
