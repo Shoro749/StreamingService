@@ -31,5 +31,7 @@ namespace StreamingService.Models
         [Required, Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
+        public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
+
     }
 }

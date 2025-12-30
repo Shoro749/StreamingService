@@ -14,12 +14,12 @@ namespace StreamingService.Services
 
         public async Task<bool> ProcessSubscriptionAsync(int profileId, int planId, string provider)
         {
-            var plan = await _repository.GetPlanAsync(planId);
-            if (plan == null || !plan.IsEnabled) return false;
+            var newPlan = await _repository.GetPlanAsync(planId);
+            if (newPlan == null || !newPlan.IsEnabled) return false;
 
             var payment = new Payment
             {
-                Amount = plan.Price,
+                Amount = newPlan.Price,
                 Currency = "UAH",
                 Provider = provider,
                 Method = "Card",
@@ -34,7 +34,7 @@ namespace StreamingService.Services
                 Status = "Active",
                 AutoRenew = true,
                 SubscriptionStart = DateTime.UtcNow,
-                SubscriptionEnd = DateTime.UtcNow.AddDays(plan.PeriodDays)
+                SubscriptionEnd = DateTime.UtcNow.AddDays(newPlan.PeriodDays)
             };
 
             return await _repository.CreateSubscriptionWithPayment(subscription, payment);

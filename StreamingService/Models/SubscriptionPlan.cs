@@ -27,5 +27,7 @@ namespace StreamingService.Models
         [Required, Column("subscription_level_id")]
         public int SubscriptionLevelId { get; set; }
         public SubscriptionLevel? SubscriptionLevel { get; set; }
+
+        public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
     }
 }

@@ -11,5 +11,8 @@ namespace StreamingService.Models
 
         [Required, StringLength(256), Column("code")]
         public string? Code { get; set; }
+
+        public ICollection<SubscriptionPlan> SubscriptionPlans { get; set; } = new List<SubscriptionPlan>();
+        public ICollection<Video> Videos { get; set; } = new List<Video>();
     }
 }
