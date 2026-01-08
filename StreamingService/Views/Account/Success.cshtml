@@ -1,0 +1,42 @@
+﻿@model StreamingService.DTO.ViewModels.AgreementViewModel
+
+@{
+    Layout = "~/Views/Shared/Layouts/_LayoutSimple.cshtml";
+    ViewData["Title"] = "Підписка успішна";
+}
+
+<div class="relative min-h-screen w-full overflow-hidden">
+
+    <partial name="~/Views/Shared/Partials/Auth/_AuthBackgroundText.cshtml"
+             model="Model.BackgroundText" />
+
+    <div class="flex flex-col gap-6 text-center mt-16">
+
+        <div class="flex flex-col gap-6 items-center">
+            @* Індикатор кроку *@
+            <h2 class="font-bold text-4xl md:text-5xl text-white">Крок 3 з 3</h2>
+
+            @* Заголовок успіху *@
+            <h1 class="font-montserrat font-700 text-4xl md:text-5xl leading-none tracking-normal text-white">
+                Вітаємо! Підписку активовано.
+            </h1>
+
+            @* Інформація про план / тимчасово використано варіант заглушки "PLAN"*@
+            <p class="font-montserrat font-extrabold text-8xl text-[#D0F260]">
+                @(Model.SubscriptionPlan)
+            </p>
+            
+            <p class="font-montserrat font-normal text-xl md:text-2xl text-white uppercase underline underline-offset-4">
+                Подивися, що ти щойно відкрив.
+            </p>
+        </div>
+
+        <div class="w-full flex justify-center mt-4">
+            <a asp-controller="Home" asp-action="Movies" class="w-full max-w-lg h-14 bg-[#D0F260] text-[#22223A] font-black text-xl md:text-2xl uppercase rounded-xl shadow-glass flex items-center justify-center hover:bg-white hover:scale-105 transition-all duration-300 decoration-0 cursor-pointer">
+                Відкрити свій обліковий запис
+            </a>
+        </div>
+
+    </div>
+    
+</div>

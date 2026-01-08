@@ -7,5 +7,6 @@
         public List<VideoCardViewModel> Trending { get; set; }
         public List<VideoCardViewModel> NewReleases { get; set; }
         public List<VideoCardViewModel> WeeklyHits { get; set; }
+        public List<PricingTier> PricingTiers { get; set; } = new List<PricingTier>();
     }
 }
