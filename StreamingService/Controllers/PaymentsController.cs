@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StreamingService.Models;
 using StreamingService.Services;
 
 namespace StreamingService.Controllers
