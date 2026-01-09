@@ -12,7 +12,7 @@ namespace StreamingService.Controllers
             _subscriptionService = subscriptionService;
         }
 
-        [HttpPost]
+        [HttpPost("subscribe")]
         public async Task<IActionResult> Subscribe(int profileId, int planId, string provider = "Stripe")
         {
             var result = await _subscriptionService.ProcessSubscriptionAsync(profileId, planId, provider);
@@ -20,7 +20,7 @@ namespace StreamingService.Controllers
             return BadRequest("Не вдалося оформити підписку");
         }
 
-        [HttpGet]
+        [HttpGet("my-plan")]
         public async Task<IActionResult> GetMyPlan(int profileId)
         {
             var plan = await _subscriptionService.GetCurrentPlanInfoAsync(profileId);
@@ -28,7 +28,7 @@ namespace StreamingService.Controllers
             return Ok(plan);
         }
 
-        [HttpPost]
+        [HttpPost("cancel")]
         public async Task<IActionResult> Cancel(int profileId)
         {
             var success = await _subscriptionService.CancelSubscriptionAsync(profileId);

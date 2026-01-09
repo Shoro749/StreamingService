@@ -23,7 +23,7 @@ namespace StreamingService.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> Register(UserProfileViewModel model)
         {
             var result = await _profileService.CreateUserProfileAsync(model);
@@ -31,7 +31,14 @@ namespace StreamingService.Controllers
             return BadRequest("Не вдалося зареєструвати користувача");
         }
 
-        [HttpGet("login")]
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserProfileViewModel model)
+        {
+            //login
+            return BadRequest("Не увійти");
+        }
+
+        [HttpGet("api-login")]
         public IActionResult Login()
         {
             return Challenge(new AuthenticationProperties

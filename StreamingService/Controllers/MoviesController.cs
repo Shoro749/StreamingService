@@ -12,6 +12,7 @@ namespace StreamingService.Controllers
             _service = service;
         }
 
+        [HttpGet("home")]
         public async Task<IActionResult> Index([FromQuery] string locale = "uk")
         {
             var model = new HomePageViewModel
