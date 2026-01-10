@@ -13,6 +13,7 @@ namespace StreamingService.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly PricingService _pricingService;
+        
 
         public HomeController(ILogger<HomeController> logger, PricingService pricingService)
         {
@@ -23,9 +24,17 @@ namespace StreamingService.Controllers
         public IActionResult Index()
         {
             var plans = _pricingService.GetPricingPlans();
+            var studios = StudioItem.GetStudios();
+            var features = FeatureItem.GetFeatures();
+            var questions = FaqItem.GetQuestions();
+            var topMovies = TopMovieSeeder.Seed();
             var model = new HomePageViewModel
             {
-                PricingTiers = plans
+                PricingTiers = plans,
+                Studios = studios,
+                Features = features,
+                Questions = questions,
+                TopMovies = topMovies,
             };
             return View(model);
         }
