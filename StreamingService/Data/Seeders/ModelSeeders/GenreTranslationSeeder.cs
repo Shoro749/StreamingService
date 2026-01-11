@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using StreamingService.Models;
 
 namespace StreamingService.Data.Seeders.ModelSeeders
@@ -10,7 +7,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
         public static async Task<List<GenreTranslation>?> SeedAsync(AppDbContext context, List<Genre>? genres)
         {
             if (genres == null)
-                return null;    
+                return null;
 
             if (context.GenresTranslations.Any())
                 return null;

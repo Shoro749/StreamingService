@@ -1,8 +1,6 @@
-﻿
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
-using StreamingService.Models;
+using StreamingService.Repositories;
 
 namespace StreamingService.Services
 {
@@ -20,8 +18,15 @@ namespace StreamingService.Services
 
         public static IServiceCollection AddAppRepositories(this IServiceCollection services)
         {
-            // services.AddScoped<IRepository<>, EFRepository<>>();
+            services.AddScoped<VideoRepository>();
+            services.AddScoped<UserRepository>();
+            
+            services.AddScoped<VideoService>();
+            services.AddScoped<UserService>();
+            services.AddScoped<VideoPreviewService>();
+
             return services;
         }
+
     }
 }

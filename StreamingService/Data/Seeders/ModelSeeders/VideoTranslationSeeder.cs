@@ -10,7 +10,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 return null;
 
             if (context.VideoTranslations.Any())
-                return null; 
+                return null;
 
             var videoTranslations = new List<VideoTranslation>
             {

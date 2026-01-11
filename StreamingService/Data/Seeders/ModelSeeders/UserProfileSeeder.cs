@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Identity;
 using StreamingService.Models;
 
 namespace StreamingService.Data.Seeders.ModelSeeders
 {
     public static class UserProfileSeeder
     {
-        public static async Task<List<UserProfile>?> SeedAsync(AppDbContext context) 
-        { 
+        public static async Task<List<UserProfile>?> SeedAsync(AppDbContext context)
+        {
             if (context.UserProfiles.Any())
                 return null;
 

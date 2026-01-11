@@ -1,5 +1,4 @@
 using StreamingService.Models;
-using System.Collections.Generic;
 
 namespace StreamingService.Data.Seeders.ModelSeeders
 {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StreamingService.Models;
 
 namespace StreamingService.Data;
@@ -72,7 +70,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<VideoTranslation> VideoTranslations { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {}
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,10 +88,10 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-             entity.HasOne(e => e.Parent)
-                .WithMany()
-                .HasForeignKey(e => e.ParentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Parent)
+               .WithMany()
+               .HasForeignKey(e => e.ParentId)
+               .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.UserProfile)
                 .WithMany()

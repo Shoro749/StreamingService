@@ -1,6 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using StreamingService.Models;
-using System.Collections.Generic;
+﻿using StreamingService.Models;
 
 namespace StreamingService.Data.Seeders.ModelSeeders
 {
@@ -8,7 +6,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
     {
         public static async Task<List<Audiotrack>?> SeedAsync(AppDbContext context, List<VideoEpisode>? videoEpisodes)
         {
-            if(videoEpisodes == null)
+            if (videoEpisodes == null)
                 return null;
             if (context.Audiotracks.Any())
                 return null;

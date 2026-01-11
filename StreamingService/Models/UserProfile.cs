@@ -17,7 +17,7 @@ namespace StreamingService.Models
 
         [StringLength(2048), Column("avatar_url")]
         public string? AvatarUrl { get; set; }
-        
+
         //[Required, Column("user_id")]
         //public int UserId { get; set; }
         //public User User { get; set; }

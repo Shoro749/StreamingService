@@ -13,7 +13,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
             {
                 new Payment
                 {
-                    
+
                     Amount = 9.99m,
                     Currency = "USD",
                     Provider = "LiqPay",
@@ -24,7 +24,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 },
                 new Payment
                 {
-                   
+
                     Amount = 19.99m,
                     Currency = "USD",
                     Provider = "Fondy",
@@ -32,12 +32,12 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                     TransactionId = "TXN002",
                     Status = "Completed",
                     CreatedAt = DateTime.UtcNow.AddDays(-5),
-                   
-                    
+
+
                 },
                 new Payment
                 {
-                   
+
                     Amount = 29.99m,
                     Currency = "USD",
                     Provider = "LiqPay",

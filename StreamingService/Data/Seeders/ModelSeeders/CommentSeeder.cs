@@ -1,4 +1,3 @@
-using Microsoft.IdentityModel.Tokens;
 using StreamingService.Models;
 
 namespace StreamingService.Data.Seeders.ModelSeeders

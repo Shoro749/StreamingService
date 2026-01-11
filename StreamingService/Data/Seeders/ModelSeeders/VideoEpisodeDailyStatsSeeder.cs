@@ -1,5 +1,3 @@
-using StreamingService.Models;
-
 namespace StreamingService.Data.Seeders.ModelSeeders
 {
     public static class VideoEpisodeDailyStatsSeeder

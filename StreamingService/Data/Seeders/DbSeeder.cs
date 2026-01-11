@@ -1,8 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using StreamingService.Data.Seeders.ModelSeeders;
-using StreamingService.Models;
+﻿using StreamingService.Data.Seeders.ModelSeeders;
 
 namespace StreamingService.Data.Seeders
 {
@@ -58,7 +54,7 @@ namespace StreamingService.Data.Seeders
 
             foreach (var video in videos)
             {
-                var videoRatings = ratings.Where(r => r.VideoId == video.Id);  
+                var videoRatings = ratings.Where(r => r.VideoId == video.Id);
                 video.RatingCount = videoRatings.Count();
                 video.RatingSum = videoRatings.Sum(r => r.Rating);
             }

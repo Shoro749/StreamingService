@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
 using StreamingService.Data.Seeders;
-using StreamingService.Models;
 using StreamingService.Services;
 
 namespace StreamingService
