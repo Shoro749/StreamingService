@@ -3,35 +3,35 @@ using StreamingService.Services;
 
 namespace StreamingService.Controllers
 {
-    public class PaymentsController : Controller
+    public class SubscribtionController : Controller
     {
-        private readonly PaymentService _paymentService;
+        private readonly SubscriptionService _subscriptionService;
 
-        public PaymentsController(PaymentService paymentService)
+        public SubscribtionController(SubscriptionService subscriptionService)
         {
-            _paymentService = paymentService;
+            _subscriptionService = subscriptionService;
         }
 
-        [HttpPost]
+        [HttpPost("subscribe")]
         public async Task<IActionResult> Subscribe(int profileId, int planId, string provider = "Stripe")
         {
-            var result = await _paymentService.ProcessSubscriptionAsync(profileId, planId, provider);
+            var result = await _subscriptionService.ProcessSubscriptionAsync(profileId, planId, provider);
             if (result) return Ok(new { message = "Підписку успішно оформлено" });
             return BadRequest("Не вдалося оформити підписку");
         }
 
-        [HttpGet]
+        [HttpGet("my-plan")]
         public async Task<IActionResult> GetMyPlan(int profileId)
         {
-            var plan = await _paymentService.GetCurrentPlanInfoAsync(profileId);
+            var plan = await _subscriptionService.GetCurrentPlanInfoAsync(profileId);
             if (plan == null) return NotFound("Активної підписки не знайдено");
             return Ok(plan);
         }
 
-        [HttpPost]
+        [HttpPost("cancel")]
         public async Task<IActionResult> Cancel(int profileId)
         {
-            var success = await _paymentService.CancelSubscriptionAsync(profileId);
+            var success = await _subscriptionService.CancelSubscriptionAsync(profileId);
             if (!success) return BadRequest("Не вдалося скасувати підписку");
             return Ok(new { message = "Автопродовження вимкнено. Підписка діє до кінця оплаченого періоду." });
         }

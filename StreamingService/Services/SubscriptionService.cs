@@ -3,11 +3,11 @@ using StreamingService.Repositories;
 
 namespace StreamingService.Services
 {
-    public class PaymentService
+    public class SubscriptionService
     {
-        private readonly PaymentsRepository _repository;
+        private readonly SubscriptionRepository _repository;
 
-        public PaymentService(PaymentsRepository repository)
+        public SubscriptionService(SubscriptionRepository repository)
         {
             _repository = repository;
         }
@@ -37,7 +37,7 @@ namespace StreamingService.Services
                 Currency = "UAH",
                 Provider = provider,
                 Method = "Card",
-                Status = "Completed",
+                Status = "Active",
                 CreatedAt = DateTime.UtcNow
             };
 

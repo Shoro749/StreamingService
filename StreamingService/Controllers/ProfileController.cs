@@ -5,17 +5,16 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Services;
+using System.Numerics;
 
 namespace StreamingService.Controllers
 {
     public class ProfileController : Controller
     {
-        private readonly IMapper _mapper;
         private readonly ProfileService _profileService;
 
-        public ProfileController(IMapper mapper, ProfileService profileService)
+        public ProfileController(ProfileService profileService)
         {
-            _mapper = mapper;
             _profileService = profileService;
         }
 
@@ -24,26 +23,22 @@ namespace StreamingService.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(UserProfileViewModel model)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserProfileViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var (success, errorMessage) = await _profileService.CreateUserProfileAsync(model);
-
-            if (success)
-            {
-                return RedirectToAction("Index");
-            }
-
-            ModelState.AddModelError(string.Empty, errorMessage);
-            return View(model);
+            var result = await _profileService.CreateUserProfileAsync(model);
+            if (result) return Ok(new { message = "Користувача успішно зареєстровано" });
+            return BadRequest("Не вдалося зареєструвати користувача");
         }
 
-        [HttpGet("login")]
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserProfileViewModel model)
+        {
+            //login
+            return BadRequest("Не увійти");
+        }
+
+        [HttpGet("api-login")]
         public IActionResult Login()
         {
             return Challenge(new AuthenticationProperties

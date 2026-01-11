@@ -13,13 +13,13 @@ namespace StreamingService.Services
             _profileRepository = profileRepository;
         }
 
-        public async Task<(bool Success, string ErrorMessage)> CreateUserProfileAsync(UserProfileViewModel model)
+        public async Task<bool> CreateUserProfileAsync(UserProfileViewModel model)
         {
             var existingProfile = await _profileRepository.GetByUsernameAsync(model.Username);
 
             if (existingProfile != null)
             {
-                return (false, "Нікнейм вже зайнятий. Будь ласка, оберіть інший.");
+                return false;
             }
 
             var newProfile = new UserProfile
@@ -33,10 +33,10 @@ namespace StreamingService.Services
 
             if (success)
             {
-                return (true, string.Empty);
+                return true;
             }
 
-            return (false, "Виникла помилка під час збереження даних. Спробуйте ще раз.");
+            return false;
         }
     }
 }

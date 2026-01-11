@@ -12,29 +12,39 @@ namespace StreamingService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly PricingService _pricingService;
         
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, PricingService pricingService)
         {
             _logger = logger;
+            _pricingService = pricingService;
         }
-        // ������ 
+        
         public IActionResult Index()
         {
-            return View();
+            var plans = _pricingService.GetPricingPlans();
+            var studios = StudioItem.GetStudios();
+            var features = FeatureItem.GetFeatures();
+            var questions = FaqItem.GetQuestions();
+            var topMovies = TopMovieSeeder.Seed();
+            var model = new HomePageViewModel
+            {
+                PricingTiers = plans,
+                Studios = studios,
+                Features = features,
+                Questions = questions,
+                TopMovies = topMovies,
+            };
+            return View(model);
         }
-
-        //�����������
+        
         public IActionResult Auth()
         {
             return View();
         }
         
-        //������� ������� ���� �����������
         public IActionResult Movies()
-        {
-            return View();
-        }
-        public IActionResult Tests()
         {
             return View();
         }
