@@ -1,6 +1,5 @@
 ﻿function toggleFaq(button) {
     const item = button.parentElement;
-
     const answer = item.querySelector('.faq-answer');
     const icon = item.querySelector('.faq-icon');
 
@@ -29,45 +28,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentSlide = 0;
     const totalSlides = slides.length;
-
     const heroSection = document.getElementById('hero-section');
 
-    if (!heroSection) return;
+    if (heroSection) {
+        function updateIndicators(activeIndex) {
+            for (let i = 0; i < totalSlides; i++) {
+                const slideEl = document.getElementById(`slide-${i}`);
+                if (!slideEl) continue;
 
-    function updateIndicators(activeIndex) {
-        for (let i = 0; i < totalSlides; i++) {
-            const slideEl = document.getElementById(`slide-${i}`);
-            if (!slideEl) continue;
+                const dot = slideEl.children[0];
+                const line = slideEl.children[1];
 
-            const dot = slideEl.children[0];
-            const line = slideEl.children[1];
-
-            if (i === activeIndex) {
-                slideEl.classList.remove('opacity-50');
-                dot.classList.remove('bg-white', 'w-2.5', 'h-2.5');
-                dot.classList.add('bg-[#DCF260]', 'shadow-[0_0_10px_#DCF260]', 'w-4', 'h-4');
-                line.classList.remove('bg-white');
-                line.classList.add('bg-[#DCF260]');
-            } else {
-                slideEl.classList.add('opacity-50');
-                dot.classList.remove('bg-[#DCF260]', 'shadow-[0_0_10px_#DCF260]', 'w-4', 'h-4');
-                dot.classList.add('bg-white', 'w-2.5', 'h-2.5');
-                line.classList.remove('bg-[#DCF260]');
-                line.classList.add('bg-white');
+                if (i === activeIndex) {
+                    slideEl.classList.remove('opacity-50');
+                    dot.classList.remove('bg-white', 'w-2.5', 'h-2.5');
+                    dot.classList.add('bg-[#DCF260]', 'shadow-[0_0_10px_#DCF260]', 'w-4', 'h-4');
+                    line.classList.remove('bg-white');
+                    line.classList.add('bg-[#DCF260]');
+                } else {
+                    slideEl.classList.add('opacity-50');
+                    dot.classList.remove('bg-[#DCF260]', 'shadow-[0_0_10px_#DCF260]', 'w-4', 'h-4');
+                    dot.classList.add('bg-white', 'w-2.5', 'h-2.5');
+                    line.classList.remove('bg-[#DCF260]');
+                    line.classList.add('bg-white');
+                }
             }
         }
+
+        function setSlide(index) {
+            if (index >= totalSlides) index = 0;
+            if (index < 0) index = totalSlides - 1;
+
+            currentSlide = index;
+            heroSection.style.backgroundImage = `url('${slides[currentSlide]}')`;
+            updateIndicators(currentSlide);
+        }
+
+        setInterval(() => {
+            setSlide(currentSlide + 1);
+        }, 3000);
     }
 
-    function setSlide(index) {
-        if (index >= totalSlides) index = 0;
-        if (index < 0) index = totalSlides - 1;
+    const carousel = document.getElementById('topMoviesCarousel');
+    const rightButton = document.getElementById('scrollRightBtn');
+    const leftButton = document.getElementById('scrollLeftBtn');
 
-        currentSlide = index;
-        heroSection.style.backgroundImage = `url('${slides[currentSlide]}')`;
-        updateIndicators(currentSlide);
+    if (carousel && rightButton && leftButton) {
+
+        const scrollStep = 360;
+
+        rightButton.addEventListener('click', () => {
+            carousel.scrollBy({
+                left: scrollStep,
+                behavior: 'smooth'
+            });
+        });
+
+        leftButton.addEventListener('click', () => {
+            carousel.scrollBy({
+                left: -scrollStep,
+                behavior: 'smooth'
+            });
+        });
+
+        carousel.addEventListener('scroll', () => {
+            const isAtStart = carousel.scrollLeft === 0;
+            leftButton.classList.toggle('hidden', isAtStart);
+
+            const isAtEnd = carousel.scrollWidth - carousel.clientWidth <= carousel.scrollLeft + 1;
+            rightButton.classList.toggle('hidden', isAtEnd);
+        });
+
     }
-
-    setInterval(() => {
-        setSlide(currentSlide + 1);
-    }, 3000);
 });

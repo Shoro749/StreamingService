@@ -99,63 +99,39 @@
 
 </section>
 
-<section class="w-full py-10">
+<section class="w-full py-10 relative">
 	<div class="lumeo-container">
-        <div class="mb-21">
+        <div class="mb-20">
             <h2 class="text-5xl font-bold text-white leading-tight">
                 Сьогодні всі дивляться це
             </h2>
             <div class="mt-3 w-40 h-3 bg-[#D0F260]"></div>
         </div>
 
-        <div class="flex gap-8">
+		<div class="relative">
+            <button id="scrollLeftBtn" class="hidden absolute -left-30 top-1/2 z-40 -translate-y-1/2 w-17 h-15 bg-[#48485D] rounded-2xl flex items-center justify-center hover:bg-[#5a5a75] transition-colors">
+                <svg class="rotate-180" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
 
-            <div class="movie-card group">
-                <img src="~/images/landing/posters/movie_1.png"
-                     alt="Дикий робот"
-                     class="movie-poster" />
-
-                <span class="movie-rank-number">1</span>
+            <div id="topMoviesCarousel" class="flex gap-10 overflow-x-auto scroll-smooth custom-scrollbar-hide snap-x snap-mandatory py-10 pl-10 -ml-10 scroll-pl-10">
+                @foreach (var topMovie in Model.TopMovies)
+                {
+                    <div class="movie-card group snap-start">
+                        <img src="@topMovie.Poster"
+                             alt="@topMovie.Title" class="movie-poster" />
+                        <span class="movie-rank-number">@topMovie.Rank</span>
+                    </div>
+                }
             </div>
 
-            <div class="movie-card group">
-                <img src="~/images/landing/posters/movie_2.png"
-                     alt="Відьмак"
-                     class="movie-poster" />
-                <span class="movie-rank-number">2</span>
-            </div>
-
-            <div class="movie-card group">
-                <img src="~/images/landing/posters/movie_3.png"
-                     alt="Дім дракона"
-                     class="movie-poster" />
-                <span class="movie-rank-number">3</span>
-            </div>
-
-            <div class="movie-card group">
-                <img src="~/images/landing/posters/movie_4.png"
-                     alt="Довга хода"
-                     class="movie-poster" />
-                <span class="movie-rank-number">4</span>
-            </div>
-
-            <div class="movie-card group">
-                <img src="~/images/landing/posters/movie_5.png"
-                     alt="Я не залізна"
-                     class="movie-poster group-hover:scale-100" />
-
-                <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-[#22223A] via-70% to-[#22223A] z-10"></div>
-
-                <span class="movie-rank-number">5</span>
-
-                <button class="absolute right-7 top-1/2 -translate-y-1/2 w-17 h-15 bg-[#48485D] rounded-2xl flex items-center justify-center hover:bg-[#5a5a75] transition-colors z-30">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-            </div>
-
-        </div>
+            <button id="scrollRightBtn" class="absolute -right-30 top-1/2 z-40 -translate-y-1/2 w-17 h-15 bg-[#48485D] rounded-2xl flex items-center justify-center hover:bg-[#5a5a75] transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>       
     </div>
     
 </section>

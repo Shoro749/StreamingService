@@ -94,6 +94,15 @@
         border-right: 2px solid transparent;
         background-clip: padding-box;
     }
+
+    .custom-scrollbar-hide {
+        -ms-overflow-style: none; 
+        scrollbar-width: none; 
+    }
+
+    .custom-scrollbar-hide::-webkit-scrollbar {
+        display: none; 
+    }
 }
 /* 5. Стилі валідації форм */
 @layer utilities {
