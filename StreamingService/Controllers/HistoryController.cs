@@ -13,7 +13,7 @@ namespace StreamingService.Controllers
             _historyService = continueService;
         }
 
-        [HttpGet("continue")
+        [HttpGet("continue")]
         public async Task<IActionResult> GetContinueWatching(int userId)
         {
             var result = await _historyService.GetContinueWatchingAsync(userId);

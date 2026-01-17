@@ -1,10 +1,12 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using StreamingService.Data;
 using StreamingService.Data.Seeders;
+using StreamingService.DTO.ViewModels;
+using StreamingService.Models;
 using StreamingService.Repositories;
 using StreamingService.Services;
+using System.Security.Claims;
 
 namespace StreamingService
 {
@@ -41,6 +43,18 @@ namespace StreamingService
             {
                 options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
+                options.Events.OnCreatingTicket = async context =>
+                {
+                    var profileService = context.HttpContext.RequestServices.GetRequiredService<ProfileService>();
+
+                    var googleId = context.Identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var email = context.Identity.FindFirst(ClaimTypes.Email)?.Value;
+                    var name = context.Identity.FindFirst(ClaimTypes.Name)?.Value;
+                    var picture = context.User.GetProperty("picture").GetString();
+
+                    await profileService.HandleGoogleAuthAsync(googleId, email, name, picture);
+                };
             });
 
             var app = builder.Build();

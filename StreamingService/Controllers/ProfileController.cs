@@ -38,8 +38,8 @@ namespace StreamingService.Controllers
             return BadRequest("Не увійти");
         }
 
-        [HttpGet("api-login")]
-        public IActionResult Login()
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
         {
             return Challenge(new AuthenticationProperties
             {
@@ -47,8 +47,8 @@ namespace StreamingService.Controllers
             }, GoogleDefaults.AuthenticationScheme);
         }
 
-        [HttpGet("logout")]
-        public IActionResult Logout()
+        [HttpGet("google-logout")]
+        public IActionResult GoogleLogout()
         {
             return SignOut(new AuthenticationProperties
             {

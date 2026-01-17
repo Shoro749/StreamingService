@@ -17,5 +17,14 @@ namespace StreamingService.Models
 
         [StringLength(2048), Column("avatar_url")]
         public string? AvatarUrl { get; set; }
+
+        [Required, StringLength(256), Column("email")]
+        public string Email { get; set; }
+
+        [StringLength(512), Column("password_hash")]
+        public string? PasswordHash { get; set; }
+
+        [StringLength(128), Column("google_id")]
+        public string? GoogleId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamingService.DTO.ViewModels
 {
@@ -10,5 +11,8 @@ namespace StreamingService.DTO.ViewModels
         public string Username { get; set; }
         public DateTime? Birthday { get; set; }
         public string? AvatarUrl { get; set; }
+        public string Email { get; set; }
+        public string? PasswordHash { get; set; }
+        public string? GoogleId { get; set; }
     }
 }
