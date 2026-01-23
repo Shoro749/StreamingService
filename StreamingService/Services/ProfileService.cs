@@ -23,7 +23,7 @@ namespace StreamingService.Services
             return await _profileRepository.GetByEmailAsync(email);
         }
 
-        public async Task HandleGoogleAuthAsync(string googleId, string email, string name, string picture)
+        public async Task<bool> HandleGoogleAuthAsync(string googleId, string email, string name, string picture)
         {
             var user = await _profileRepository.GetByGoogleIdAsync(googleId);
 
@@ -42,21 +42,19 @@ namespace StreamingService.Services
                     AvatarUrl = picture,
                 };
 
-                await _profileRepository.AddDataAsync(newProfile);
-                return;
+                return await _profileRepository.AddDataAsync(newProfile);
             }
 
             user.AvatarUrl = picture;
             user.Username = name;
 
-            await _profileRepository.UpdateDataAsync(user);
+            return await _profileRepository.UpdateDataAsync(user);
         }
 
         public async Task<bool> CreateUserProfileAsync(UserProfileViewModel model)
         {
-            var existingProfile = await _profileRepository.GetByUsernameAsync(model.Username);
-
-            if (existingProfile == null)
+            var existingEmail = await _profileRepository.GetByEmailAsync(model.Email);
+            if (existingEmail != null)
             {
                 return false;
             }
@@ -64,11 +62,33 @@ namespace StreamingService.Services
             var newProfile = new UserProfile
             {
                 Username = model.Username,
+                Email = model.Email,
+                PasswordHash = PasswordHasher.HashPassword(model.Password),
                 Birthday = model.Birthday,
                 AvatarUrl = model.AvatarUrl,
-            };
+                GoogleId = model.GoogleId
+            };
 
             return await _profileRepository.AddDataAsync(newProfile);
+        }
+
+        public async Task<bool> LoginUserAsync(LoginViewModel model)
+        {
+            var user = await _profileRepository.GetByEmailAsync(model.Email);
+
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash))
+            {
+                return false;
+            }
+
+            bool isPasswordValid = PasswordHasher.VerifyPassword(model.Password, user.PasswordHash);
+
+            if (!isPasswordValid)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

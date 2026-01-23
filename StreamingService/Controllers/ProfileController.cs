@@ -34,8 +34,9 @@ namespace StreamingService.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserProfileViewModel model)
         {
-            //login
-            return BadRequest("Не увійти");
+            var result = await _profileService.LoginUserAsync(model);
+            if (result) return Ok(new { message = "Успішний вхід" });
+            return BadRequest("Не вдалося увійти");
         }
 
         [HttpGet("google-login")]
