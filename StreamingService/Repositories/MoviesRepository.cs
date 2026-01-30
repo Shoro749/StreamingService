@@ -24,7 +24,7 @@ namespace StreamingService.Repositories
                         .Select(t => t.Title)
                         .FirstOrDefault(),
 
-                    PosterUrl = v.Images
+                    ImageUrl = v.Images
                         .Where(i => i.Type == "poster")
                         .Select(i => i.BlobContainer + "/" + i.BlobPath)
                         .FirstOrDefault(),

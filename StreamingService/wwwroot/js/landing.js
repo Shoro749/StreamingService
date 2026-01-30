@@ -69,35 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    const carousel = document.getElementById('topMoviesCarousel');
-    const rightButton = document.getElementById('scrollRightBtn');
-    const leftButton = document.getElementById('scrollLeftBtn');
+    setupScrollableCarousel('topMoviesCarousel', 'scrollLeftBtn', 'scrollRightBtn');
 
-    if (carousel && rightButton && leftButton) {
-
-        const scrollStep = 360;
-
-        rightButton.addEventListener('click', () => {
-            carousel.scrollBy({
-                left: scrollStep,
-                behavior: 'smooth'
-            });
-        });
-
-        leftButton.addEventListener('click', () => {
-            carousel.scrollBy({
-                left: -scrollStep,
-                behavior: 'smooth'
-            });
-        });
-
-        carousel.addEventListener('scroll', () => {
-            const isAtStart = carousel.scrollLeft === 0;
-            leftButton.classList.toggle('hidden', isAtStart);
-
-            const isAtEnd = carousel.scrollWidth - carousel.clientWidth <= carousel.scrollLeft + 1;
-            rightButton.classList.toggle('hidden', isAtEnd);
-        });
-
-    }
 });

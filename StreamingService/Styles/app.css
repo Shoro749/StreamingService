@@ -65,6 +65,27 @@
     .feature-card {
         @apply relative w-full max-w-lg h-72 rounded-4xl bg-[#9A9A9A]/10 backdrop-blur-md border border-white/5 overflow-hidden shadow-glass;
     }
+
+    .fade-mask-right {
+        mask-image: linear-gradient(to right, black calc(100% - 200px), transparent calc(100% - 130px) );
+        -webkit-mask-image: linear-gradient(to right, black calc(100% - 200px), transparent calc(100% - 130px) );
+    }
+
+    .nav-btn-glass,
+    .nav-btn-solid {
+        @apply w-15 h-13 rounded-xl flex items-center justify-center;
+        @apply transition-all active:scale-95 pointer-events-auto cursor-pointer;
+    }
+
+    .nav-btn-glass {
+        @apply bg-[#9A9A9A]/10 backdrop-blur-md text-white;
+        @apply hover:bg-white/20 hover:text-[#DCF260];
+    }
+
+    .nav-btn-solid {
+        @apply bg-[#2E2E4D] text-white shadow-lg;
+        @apply hover:bg-[#3E3E61] hover:text-[#DCF260];
+    }
 }
 
 /* 4. Спеціальний скролбар */

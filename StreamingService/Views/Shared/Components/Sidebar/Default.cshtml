@@ -1,0 +1,33 @@
+﻿@model List<StreamingService.DTO.ViewModels.SidebarItemViewModel>
+
+<div class="flex flex-col">
+    @foreach (var item in Model)
+    {
+
+        var textClass = item.IsActive
+        ? "text-[#DCF260] text-xl font-montserrat font-medium leading-none"
+        : "text-white/50 group-hover:text-white transition-colors text-xl font-montserrat font-medium leading-none";
+
+        var imgClass = item.IsActive
+        ? ""
+        : "opacity-50 group-hover:opacity-100 transition-opacity duration-300";
+
+        var currentIcon = item.IsActive ? item.ActiveIcon : item.InactiveIcon;
+
+        <a href="@item.PageUrl" class="group flex items-center justify-center lg:justify-start gap-5 py-3 transition-all px-4 lg:pl-16">
+
+            <div class="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                <img src="@currentIcon" alt="@item.PageName" class="w-full h-full object-contain @imgClass" />
+            </div>
+
+            <span class="hidden lg:block @textClass">
+                @item.PageName
+            </span>
+        </a>
+
+        @if (item.HasSeparator)
+        {
+            <div class="mb-16"></div>
+        }
+    }
+</div>

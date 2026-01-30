@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Routing
+@model dynamic
+@{
+    var values = new RouteValueDictionary(Model);
+
+    var btnId = values["Id"] as string;
+
+    var isLeft = values.ContainsKey("IsLeft") ? (bool)values["IsLeft"] : false;
+    var rotateClass = isLeft ? "rotate-180" : "";
+
+    var theme = values.ContainsKey("Theme") ? values["Theme"] as string : "glass";
+    var themeClass = theme == "solid" ? "nav-btn-solid" : "nav-btn-glass";
+
+    var extraClasses = values.ContainsKey("ExtraClasses") ? values["ExtraClasses"] as string : "";
+}
+
+<button id="@btnId" class="@themeClass @extraClasses">
+    <svg class="w-6 h-6 @rotateClass" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+</button>

@@ -134,12 +134,9 @@
         </div>
 
 		<div class="relative">
-            <button id="scrollLeftBtn" class="hidden absolute -left-30 top-1/2 z-40 -translate-y-1/2 w-17 h-15 bg-[#48485D] rounded-2xl flex items-center justify-center hover:bg-[#5a5a75] transition-colors">
-                <svg class="rotate-180" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
 
+            <partial name="Partials/UI/_LendNavButton" model="@(new { Id = "scrollLeftBtn", IsLeft = true })" />
+            
             <div id="topMoviesCarousel" class="flex gap-10 overflow-x-auto scroll-smooth custom-scrollbar-hide snap-x snap-mandatory py-10 pl-10 -ml-10 scroll-pl-10">
                 @foreach (var topMovie in Model.TopMovies)
                 {
@@ -151,12 +148,8 @@
                 }
             </div>
 
-            <button id="scrollRightBtn" class="absolute -right-30 top-1/2 z-40 -translate-y-1/2 w-17 h-15 bg-[#48485D] rounded-2xl flex items-center justify-center hover:bg-[#5a5a75] transition-colors">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
-        </div>       
+            <partial name="Partials/UI/_LendNavButton" model="@(new { Id = "scrollRightBtn", IsLeft = false })" />
+            
     </div>
     
 </section>
@@ -244,4 +237,7 @@
     </div>
 </section>
 
-<script src="~/js/landing.js" asp-append-version="true"></script>
+@section Scripts {
+    <script src="~/js/ui-components.js" asp-append-version="true"></script>
+    <script src="~/js/landing.js" asp-append-version="true"></script>
+}

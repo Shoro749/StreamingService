@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
+using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
+using StreamingService.Extensions;
 using StreamingService.Models;
 using StreamingService.Services;
 using System.Diagnostics;
@@ -46,6 +48,20 @@ namespace StreamingService.Controllers
         
         public IActionResult Movies()
         {
+            return View();
+        }
+
+        public IActionResult Dashboard()
+        {
+            ViewData["Title"] = "Óñ³";
+            ViewData["MenuTitle"] = "Óñ³";
+            return View("Catalog");
+        }
+
+        public IActionResult Catalog(VideoType category)
+        {
+            ViewData["Title"] = category.GetDisplayName();
+            ViewData["MenuTitle"] = category.GetShortName();
             return View();
         }
 

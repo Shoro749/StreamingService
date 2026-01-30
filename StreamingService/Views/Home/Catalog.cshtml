@@ -1,0 +1,67 @@
+﻿@{
+    Layout = "~/Views/Shared/Layouts/_LayoutApp.cshtml";
+}
+
+<section class="relative w-full h-[580px] overflow-hidden mb-10">
+
+    @await Component.InvokeAsync("Hero")
+
+</section>
+
+
+<section class="mb-12 relative group">
+
+    <div id="genresList" class="fade-mask-right flex items-center gap-5 overflow-x-auto custom-scrollbar-hide pr-56 snap-x scroll-smooth">
+
+        @foreach (var genre in new[] { "Бойовик", "Пригоди", "Комедія", "Драма", "Жахи", "Фантастика", "Фентезі", "Трилер", "Сімейний", "Документальний", "Детектив", "Екшн", "Мелодрама", "Історичний" })
+        {
+            <button class="snap-start flex-shrink-0 px-9 py-3 rounded-full
+                               bg-white/10 backdrop-blur-sm
+                               text-white font-medium text-base
+                               shadow-glass transition-all hover:bg-white/20 active:scale-95">
+                @genre
+            </button>
+        }
+    </div>
+
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 pointer-events-none">
+
+        <partial name="Partials/UI/_NavButton" model="@(new { Id = "genresLeftBtn", IsLeft = true, Theme = "glass"})" />
+        <partial name="Partials/UI/_NavButton" model="@(new { Id = "genresRightBtn", IsLeft = false, Theme = "glass"})"/>
+
+    </div>
+
+</section>
+
+<div id="video-collections">
+    
+    @await Component.InvokeAsync("VideoSection", new { 
+        Title = "", // вибір редакції
+        SectionId = "featured", 
+        LinkUrl = "/featured"  
+    })
+
+    @await Component.InvokeAsync("VideoSection", new { 
+        Title = "Вибух емоцій у кожному кадрі", 
+        SectionId = "action", 
+        LinkUrl = "/action" 
+    })
+
+    @await Component.InvokeAsync("VideoSection", new { 
+        Title = "Те, що всі обговорюють", 
+    SectionId = "popular", 
+    LinkUrl = "/popular" 
+    })
+
+    @await Component.InvokeAsync("VideoSection", new { 
+        Title = "Не пропусти цього тижня!", 
+    SectionId = "newReleases", 
+    LinkUrl = "/new-releases" 
+    })
+
+</div>
+
+@section Scripts {
+    <script src="~/js/hero-slider.js" asp-append-version="true"></script>
+    <script src="~/js/video-carousel.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Routing
+@model dynamic
+@{
+    var values = new RouteValueDictionary(Model);
+
+    var btnId = values["Id"] as string;
+
+    var extraClasses = values.ContainsKey("ExtraClasses") ? values["ExtraClasses"] as string : "";
+
+    var baseClasses = "relative group/btn p-1.5 rounded-full text-white/60 transition-all duration-300 hover:text-white hover:bg-white/10 active:scale-95";
+}
+
+<button id="@btnId" class="@baseClasses @extraClasses">
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
+        </path>
+    </svg>
+</button>
