@@ -38,9 +38,14 @@
             </div>
         </div>
 
-        <partial name="Partials/UI/_ContextButton" model="@(new { 
+        <div>
+
+            <partial name="Partials/UI/_ContextButton" model="@(new { 
             Id = "ctxBtn-" + Model.Id,
             ExtraClasses = "-mr-2"            
-        })" />
+            })" />
+  
+        </div>
+        
     </div>
 </div>
