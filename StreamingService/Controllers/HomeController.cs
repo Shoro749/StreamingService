@@ -62,6 +62,7 @@ namespace StreamingService.Controllers
         {
             ViewData["Title"] = category.GetDisplayName();
             ViewData["MenuTitle"] = category.GetShortName();
+            ViewData["Category"] = category;
             return View();
         }
 
