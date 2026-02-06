@@ -32,7 +32,7 @@ namespace StreamingService.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserProfileViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             var result = await _profileService.LoginUserAsync(model);
             if (result) return Ok(new { message = "Успішний вхід" });
