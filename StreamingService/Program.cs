@@ -26,6 +26,7 @@ namespace StreamingService
             builder.Services.AddScoped<FavoritesService>();
             builder.Services.AddScoped<ProfileRepository>();
             builder.Services.AddScoped<ProfileService>();
+            builder.Services.AddScoped<PricingService>();
             builder.Services.AddScoped<VideoStatsService>();
             builder.Services.AddScoped<VideoStatsRepository>();
             builder.Services.AddScoped<HistoryRepository>();

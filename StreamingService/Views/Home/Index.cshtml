@@ -1,8 +1,429 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model StreamingService.DTO.ViewModels.HomePageViewModel
+@{
+    Layout = "~/Views/Shared/Layouts/_LayoutLanding.cshtml"; ;
+    ViewData["Title"] = "Ласкаво просимо";
 }
 
-<div class="p-10 bg-blue-100 border-l-4 border-blue-500 text-blue-700">
-    <p class="font-bold">Ура!</p>
-    <p>Tailwind CSS успішно підключено.</p>
-</div>
+<section id="hero-section" class="relative h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden"
+         style="background-image: url('/images/landing/Landing_robot.png'); transition: background-image 1s ease-in-out;">
+
+    <div class="absolute inset-0 bg-black/10 z-0"></div>
+
+    <div class="relative z-10 w-full max-w-4xl px-6 text-center flex flex-col items-center gap-6">
+
+        <h1 class="text-4xl md:text-5xl lg:text-5xl font-black text-white leading-tight drop-shadow-lg">
+            Безлімітні фільми, серіали та мультфільми — у будь-який час
+        </h1>
+
+        <p class="text-lg md:text-2xl font-normal font-montserrat text-white drop-shadow-md">
+            Почни від ₴249/міс. Скасувати можна будь-коли.
+        </p>
+
+        <p class="text-base md:text-xl font-light font-montserrat text-white mt-16 drop-shadow-md max-w-[762px]">
+            Готовий(-а) до перегляду? Введи свою електронну пошту, щоб створити або відновити акаунт.
+        </p>
+
+        <form asp-controller="Account" asp-action="Register" method="get" class="w-full max-w-5xl relative">
+
+            <div class="relative w-full max-w-3xl mx-auto">
+
+                <input name="Email"
+                       type="email"
+                       placeholder="Email address"
+                       class="w-full h-20 pl-6 pr-52 rounded-2xl bg-[#9A9A9A]/10 text-white placeholder-gray-300 backdrop-blur-sm focus:outline-none focus:border-[#DCF260] focus:bg-black/40 transition-all text-xl font-normal shadow-glass"
+                       required />
+
+                <button type="submit" class="absolute right-0 top-0 h-20 w-48 bg-[#DCF260] rounded-2xl text-[#22223A] text-xl font-black uppercase flex items-center justify-center gap-3 hover:scale-105 transition-all duration-300 shadow-[0px_0px_10px_rgba(208,242,96,0.6)] z-10">
+                    <span>Почати</span>
+
+                    <img src="~/images/ui/symbols/vector_right.svg"
+                         alt="Start"
+                         class="w-2 h-4 object-contain" />
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="absolute bottom-12 left-0 w-full flex justify-center items-center gap-4 z-20">
+
+        <div id="slide-0" class="flex flex-col items-center gap-2 cursor-pointer group" onclick="setSlide(0)">
+            <div class="w-4 h-4 bg-[#DCF260] rounded-full shadow-[0_0_10px_#DCF260] transition-all"></div>
+            <div class="w-28 h-0.5 bg-[#DCF260] rounded-full transition-all"></div>
+        </div>
+
+        <div id="slide-1" class="flex flex-col items-center gap-2 cursor-pointer group opacity-50 hover:opacity-100 transition-opacity" onclick="setSlide(1)">
+            <div class="w-2.5 h-2.5 bg-white rounded-full transition-all"></div>
+            <div class="w-28 h-0.5 bg-white rounded-full transition-all"></div>
+        </div>
+
+        <div id="slide-2" class="flex flex-col items-center gap-2 cursor-pointer group opacity-50 hover:opacity-100 transition-opacity" onclick="setSlide(2)">
+            <div class="w-2.5 h-2.5 bg-white rounded-full transition-all"></div>
+            <div class="w-28 h-0.5 bg-white rounded-full transition-all"></div>
+        </div>
+
+    </div>
+
+</section>
+
+<section class="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden pb-20">
+         
+    <h2 class="text-6xl md:text-[140px] font-black text-white text-center leading-none mt-16 drop-shadow-md">
+        Обери тариф
+    </h2>
+
+    <div class="lumeo-container grid grid-cols-1 xl:grid-cols-3 gap-5 items-start -mt-12 mb-12 z-10">
+       
+        @foreach (var tier in Model.PricingTiers)
+        {
+            <partial name="~/Views/Shared/Partials/Landing/_PriceCard.cshtml" 
+                     model="tier"
+                     view-data='@new ViewDataDictionary(ViewData) { { "TargetAction", "Register" } }' />
+        }
+   
+    </div>
+
+    <div class="lumeo-container">
+		<p class="w-full text-xl font-normal font-montserrat text-white/50 text-left">
+			**Усі тарифні плани можуть містити рекламу перед або після показу контенту, а також у спеціальних подіях.
+			Якість відео та звуку залежить від швидкості інтернет-з'єднання, технічних можливостей пристрою та налаштувань платформи.
+			Не весь контент доступний у високій роздільній здатності. Деталі про сумісність пристроїв та якість відтворення можна переглянути у
+			<span class="underline underline-offset-4 cursor-pointer hover:text-white transition-colors">довідковому розділі</span>.
+			Всі функції та можливості тарифного плану “<span class="underline underline-offset-4 cursor-pointer hover:text-white transition-colors">Стандарт</span>” автоматично включені у тариф
+			“<span class="underline underline-offset-4 cursor-pointer hover:text-white transition-colors">Преміум</span>”.
+		</p>
+    </div>
+    
+
+</section>
+
+<section class="w-full py-10 pl-8 md:pl-12 xl:pl-36">
+
+    <div class="mb-21">
+        <h2 class="text-5xl font-bold text-white leading-tight">
+            Сьогодні всі дивляться це
+        </h2>
+        <div class="mt-3 w-40 h-3 bg-[#D0F260]"></div>
+    </div>
+
+    <div class="flex gap-8">
+
+        <div class="relative flex-shrink-0 w-80 h-116 group cursor-pointer">
+            <img src="~/images/landing/posters/movie_1.png"
+                 alt="Дикий робот"
+                 class="w-full h-full object-cover rounded-3xl transition-transform duration-300 group-hover:scale-105" />
+
+            <span class="absolute -left-[27px] -bottom-2 text-[150px] font-extrabold text-white/75 leading-none z-10 select-none drop-shadow-xl"
+                  style="-webkit-text-stroke: 0.5px rgba(255,255,255,0.8); paint-order: stroke fill;">
+                1
+            </span>
+        </div>
+
+        <div class="relative flex-shrink-0 w-80 h-116 group cursor-pointer">
+            <img src="~/images/landing/posters/movie_2.png" 
+                alt="Відьмак"
+                class="w-full h-full object-cover rounded-3xl transition-transform duration-300 group-hover:scale-105" />
+            <span class="absolute -left-[27px] -bottom-2 text-[150px] font-extrabold text-white/75 leading-none z-10 select-none drop-shadow-xl"
+                  style="-webkit-text-stroke: 0.5px rgba(255,255,255,0.8); paint-order: stroke fill;">
+                2
+            </span>
+        </div>
+
+        <div class="relative flex-shrink-0 w-80 h-116 group cursor-pointer">
+            <img src="~/images/landing/posters/movie_3.png" 
+            alt="Дім дракона" 
+            class="w-full h-full object-cover rounded-3xl transition-transform duration-300 group-hover:scale-105" />
+            <span class="absolute -left-[27px] -bottom-2 text-[150px] font-extrabold text-white/75 leading-none z-10 select-none drop-shadow-xl"
+                  style="-webkit-text-stroke: 0.5px rgba(255,255,255,0.8); paint-order: stroke fill;">
+                3
+            </span>
+        </div>
+
+        <div class="relative flex-shrink-0 w-80 h-116 group cursor-pointer">
+            <img src="~/images/landing/posters/movie_4.png" 
+            alt="Довга хода"
+                 class="w-full h-full object-cover rounded-3xl transition-transform duration-300 group-hover:scale-105" />
+            <span class="absolute -left-[27px] -bottom-2 text-[150px] font-extrabold text-white/75 leading-none z-10 select-none drop-shadow-xl"
+                  style="-webkit-text-stroke: 0.5px rgba(255,255,255,0.8); paint-order: stroke fill;">
+                4
+            </span>
+        </div>
+
+        <div class="relative flex-shrink-0 w-80 h-116 group cursor-pointer">
+            <img src="~/images/landing/posters/movie_5.png"
+                 alt="Я не залізна"
+                 class="w-full h-full object-cover rounded-3xl" />
+
+            <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-[#22223A] via-70% to-[#22223A] z-10"></div>
+
+            <span class="absolute -left-[27px] -bottom-2 text-[150px] font-extrabold text-white/75 leading-none z-20 select-none drop-shadow-xl"
+                  style="-webkit-text-stroke: 0.5px rgba(255,255,255,0.8); paint-order: stroke fill;">
+                5
+            </span>
+
+            <button class="absolute right-[30px] top-1/2 -translate-y-1/2 w-17 h-15 bg-[#48485D] rounded-2xl flex items-center justify-center hover:bg-[#5a5a75] transition-colors z-30">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+    </div>
+</section>
+
+<section class="w-full relative pl-8 md:pl-12 xl:pl-36 pb-20">
+
+    <div class="pt-[121px] mb-[121px]">
+        <h2 class="text-5xl font-bold text-white leading-tight">
+            Усі хіти від топ-студій в одному місці
+        </h2>
+
+        <div class="mt-[13px] w-40 h-3 bg-[#0059FF]"></div>
+
+    </div>
+
+    <div class="grid grid-cols-5 pr-8 md:pr-12 xl:pr-36">
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/netflix.svg" alt="Netflix" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/disney.svg" alt="Disney" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/universal.svg" alt="Universal" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/dream_works.svg" alt="Dream works" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/pixar.svg" alt="Pixar" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/warner.svg" alt="Warner" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/paramaunt.svg" alt="Paramaunt" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/sony.svg" alt="Sony" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/fox.svg" alt="Fox" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/illumination.svg" alt="Illumination" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/columbia.svg" alt="Columbia" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/hbo.svg" alt="Hbo" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/apple.svg" alt="Apple" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/amazon.svg" alt="Amazon" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+        <div class="aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer">
+            <img src="~/images/landing/logos/peacock.svg" alt="Peacock" class="w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+
+    </div>
+
+</section>
+
+<section class="w-full relative py-32">
+
+    <div class="lumeo-container mb-12">
+        <h2 class="text-5xl font-bold text-white leading-tight">
+            Все для тебе
+        </h2>
+        <div class="mt-4 w-40 h-3 bg-[#FF0000]"></div>
+    </div>
+
+    <div class="lumeo-container grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
+
+        <div class="relative w-full max-w-lg h-72 rounded-4xl bg-[#9A9A9A]/10 backdrop-blur-md border border-white/5 overflow-hidden group shadow-glass">
+            <div class="pt-7 pl-5 pr-5">
+                <h3 class="font-black text-3xl text-white leading-tight mb-3">
+                    Дивись на будь-якому екрані
+                </h3>
+                <p class="font-normal text-xl text-white leading-tight max-w-lg">
+                    Smart TV, ноутбук, планшет чи смартфон — переглядай, де зручно, без обмежень у якості.
+                </p>
+            </div>
+            <img src="~/images/landing/icons/Image 1.svg" alt="screens" class="absolute bottom-6 right-14 w-16 h-16">
+        </div>
+
+        <div class="relative w-full max-w-lg h-72 rounded-4xl bg-[#9A9A9A]/10 backdrop-blur-md border border-white/5 overflow-hidden group shadow-glass">
+            <div class="pt-7 pl-5 pr-5">
+                <h3 class="font-black text-3xl text-white leading-tight mb-3">
+                    Переглядай навіть без інтернету
+                </h3>
+                <p class="font-normal text-xl text-white leading-tight max-w-lg">
+                    Завантажуй улюблені фільми, серіали чи мультфільми заздалегідь і дивись офлайн — у дорозі, у подорожі чи вдома без Wi-Fi.
+                </p>
+            </div>
+            <img src="~/images/landing/icons/Image 2.svg" alt="offline" class="absolute bottom-6 right-14 w-16 h-16">
+        </div>
+
+        <div class="relative w-full max-w-lg h-72 rounded-4xl bg-[#9A9A9A]/10 backdrop-blur-md border border-white/5 overflow-hidden group shadow-glass">
+            <div class="pt-7 pl-5 pr-5">
+                <h3 class="font-black text-3xl text-white leading-tight mb-3">
+                    Твої історії завжди поруч
+                </h3>
+                <p class="font-normal text-xl text-white leading-tight max-w-lg">
+                    Без обмежень у перегляді — уся бібліотека доступна в будь-який момент, у твоєму власному темпі.
+                </p>
+            </div>
+            <img src="~/images/landing/icons/Image 3.svg" alt="history" class="absolute bottom-6 right-14 w-16 h-16">
+        </div>
+
+        <div class="relative w-full max-w-lg h-72 rounded-4xl bg-[#9A9A9A]/10 backdrop-blur-md border border-white/5 overflow-hidden group xl:col-start-2 shadow-glass">
+            <div class="pt-7 pl-5 pr-5">
+                <h3 class="font-black text-3xl text-white leading-tight mb-3">
+                    Окремий простір для дітей
+                </h3>
+                <p class="font-normal text-xl text-white leading-tight max-w-lg">
+                    Безпечна зона з добіркою мультфільмів, сімейних шоу та дитячих серіалів — тільки перевірений контент для найменших.
+                </p>
+            </div>
+            <img src="~/images/landing/icons/Image 4.svg" alt="kids" class="absolute bottom-6 right-14 w-16 h-16">
+        </div>
+
+    </div>
+</section>
+
+<section class="w-full relative pt-12 pb-24">
+    <div class="lumeo-container">
+
+        <div class="mb-10">
+            <h2 class="text-5xl font-bold text-white leading-tight">
+                Є питання?
+            </h2>
+            <div class="mt-4 w-40 h-3 bg-[#EAC71B]"></div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+
+            <div class="faq-item group w-full rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300">
+                <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-8 text-left outline-none cursor-pointer">
+                    <span class="font-semibold text-2xl text-white pl-1">
+                        Що можна дивитися на Lumeo?
+                    </span>
+                    <img src="~/images/ui/symbols/plus.svg" alt="Open"
+                         class="faq-icon w-5 h-5 transition-transform duration-300">
+                </button>
+                <div class="faq-answer max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="px-9 pb-8 text-white/80 text-lg leading-relaxed">
+                        На Lumeo ви отримуєте необмежений доступ до величезної бібліотеки контенту. Це тисячі голлівудських блокбастерів, культових серіалів від HBO, Netflix та Showtime, а також класика світового кінематографа. Ми також пишаємося нашою колекцією українського кіно та ексклюзивними документальними стрічками власного виробництва.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item group w-full rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300">
+                <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-8 text-left outline-none cursor-pointer">
+                    <span class="font-semibold text-2xl text-white pl-1">
+                        Скільки коштує підписка на Lumeo?
+                    </span>
+                    <img src="~/images/ui/symbols/plus.svg" alt="Open" class="faq-icon w-5 h-5 transition-transform duration-300">
+                </button>
+                <div class="faq-answer max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="px-9 pb-8 text-white/80 text-lg leading-relaxed">
+                        Ми пропонуємо гнучкі тарифи. Базовий тариф стартує від 99 грн/міс. Для сімей доступний тариф "Преміум" за 199 грн/міс (4 екрани, 4K якість). При оплаті за рік ви заощаджуєте 20%. Жодних прихованих платежів — скасувати можна будь-коли.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item group w-full rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300">
+                <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-8 text-left outline-none cursor-pointer">
+                    <span class="font-semibold text-2xl text-white pl-1">
+                        На яких пристроях можна дивитися?
+                    </span>
+                    <img src="~/images/ui/symbols/plus.svg" alt="Open" class="faq-icon w-5 h-5 transition-transform duration-300">
+                </button>
+                <div class="faq-answer max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="px-9 pb-8 text-white/80 text-lg leading-relaxed">
+                        Lumeo працює всюди: Smart TV (Samsung, LG, Android TV), смартфони та планшети (iOS, Android), ноутбуки та ПК через браузер. Також підтримуємо Apple AirPlay та Google Chromecast. Один акаунт — до 5 пристроїв одночасно.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item group w-full rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300">
+                <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-8 text-left outline-none cursor-pointer">
+                    <span class="font-semibold text-2xl text-white pl-1">
+                        Як дивитися без інтернету?
+                    </span>
+                    <img src="~/images/ui/symbols/plus.svg" alt="Open" class="faq-icon w-5 h-5 transition-transform duration-300">
+                </button>
+                <div class="faq-answer max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="px-9 pb-8 text-white/80 text-lg leading-relaxed">
+                        У мобільному додатку Lumeo ви можете завантажити будь-який фільм чи серіал у пам'ять пристрою. Це ідеально для подорожей або під час відключень світла. Завантажений контент доступний протягом 30 днів без доступу до мережі.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item group w-full rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300">
+                <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-8 text-left outline-none cursor-pointer">
+                    <span class="font-semibold text-2xl text-white pl-1">
+                        Як скасувати підписку?
+                    </span>
+                    <img src="~/images/ui/symbols/plus.svg" alt="Open" class="faq-icon w-5 h-5 transition-transform duration-300">
+                </button>
+                <div class="faq-answer max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="px-9 pb-8 text-white/80 text-lg leading-relaxed">
+                        Усе прозоро: зайдіть у налаштування профілю, натисніть "Керування підпискою" та оберіть "Скасувати". Доступ до контенту збережеться до кінця вже оплаченого періоду. Жодних дзвінків оператору чи складних процедур.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item group w-full rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300">
+                <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-8 text-left outline-none cursor-pointer">
+                    <span class="font-semibold text-2xl text-white pl-1">
+                        Чи підходить Lumeo для дітей?
+                    </span>
+                    <img src="~/images/ui/symbols/plus.svg" alt="Open" class="faq-icon w-5 h-5 transition-transform duration-300">
+                </button>
+                <div class="faq-answer max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="px-9 pb-8 text-white/80 text-lg leading-relaxed">
+                        Так! Ми створили окремий дитячий профіль Lumeo Kids. Це безпечний простір з добіркою мультфільмів та пізнавальних шоу, де повністю відсутній дорослий контент. Ви також можете налаштувати PIN-код для виходу з дитячого профілю.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item group w-full rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300">
+                <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-8 text-left outline-none cursor-pointer">
+                    <span class="font-semibold text-2xl text-white pl-1">
+                        Чи додаються нові фільми?
+                    </span>
+                    <img src="~/images/ui/symbols/plus.svg" alt="Open" class="faq-icon w-5 h-5 transition-transform duration-300">
+                </button>
+                <div class="faq-answer max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="px-9 pb-8 text-white/80 text-lg leading-relaxed">
+                        Ми оновлюємо бібліотеку щотижня. Свіжі кінопрем’єри з'являються на платформі майже одночасно з кінотеатрами або одразу після прокату. Також ми постійно додаємо нові епізоди серіалів у день їх світового релізу.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script src="~/js/landing.js" asp-append-version="true"></script>

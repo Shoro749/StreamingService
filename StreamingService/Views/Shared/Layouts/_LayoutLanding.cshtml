@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <partial name="~/Views/Shared/Partials/Base/_Head.cshtml" />
+</head>
+<body class="bg-[#22223A] text-white font-sans antialiased overflow-x-hidden selection:bg-[#DCF260] selection:text-black">
+
+    <partial name="~/Views/Shared/Partials/Navigation/_HeaderLanding.cshtml" />
+
+    <main class="relative z-0 overflow-visible">
+    @RenderBody()
+    </main>
+    
+    <partial name="~/Views/Shared/Partials/Base/_BottomBanner.cshtml" />
+        <partial name="~/Views/Shared/Partials/Navigation/_Footer.cshtml" />
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

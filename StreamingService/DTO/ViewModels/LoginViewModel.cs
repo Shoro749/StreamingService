@@ -4,10 +4,15 @@ namespace StreamingService.DTO.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Username or Email is required.")]
-        public string Email { get; set; }
+        public string BackgroundText { get; set; } = "";
 
-        [Required(ErrorMessage = "Password is required.")]
+        [Required(ErrorMessage = "Введіть електронну пошту")]
+        [EmailAddress(ErrorMessage = "Некоректний формат пошти")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Введіть пароль")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
+        public bool IsPersistent { get; set; }
     }
 }

@@ -1,1 +1,86 @@
 ﻿@import "tailwindcss";
+
+/* 1. Підключення локального шрифту Geist */
+@font-face {
+    font-family: 'Geist';
+    src: url('../fonts/GeistVF.woff2') format('woff2-variations');
+    src: url('../fonts/GeistVF.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+/* 2. Налаштування теми для site.css */
+@theme {
+    /* Перезаписуємо стандартний шрифт sans */
+    --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    /* Додаємо новий шрифт Montserrat */
+    --font-montserrat: "Montserrat", sans-serif;
+    /* Додаємо новий розмір "116" для карток лендігу, який дорівнює 465px */
+    --spacing-116: 465px;
+    /* Тінь для ефекту скла */
+    --shadow-glass: inset 1px 1px 0 0 rgba(255,255,255,0.2), 
+                    inset -1px -1px 0 0 rgba(255,255,255,0.2), 
+                    inset -1px 1px 0 0 rgba(0,0,0,0.5),
+                    inset 1px -1px 0 0 rgba(0,0,0,0.5);
+}
+
+/* 3. Власні компоненти */
+@layer components {
+    .lumeo-container {
+        @apply w-full px-6 md:px-12 xl:px-36 mx-auto;
+        max-width: 1920px;
+    }
+    
+    .faq-item {
+        @apply w-full min-h-20 rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300;
+    }
+
+    .faq-item.active {
+        @apply bg-[#3A3A61]/70;
+    }
+}
+
+/* 4. Спеціальний скролбар */
+@layer utilities {
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(154, 154, 154, 0.1);
+        border-radius: 10px;
+        margin-block: 80px;
+        border-right: 2px solid transparent;
+        background-clip: padding-box; 
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(208, 242, 96, 0.5);
+        border-radius: 10px;
+        border-right: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #D0F260;
+        border-right: 2px solid transparent;
+        background-clip: padding-box;
+    }
+}
+/* 5. Стилі валідації форм */
+@layer utilities {
+    .input-validation-error {
+        @apply !border-2 !border-[#FF0000];
+        @apply !shadow-none;
+    }
+
+    .input-validation-error:focus {
+        @apply !border-[#FF0000] !ring-[#FF0000];
+    }
+
+    /* Стиль тексту помилки під полем */
+    .field-validation-error {
+        @apply text-[#FF0000] text-sm font-montserrat;
+    }
+}
