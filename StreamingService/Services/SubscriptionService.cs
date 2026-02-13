@@ -1,4 +1,5 @@
-﻿using StreamingService.Models;
+﻿using StreamingService.DTO.ViewModels;
+using StreamingService.Models;
 using StreamingService.Repositories;
 
 namespace StreamingService.Services
@@ -60,6 +61,12 @@ namespace StreamingService.Services
             if (sub == null) return false;
 
             return await _repository.UpdateSubscriptionStatusAsync(sub.Id, "Active", false);
+        }
+
+        public async Task<List<SubscriptionPlan>> GetAllPlansAsync()
+        {
+            var plans = await _repository.GetListDataAsync();
+            return plans.ToList();
         }
     }
 }

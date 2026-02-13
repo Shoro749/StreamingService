@@ -51,7 +51,7 @@ namespace StreamingService.Services
             return await _profileRepository.UpdateDataAsync(user);
         }
 
-        public async Task<bool> CreateUserProfileAsync(UserProfileViewModel model)
+        public async Task<bool> CreateUserProfileAsync(UserProfile model)
         {
             var existingEmail = await _profileRepository.GetByEmailAsync(model.Email);
             if (existingEmail != null)
@@ -59,36 +59,12 @@ namespace StreamingService.Services
                 return false;
             }
 
-            var newProfile = new UserProfile
-            {
-                Username = model.Username,
-                Email = model.Email,
-                PasswordHash = PasswordHasher.HashPassword(model.Password),
-                Birthday = model.Birthday,
-                AvatarUrl = model.AvatarUrl,
-                GoogleId = model.GoogleId
-            };
-
-            return await _profileRepository.AddDataAsync(newProfile);
+            return await _profileRepository.AddDataAsync(model);
         }
 
-        public async Task<bool> LoginUserAsync(LoginViewModel model)
+        public async Task<UserProfile?> GetByIdAsync(int userId)
         {
-            var user = await _profileRepository.GetByEmailAsync(model.Email);
-
-            if (user == null || string.IsNullOrEmpty(user.PasswordHash))
-            {
-                return false;
-            }
-
-            bool isPasswordValid = PasswordHasher.VerifyPassword(model.Password, user.PasswordHash);
-
-            if (!isPasswordValid)
-            {
-                return false;
-            }
-
-            return true;
+            return await _profileRepository.GetDataAsync(userId);
         }
     }
 }

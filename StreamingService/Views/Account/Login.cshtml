@@ -30,8 +30,7 @@
                     </p>
                 </div>
 
-                <form id="loginForm" 
-                      asp-controller="Account" 
+                <form asp-controller="Profile" 
                       asp-action="Login"
                       method="post" 
                       class="w-full flex flex-col gap-8"
@@ -73,9 +72,11 @@
                     <div class="flex flex-col gap-4 w-full">
                         <span class="font-montserrat font-normal text-xl text-white">Увійти з</span>
                         <div class="flex gap-4">
-                            <a href="#" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
-                                <img src="~/images/ui/socialbtn/googleG.png" alt="Google" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
-                            </a>
+                            @* <form asp-controller="Profile" asp-action="GoogleLogin" method="post" class="inline">
+                                <button type="submit" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
+                                    <img src="~/images/ui/socialbtn/googleG.png" alt="Google" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
+                                </button>
+                            </form>
 
                             <a href="#" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
                                 <img src="~/images/ui/socialbtn/facebookF.png" alt="Facebook" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
@@ -83,7 +84,7 @@
 
                             <a href="#" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
                                 <img src="~/images/ui/socialbtn/appleIncA.png" alt="Apple" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
-                            </a>
+                            </a> *@
 
                         </div>
                     </div>

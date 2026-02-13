@@ -31,6 +31,8 @@ namespace StreamingService
             builder.Services.AddScoped<VideoStatsRepository>();
             builder.Services.AddScoped<HistoryRepository>();
             builder.Services.AddScoped<HistoryService>();
+            builder.Services.AddScoped<SubscriptionService>();
+            builder.Services.AddScoped<SubscriptionRepository>();
             builder.Services.AddAppRepositories();
 
             builder.Services.AddAuthentication(options =>
@@ -44,6 +46,7 @@ namespace StreamingService
             {
                 options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                options.CallbackPath = "/Profile/GoogleCallback";
 
                 options.Events.OnCreatingTicket = async context =>
                 {

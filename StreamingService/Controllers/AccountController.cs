@@ -1,17 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Resources;
 using StreamingService.Services;
-using System.Numerics;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace StreamingService.Controllers
 {
     public class AccountController : Controller
     {
         private readonly PricingService _pricingService;
-        public AccountController(PricingService pricingService)
+        private readonly ProfileService _profileService;
+        private readonly SubscriptionService _subscriptionService;
+
+        public AccountController(PricingService pricingService, ProfileService profileService, SubscriptionService subscriptionService)
         {
             _pricingService = pricingService;
+            _profileService = profileService;
+            _subscriptionService = subscriptionService;
         }
 
         [HttpGet]
@@ -36,8 +44,24 @@ namespace StreamingService.Controllers
             return View(model);
         }
         [HttpGet]
-        public IActionResult Subscription()
+        public async Task<IActionResult> Subscription()
         {
+            //var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+
+            //if (!pendingUserId.HasValue)
+            //{
+            //    return RedirectToAction("Register", "Account");
+            //}
+
+            //var plans = _subscriptionService.GetAllPlansAsync();
+
+            //var model = new SubscriptionViewModel
+            //{
+            //    UserId = pendingUserId.Value,
+            //    Plans = plans,
+            //    BackgroundText = "LUMEO" // Або ваш текст
+            //};
+            //return View(model);
             var model = new SubscriptionViewModel
             {
                 BackgroundText = AuthTexts.SubscriptionBackground,

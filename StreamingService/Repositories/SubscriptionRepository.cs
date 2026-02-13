@@ -4,11 +4,11 @@ using StreamingService.Models;
 
 namespace StreamingService.Repositories
 {
-    public class SubscriptionRepository
+    public class SubscriptionRepository : EFRepository<SubscriptionPlan>
     {
         private readonly AppDbContext _context;
 
-        public SubscriptionRepository(AppDbContext context)
+        public SubscriptionRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
