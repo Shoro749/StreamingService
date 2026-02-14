@@ -12,7 +12,7 @@
         public string AgeRating { get; set; }
 
         // Категорія та жанри. 
-        public List<string> Genres { get; set; } = new List<string>();
+        public List<string> Genres { get; set; } = new();
 
         // Дані для трейлера
         public string TrailerUrl { get; set; }

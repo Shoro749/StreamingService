@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace StreamingService.Extensions 
 {
@@ -42,6 +43,15 @@ namespace StreamingService.Extensions
             }
 
             return enumValue.ToString();
+        }
+
+        public static string GetSingularName(this Enum enumValue)
+        {
+            return enumValue.GetType()
+                            .GetMember(enumValue.ToString())
+                            .First()
+                            .GetCustomAttribute<DisplayAttribute>()?
+                            .GetDescription() ?? enumValue.ToString(); 
         }
     }
 }

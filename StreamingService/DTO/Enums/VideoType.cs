@@ -5,13 +5,13 @@ namespace StreamingService.DTO.Enums
 {
     public enum VideoType
     {
-        [Display(Name = "Фільми")]
+        [Display(Name = "Фільми", Description = "Фільм")]
         Movie,
-        [Display(Name = "Серіали")]
+        [Display(Name = "Серіали", Description = "Серіал")]
         Series,
-        [Display(Name = "Мультфільми", ShortName = "Мультф.")]
+        [Display(Name = "Мультфільми", ShortName = "Мультф.", Description = "Мультфільм")]
         AnimatedMovie,
-        [Display(Name = "Мультсеріали", ShortName = "Мультс.")]    
+        [Display(Name = "Мультсеріали", ShortName = "Мультс.", Description = "Мультсеріал")]    
         AnimatedSeries
     }
 }

@@ -1,4 +1,5 @@
-﻿@model StreamingService.DTO.ViewModels.VideoCardViewModel
+﻿@using StreamingService.Extensions
+@model StreamingService.DTO.ViewModels.VideoCardViewModel
 @{ 
     var heartColorClass = Model.IsFavorite ? "text-[#FF0000]" : "text-white";
  }
@@ -7,7 +8,7 @@
      
     <div class="relative w-full aspect-[2/3] rounded-3xl overflow-hidden bg-gray-800">
 
-        <img src="@Model.ImageUrl"
+        <img src="@Model.PosterUrl"
              alt="@Model.Title"
              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
 
@@ -42,10 +43,45 @@
 
             <partial name="Partials/UI/_ContextButton" model="@(new { 
             Id = "ctxBtn-" + Model.Id,
-            ExtraClasses = "-mr-2"            
+            ExtraClasses = "-mr-2",
+            Payload = new Dictionary<string, string> {
+                { "data-video-id", Model.Id.ToString() },
+                { "data-title", Model.Title },
+                { "data-year", Model.Year },
+                { "data-rating", Model.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) },
+                { "data-duration", Model.Duration },
+                { "data-description", Model.Description }, 
+                { "data-image", Model.PosterUrl },
+                { "data-age", Model.AgeRating ?? "12+" },
+                { "data-genres", Model.Genres.FirstOrDefault() ?? "" },
+                { "data-trailer", Model.TrailerUrl },
+                { "data-trailer-duration", Model.TrailerDuration },
+                { "data-video-type", Model.VideoType.GetSingularName() }
+            }
             })" />
   
         </div>
         
+    </div>
+    @* --- ПРИХОВАНИЙ СПИСОК АКТОРІВ (для модального вікна) --- *@
+    <div id="actors-source-@Model.Id" class="hidden">
+        @if (Model.Actors != null)
+        {
+            @foreach (var actor in Model.Actors)
+            {
+                <partial name="Partials/Modal/_ActorCard" model="actor" />
+            }
+        }
+    </div>
+
+    @* --- ПРИХОВАНИЙ СПИСОК СЦЕН (для модального вікна) --- *@
+    <div id="scenes-source-@Model.Id" class="hidden">
+        @if (Model.Scenes != null)
+        {
+            @foreach (var scene in Model.Scenes)
+            {
+                <partial name="Partials/Modal/_SceneCard" model="scene" />
+            }
+        }
     </div>
 </div>
