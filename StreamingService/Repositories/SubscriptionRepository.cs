@@ -15,22 +15,51 @@ namespace StreamingService.Repositories
 
         public async Task<SubscriptionPlan?> GetPlanAsync(int planId)
         {
-            return await _context.SubscriptionPlans.FindAsync(planId);
+            return await _context.SubscriptionPlans.Include(p => p.SubscriptionLevel).FirstOrDefaultAsync(p => p.Id == planId);
         }
 
-        public async Task<bool> CreateSubscriptionWithPayment(UserSubscription sub, Payment pay)
+        public async Task<List<SubscriptionPlan>> GetAllActivePlansAsync()
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            return await _context.SubscriptionPlans.Include(p => p.SubscriptionLevel).Where(p => p.IsEnabled).ToListAsync();
+        }
+
+        public async Task<bool> CreateSubscriptionAsync(UserSubscription subscription)
+        {
             try
             {
-                await _context.Payments.AddAsync(pay);
+                await _context.UsersSubscriptions.AddAsync(subscription);
                 await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
-                sub.PaymentId = pay.Id;
-                await _context.UsersSubscriptions.AddAsync(sub);
+        public async Task<int?> CreatePaymentAsync(Payment payment)
+        {
+            try
+            {
+                await _context.Payments.AddAsync(payment);
                 await _context.SaveChangesAsync();
+                return payment.Id;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
-                await transaction.CommitAsync();
+        public async Task<bool> UpdateSubscriptionPaymentAsync(int subscriptionId, int paymentId)
+        {
+            try
+            {
+                var subscription = await _context.UsersSubscriptions.FindAsync(subscriptionId);
+                if (subscription == null) return false;
+
+                subscription.PaymentId = paymentId;
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch
@@ -43,26 +72,48 @@ namespace StreamingService.Repositories
         {
             return await _context.UsersSubscriptions
                 .Include(s => s.SubscriptionPlan)
-                .ThenInclude(p => p.SubscriptionLevel)
+                    .ThenInclude(p => p.SubscriptionLevel)
+                .Include(s => s.Payment)
+                .Where(s => s.UserProfileId == profileId && s.Status == "Active")
                 .OrderByDescending(s => s.SubscriptionEnd)
-                .FirstOrDefaultAsync(s => s.UserProfileId == profileId && s.Status == "Active");
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<UserSubscription>> GetUserSubscriptionsAsync(int profileId)
+        {
+            return await _context.UsersSubscriptions
+                .Include(s => s.SubscriptionPlan)
+                    .ThenInclude(p => p.SubscriptionLevel)
+                .Include(s => s.Payment)
+                .Where(s => s.UserProfileId == profileId)
+                .OrderByDescending(s => s.SubscriptionStart)
+                .ToListAsync();
         }
 
         public async Task<bool> UpdateSubscriptionStatusAsync(int subscriptionId, string status, bool autoRenew)
         {
             try
             {
-                var sub = await _context.UsersSubscriptions.FindAsync(subscriptionId);
-                if (sub != null)
-                {
-                    sub.Status = status;
-                    sub.AutoRenew = autoRenew;
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
+                var subscription = await _context.UsersSubscriptions.FindAsync(subscriptionId);
+                if (subscription == null) return false;
+
+                subscription.Status = status;
+                subscription.AutoRenew = autoRenew;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
                 return false;
             }
-            catch { return false; }
+        }
+
+        public async Task<bool> HasActiveSubscriptionAsync(int profileId)
+        {
+            return await _context.UsersSubscriptions
+                .AnyAsync(s => s.UserProfileId == profileId
+                    && s.Status == "Active"
+                    && s.SubscriptionEnd > DateTime.UtcNow);
         }
     }
 }

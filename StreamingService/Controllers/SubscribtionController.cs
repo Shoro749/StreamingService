@@ -1,78 +1,123 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
-using StreamingService.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using StreamingService.Services;
 using System.Security.Claims;
 
 namespace StreamingService.Controllers
 {
-    public class SubscribtionController : Controller
+    public class SubscriptionController : Controller
     {
         private readonly SubscriptionService _subscriptionService;
-        private readonly ProfileService _profileService;
+        //private readonly ProfileService _profileService;
 
-        public SubscribtionController(SubscriptionService subscriptionService, ProfileService profileService)
+        public SubscriptionController(SubscriptionService subscriptionService /*, ProfileService profileService*/)
         {
             _subscriptionService = subscriptionService;
-            _profileService = profileService;
+            //_profileService = profileService;
         }
 
-        //[HttpPost]
-        //public async Task<bool> ProcessSubscriptionAsync(int profileId, int planId, string provider = "Stripe")
-        //{
-        //    var plan = await _subscriptionService.GetCurrentPlanInfoAsync(planId);
-        //    if (plan == null || !plan.IsEnabled)
-        //        return false;
-
-        //    // 1. Створюємо Payment зі статусом "Pending"
-        //    var payment = new Payment
-        //    {
-        //        Amount = plan.Price,
-        //        Currency = "UAH",
-        //        Provider = provider,
-        //        Method = "Card",
-        //        Status = "Pending", // Чекаємо на оплату
-        //        CreatedAt = DateTime.UtcNow
-        //    };
-
-        //    var paymentResult = await _paymentGateway.CreatePaymentAsync(payment);
-
-        //    if (!paymentResult.Success)
-        //        return false;
-
-        //    // 3. Оновлюємо статус оплати
-        //    payment.Status = "Completed";
-        //    payment.TransactionId = paymentResult.TransactionId;
-
-        //    // 4. Створюємо підписку
-        //    var subscription = new UserSubscription
-        //    {
-        //        UserProfileId = profileId,
-        //        SubscriptionPlanId = planId,
-        //        Status = "Active",
-        //        AutoRenew = true,
-        //        SubscriptionStart = DateTime.UtcNow,
-        //        SubscriptionEnd = DateTime.UtcNow.AddDays(plan.PeriodDays)
-        //    };
-
-        //    return await _repository.CreateSubscriptionWithPayment(subscription, payment);
-        //}
-
-        [HttpGet("my-plan")]
-        public async Task<IActionResult> GetMyPlan(int profileId)
+        [HttpPost]
+        public async Task<IActionResult> ProcessPayment(string paymentMethod)
         {
-            var plan = await _subscriptionService.GetCurrentPlanInfoAsync(profileId);
-            if (plan == null) return NotFound("Активної підписки не знайдено");
-            return Ok(plan);
+            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+            var selectedPlanId = HttpContext.Session.GetInt32("SelectedPlanId");
+
+            if (!pendingUserId.HasValue || !selectedPlanId.HasValue)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var result = await _subscriptionService.ProcessSubscriptionAsync(
+                pendingUserId.Value,
+                selectedPlanId.Value,
+                paymentMethod ?? "Card");
+
+            if (!result)
+            {
+                TempData["Error"] = "Не вдалося оформити підписку. Спробуйте ще раз.";
+                return RedirectToAction("SubscriptionConfirmation");
+            }
+
+            return RedirectToAction("Success", "Account");
         }
 
-        [HttpPost("cancel")]
-        public async Task<IActionResult> Cancel(int profileId)
+        [HttpGet]
+        public async Task<IActionResult> MyPlan()
         {
-            var success = await _subscriptionService.CancelSubscriptionAsync(profileId);
-            if (!success) return BadRequest("Не вдалося скасувати підписку");
-            return Ok(new { message = "Автопродовження вимкнено. Підписка діє до кінця оплаченого періоду." });
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var plan = await _subscriptionService.GetCurrentPlanInfoAsync(userId);
+
+            if (plan == null)
+            {
+                TempData["Info"] = "У вас немає активної підписки";
+                return RedirectToAction("Index");
+            }
+
+            return View(plan);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAutoRenewal()
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var result = await _subscriptionService.CancelAutoRenewalAsync(userId);
+
+            if (result)
+            {
+                TempData["Success"] = "Автопродовження вимкнено. Підписка діє до кінця оплаченого періоду.";
+            }
+            else
+            {
+                TempData["Error"] = "Не вдалося скасувати автопродовження";
+            }
+
+            return RedirectToAction("MyPlan");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Cancel()
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var result = await _subscriptionService.CancelSubscriptionAsync(userId);
+
+            if (result)
+            {
+                TempData["Success"] = "Підписку скасовано";
+            }
+            else
+            {
+                TempData["Error"] = "Не вдалося скасувати підписку";
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> History()
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var history = await _subscriptionService.GetSubscriptionHistoryAsync(userId);
+
+            return View(history);
         }
     }
 }

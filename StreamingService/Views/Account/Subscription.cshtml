@@ -1,5 +1,83 @@
 ﻿@model StreamingService.DTO.ViewModels.SubscriptionViewModel
 @{
+    Layout = "~/Views/Shared/Layouts/_LayoutSimple.cshtml";
+    ViewData["Title"] = "Підписки";
+}
+
+<div class="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center">
+
+    <partial name="~/Views/Shared/Partials/Auth/_AuthBackgroundText.cshtml"
+             model="Model.BackgroundText" />
+
+    <h2 class="relative z-10 text-5xl md:text-7xl font-black text-white text-center uppercase mb-10 drop-shadow-md">
+        Обери свій тарифний план
+    </h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="relative z-10 bg-red-500/90 text-white px-6 py-3 rounded-lg mb-6 backdrop-blur-sm">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="lumeo-container grid grid-cols-1 xl:grid-cols-3 gap-5 items-start mb-12 z-10">
+
+        @foreach (var plan in Model.Plans)
+        {
+            <div class="bg-[#9A9A9A]/10 backdrop-blur-md rounded-3xl p-8 border border-white/5 shadow-glass flex flex-col gap-6">
+
+                <!-- Назва плану -->
+                <h3 class="font-black text-3xl text-white text-center uppercase">
+                    @plan.Name
+                </h3>
+
+                <!-- Ціна -->
+                <div class="text-center">
+                    <p class="font-black text-5xl text-[#D0F260]">
+                        @plan.Price ₴
+                    </p>
+                    <p class="font-montserrat text-lg text-white/70 mt-2">
+                        / @plan.PeriodDays днів
+                    </p>
+                </div>
+
+                <!-- Опис -->
+                @if (!string.IsNullOrEmpty(plan.Description))
+                {
+                    <p class="font-montserrat text-base text-white/80 text-center">
+                        @plan.Description
+                    </p>
+                }
+
+                <!-- Функції (якщо є) -->
+                @if (!string.IsNullOrEmpty(plan.Features))
+                {
+                    <ul class="flex flex-col gap-3 my-4">
+                        @foreach (var feature in plan.Features.Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <li class="font-montserrat text-base text-white flex items-start gap-2">
+                                <span class="text-[#D0F260] text-xl">✓</span>
+                                <span>@feature.Trim()</span>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                <!-- Кнопка вибору -->
+                <a asp-controller="Account"
+                   asp-action="Agreement"
+                   asp-route-planId="@plan.Id"
+                   class="w-full py-4 bg-[#D0F260] text-[#22223A] font-black text-lg uppercase rounded-xl shadow-glass hover:bg-white hover:scale-105 transition-all duration-300 flex items-center justify-center cursor-pointer decoration-0">
+                    Обрати план
+                </a>
+
+            </div>
+        }
+    </div>
+</div>
+
+@* @model StreamingService.DTO.ViewModels.SubscriptionViewModel
+@{
 	Layout = "~/Views/Shared/Layouts/_LayoutSimple.cshtml";
 	ViewData["Title"] = "Підписки";
 }
@@ -23,7 +101,7 @@
 
     </div>
 
-</div>
+</div> *@
 
 
 

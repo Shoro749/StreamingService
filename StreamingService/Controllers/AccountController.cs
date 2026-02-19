@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.ViewModels;
+using StreamingService.Models;
 using StreamingService.Resources;
 using StreamingService.Services;
+using System.Numerics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -46,46 +48,91 @@ namespace StreamingService.Controllers
         [HttpGet]
         public async Task<IActionResult> Subscription()
         {
-            //var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
 
-            //if (!pendingUserId.HasValue)
-            //{
-            //    return RedirectToAction("Register", "Account");
-            //}
+            if (!pendingUserId.HasValue)
+            {
+                return RedirectToAction("Register", "Account");
+            }
 
-            //var plans = _subscriptionService.GetAllPlansAsync();
+            var plans = await _subscriptionService.GetAllPlansAsync();
 
-            //var model = new SubscriptionViewModel
-            //{
-            //    UserId = pendingUserId.Value,
-            //    Plans = plans,
-            //    BackgroundText = "LUMEO" // Або ваш текст
-            //};
-            //return View(model);
             var model = new SubscriptionViewModel
             {
-                BackgroundText = AuthTexts.SubscriptionBackground,
-                Plans = _pricingService.GetPricingPlans()
+                UserId = pendingUserId.Value,
+                Plans = plans.Select(p => new SubscriptionPlanDto
+                {
+                    Id = p.Id,
+                    Name = p.SubscriptionLevel?.Code ?? "Невідомо",
+                    Price = p.Price,
+                    PeriodDays = p.PeriodDays,
+                    Description = $"Підписка на {p.PeriodDays} днів",
+                    Features = p.Features
+                }).ToList(),
+                BackgroundText = "LUMEO"
             };
+
             return View(model);
+            //var model = new SubscriptionViewModel
+            //{
+            //    BackgroundText = AuthTexts.SubscriptionBackground,
+            //    Plans = _pricingService.GetPricingPlans()
+            //};
+            //return View(model);
         }
         [HttpGet]
-        public IActionResult Agreement(string plan)
+        public async Task<IActionResult> Agreement(int planId)
         {
+            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+
+            if (!pendingUserId.HasValue)
+            {
+                return RedirectToAction("Register", "Account");
+            }
+
+            var plan = await _subscriptionService.GetPlanByIdAsync(planId);
+
+            if (plan == null)
+            {
+                TempData["Error"] = "План не знайдено";
+                return RedirectToAction("Index");
+            }
+
+            HttpContext.Session.SetInt32("SelectedPlanId", planId);
+
             var model = new AgreementViewModel
             {
-                BackgroundText = AuthTexts.SubscriberAgreementBackground,
-                SubscriptionPlan = plan
+                SubscriptionPlan = plan.SubscriptionLevel?.Code ?? "PLAN",
+                BackgroundText = "LUMEO"
             };
+
             return View(model);
         }
+
         [HttpGet]
-        public IActionResult SubscriptionConfirmation(string plan)
+        public async Task<IActionResult> SubscriptionConfirmation()
         {
+            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+            var selectedPlanId = HttpContext.Session.GetInt32("SelectedPlanId");
+
+            if (!pendingUserId.HasValue || !selectedPlanId.HasValue)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var plan = await _subscriptionService.GetPlanByIdAsync(selectedPlanId.Value);
+
+            if (plan == null)
+            {
+                TempData["Error"] = "План не знайдено";
+                return RedirectToAction("Index");
+            }
+
             var model = new AgreementViewModel
             {
-                BackgroundText = AuthTexts.SubscriptionConfirmationBackground,
-                SubscriptionPlan = plan
+                SubscriptionPlan = plan.SubscriptionLevel?.Code ?? "PLAN",
+                SubscriptionPrice = plan.Price,
+                BackgroundText = "LUMEO"
             };
             return View(model);
         }
@@ -103,26 +150,44 @@ namespace StreamingService.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(AuthPageViewModel model)
+        public async Task<IActionResult> Register(AuthPageViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                model.BackgroundText = AuthTexts.SignupBackground;
-                return View(model);
+                model.BackgroundText = AuthTexts.SignInBackground;
+                return View("~/Views/Account/Register.cshtml", model);
             }
 
-            // ТУТ МАЄ БУТИ КОД СТВОРЕННЯ КОРИСТУВАЧА В БАЗІ ДАНИХ (Identity)
+            var user = await _profileService.GetByEmailAsync(model.Email);
 
-            if (!string.IsNullOrEmpty(model.SubscriptionPlan))
+            if (user != null)
             {
-                // СЦЕНАРІЙ 1: План вже обраний (наприклад, прийшов з email)
-                return RedirectToAction("Agreement", new { plan = model.SubscriptionPlan });
+                ModelState.AddModelError("Email", "Користувач з такою поштою уже існує");
+                model.BackgroundText = AuthTexts.SignInBackground;
+                return View("~/Views/Account/Register.cshtml", model);
             }
-            else
+
+            var newUser = new UserProfile
             {
-                // СЦЕНАРІЙ 2: Плану ще немає
-                return RedirectToAction("Subscription");
+                Username = model.Name + " " + model.Surname,
+                Email = model.Email,
+                PasswordHash = PasswordHasher.HashPassword(model.Password),
+            };
+
+            var isCreated = await _profileService.CreateUserProfileAsync(newUser);
+
+            if (!isCreated)
+            {
+                ModelState.AddModelError("", "Помилка при створенні користувача");
+                model.BackgroundText = AuthTexts.SignInBackground;
+                return View("~/Views/Account/Register.cshtml", model);
             }
+
+            var createdUser = await _profileService.GetByEmailAsync(model.Email);
+
+            HttpContext.Session.SetInt32("PendingUserId", createdUser.Id);
+
+            return RedirectToAction("Subscription", "Account");
         }
     }
 }

@@ -35,6 +35,14 @@ namespace StreamingService
             builder.Services.AddScoped<SubscriptionRepository>();
             builder.Services.AddAppRepositories();
 
+            builder.Services.AddDistributedMemoryCache(); // Для збереження сесій у пам'яті
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Час життя сесії
+                options.Cookie.HttpOnly = true; // Захист від XSS
+                options.Cookie.IsEssential = true; // Обов'язковий cookie
+            });
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -84,6 +92,7 @@ namespace StreamingService
 
             app.UseRouting();
 
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 

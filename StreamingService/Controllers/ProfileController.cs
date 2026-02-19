@@ -85,46 +85,7 @@ namespace StreamingService.Controllers
             return RedirectToAction("Movies", "Home");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Register(AuthPageViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                model.BackgroundText = AuthTexts.SignInBackground;
-                return View("~/Views/Account/Register.cshtml", model);
-            }
-
-            var user = await _profileService.GetByEmailAsync(model.Email);
-
-            if (user != null)
-            {
-                ModelState.AddModelError("Email", "Користувач з такою поштою уже існує");
-                model.BackgroundText = AuthTexts.SignInBackground;
-                return View("~/Views/Account/Register.cshtml", model);
-            }
-
-            var newUser = new UserProfile
-            {
-                Username = model.Name + " " + model.Surname,
-                Email = model.Email,
-                PasswordHash = PasswordHasher.HashPassword(model.Password),
-            };
-
-            var isCreated = await _profileService.CreateUserProfileAsync(newUser);
-
-            if (!isCreated)
-            {
-                ModelState.AddModelError("", "Помилка при створенні користувача");
-                model.BackgroundText = AuthTexts.SignInBackground;
-                return View("~/Views/Account/Register.cshtml", model);
-            }
-
-            var createdUser = await _profileService.GetByEmailAsync(model.Email);
-
-            HttpContext.Session.SetInt32("PendingUserId", createdUser.Id);
-
-            return RedirectToAction("Subscription", "Home");
-        }
+        
 
         [HttpPost]
         public IActionResult GoogleLogin()
