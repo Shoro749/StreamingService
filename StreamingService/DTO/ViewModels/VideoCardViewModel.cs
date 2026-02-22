@@ -10,6 +10,7 @@ namespace StreamingService.DTO.ViewModels
         public string ThumbnailUrl { get; set; } = "";   // Маленький (для списків)
         public double Rating { get; set; }
         public string Year { get; set; } = "";
+        public DateTime? ReleaseDate { get; set; }
         public string Description { get; set; } = "";
         public string Duration { get; set; } = "";
         public string AgeRating { get; set; } = "";
@@ -17,6 +18,7 @@ namespace StreamingService.DTO.ViewModels
         public string TrailerDuration { get; set; } = "";
         public List<string> Genres { get; set; } = new();
         public bool IsFavorite { get; set; }
+        public bool IsSavedForLater { get; set; }
         public VideoType VideoType { get; set; }
         public List<ActorViewModel> Actors { get; set; } = new();
         public List<SceneViewModel> Scenes { get; set; } = new();

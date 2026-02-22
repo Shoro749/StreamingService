@@ -1,5 +1,8 @@
 ﻿@using StreamingService.DTO.Enums
 @using StreamingService.Extensions
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "Catalog";
+}
 
 <div class="flex items-center w-full h-16 gap-4">
 
@@ -24,7 +27,7 @@
             <ul class="flex flex-col">
                 <li>
                     <a asp-controller="Home"
-                       asp-action="Dashboard"
+                       asp-action="@currentAction"
                        class="block px-6 py-3 text-white hover:bg-white/20 transition-colors"
                        data-bg="bg-neutral">
                         Усі
@@ -35,7 +38,7 @@
                 {
                     <li>
                         <a asp-controller="Home"
-                           asp-action="Catalog"
+                           asp-action="@currentAction"
 						   asp-route-category="@category"
                            class="block px-6 py-3 text-white hover:bg-white/20 transition-colors"
                            data-bg="bg-@category">

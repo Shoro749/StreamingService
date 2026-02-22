@@ -1,0 +1,48 @@
+﻿@using StreamingService.Extensions
+@model StreamingService.DTO.ViewModels.VideoCardViewModel
+@{
+    var btnBgClass = Model.IsSavedForLater ? "bg-white/20" : "bg-white/10";
+    var iconColorClass = Model.IsSavedForLater ? "bg-[#DCF260] group-hover/btn:bg-white" : "bg-white group-hover/btn:bg-[#DCF260]";
+    var btnTitle = Model.IsSavedForLater ? "Видалити з відкладеного" : "Відкласти на потім";
+}
+
+<div class="shadow-glass flex items-center w-full min-h-32 rounded-xl pl-6 pr-8 py-3 mb-4 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
+
+    <div class="w-20 h-28 flex-shrink-0 rounded-md overflow-hidden bg-gray-800">
+        <img src="@Model.ThumbnailUrl" alt="@Model.Title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+    </div>
+
+    <div class="flex flex-col justify-center gap-3 ml-5 flex-1 min-w-0">
+
+        <h3 class="font-montserrat font-semibold text-xl leading-none text-white truncate">
+            @Model.Title
+        </h3>
+
+        <div class="flex flex-wrap items-center gap-1">
+            <span class="shadow-glass flex items-center justify-center h-10 px-5 rounded-full bg-white/10 text-white font-bold text-sm leading-none lowercase tracking-wide">
+                @Model.VideoType.GetSingularName()
+            </span>
+
+            @foreach (var genre in Model.Genres.Take(3))
+            {
+                <span class="shadow-glass flex items-center justify-center h-10 px-5 rounded-full bg-white/10 text-white font-bold text-sm leading-none lowercase tracking-wide">
+                    @genre
+                </span>
+            }
+        </div>
+
+        <p class="font-montserrat font-semibold text-sm leading-none text-[#D3D3D3] truncate">
+            @(string.Join(" • ", Model.Actors.Select(a => a.Name)))
+        </p>
+    </div>
+
+    <button class="shadow-glass flex-shrink-0 w-14 h-14 rounded-full @btnBgClass flex items-center justify-center hover:bg-white/20 transition-all ml-7 group/btn"
+            title="@btnTitle">
+
+        <div class="w-7 h-7 @iconColorClass transition-colors"
+             style="-webkit-mask-image: url('/images/ui/SavedForLater.png'); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; mask-image: url('/images/ui/SavedForLater.png'); mask-size: contain; mask-repeat: no-repeat; mask-position: center;">
+        </div>
+
+    </button>
+
+</div>

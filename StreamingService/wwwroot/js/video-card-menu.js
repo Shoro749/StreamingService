@@ -137,6 +137,27 @@
             }
         }
 
+        // 2.7 Кнопка "Улюблене"
+        const modalFavBtn = modal.querySelector('.js-favorite-btn');
+        const originalFavBtn = document.querySelector(`.js-favorite-btn[data-video-id="${videoId}"]:not(#video-info-modal .js-favorite-btn)`);
+
+        if (modalFavBtn) {
+            modalFavBtn.dataset.videoId = videoId;
+
+            if (originalFavBtn) {
+                const isFav = originalFavBtn.dataset.isFavorite;
+                modalFavBtn.dataset.isFavorite = isFav;
+
+                if (isFav === 'true') {
+                    modalFavBtn.classList.add('text-[#FF0000]');
+                    modalFavBtn.classList.remove('text-white');
+                } else {
+                    modalFavBtn.classList.add('text-white');
+                    modalFavBtn.classList.remove('text-[#FF0000]');
+                }
+            }
+        }
+
         switchModalTab(targetTab);
 
         modal.classList.remove('hidden');
@@ -186,9 +207,7 @@
         }
     });
 
-    // ==========================================================
     // === 4. ЛОГІКА ВКЛАДОК (ТАБІВ) МОДАЛЬНОГО ВІКНА ===
-    // ==========================================================
 
     function switchModalTab(tabName) {
         const trailerText = tabBtnTrailer.querySelector('span');

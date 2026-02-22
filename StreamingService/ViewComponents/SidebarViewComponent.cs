@@ -15,7 +15,7 @@ namespace StreamingService.ViewComponents
                 new SidebarItemViewModel
                 {
                     PageName = "Головна",
-                    PageUrl = "/Home/Dashboard",
+                    PageUrl = "/Home/Catalog",
                     InactiveIcon = "/images/ui/sidebar/home_off.png",
                     ActiveIcon = "/images/ui/sidebar/home.png",
                     IsActive = currentPath == "/" || currentPath.StartsWith("/home")
@@ -69,8 +69,23 @@ namespace StreamingService.ViewComponents
                 }
 
             };
-
-            return View(items);
+            // Дані для "продовжити перегляд"
+            var videoData = new ContinueWatchingViewModel
+            {
+                Id = "1",
+                Title = "Легенда Г'ю Гласса",
+                Duration = "1г 24хв",
+                ViewProgress = "55%",
+                PosterUrl = "/images/landing/Landing_revenant.png"
+            };
+            // Збирання даних в модель
+            var viewModel = new SidebarViewModel
+            {
+                MenuItems = items,
+                ContinueWatching = videoData
+            }; 
+            
+            return View(viewModel);
         }
 
     }

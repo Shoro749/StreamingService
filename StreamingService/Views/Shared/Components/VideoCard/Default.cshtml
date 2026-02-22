@@ -12,14 +12,18 @@
              alt="@Model.Title"
              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
 
-        <button class="absolute top-3 right-4 z-10 transition-transform duration-300 hover:scale-110 @heartColorClass hover:text-[#FF0000]">
-            <svg class="w-8 h-8 drop-shadow-md" 
-                 fill="currentColor" 
-                 viewBox="0 0 24 24">
-                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>
-        </button>
+        @if (!Model.IsSavedForLater)
+        {
+            <button class="js-favorite-btn absolute top-3 right-4 z-10 transition-transform duration-300 hover:scale-110 @heartColorClass hover:text-[#FF0000]"
+                data-video-id="@Model.Id"
+                data-is-favorite="@Model.IsFavorite.ToString().ToLower()">
 
+                <svg class="w-8 h-8 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+            </button>
+        }
+        
         <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
     </div>
 
@@ -32,10 +36,18 @@
             <div class="flex items-center gap-4 font-montserrat font-semibold text-xl leading-none text-white/50">
                 <span>@Model.Year</span>
                 
-                <span class="flex items-center gap-1 text-[#DCF260]">
-                    <img src="/images/ui/symbols/star.svg" alt="Rating" class="w-5 h-5" />
-                    @Model.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)
-                </span>
+                @if (Model.IsSavedForLater)
+                {
+                    <span class="flex items-center gap-1 text-white/70 text-sm font-medium">NR</span>
+                }
+                else
+                {
+                    <span class="flex items-center gap-1 text-[#DCF260]">
+                        <img src="/images/ui/symbols/star.svg" alt="Rating" class="w-5 h-5" />
+                        @Model.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)
+                    </span>
+                }
+                
             </div>
         </div>
 
