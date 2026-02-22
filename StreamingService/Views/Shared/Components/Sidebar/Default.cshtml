@@ -1,12 +1,12 @@
-﻿@model List<StreamingService.DTO.ViewModels.SidebarItemViewModel>
+﻿@model StreamingService.DTO.ViewModels.SidebarViewModel
 
 <div class="flex flex-col">
-    @foreach (var item in Model)
+    @foreach (var item in Model.MenuItems)
     {
 
         var textClass = item.IsActive
-        ? "text-[#DCF260] text-xl font-montserrat font-medium leading-none"
-        : "text-white/50 group-hover:text-white transition-colors text-xl font-montserrat font-medium leading-none";
+        ? "text-[#DCF260] text-lg font-montserrat font-medium leading-none"
+        : "text-white/50 group-hover:text-white transition-colors text-lg font-montserrat font-medium leading-none";
 
         var imgClass = item.IsActive
         ? ""
@@ -27,7 +27,53 @@
 
         @if (item.HasSeparator)
         {
-            <div class="mb-16"></div>
+            <div class="mb-8"></div>
         }
     }
 </div>
+       
+
+@if (Model.ContinueWatching != null)
+{
+    <div class="mt-8 hidden lg:block">
+        
+        <div class="px-4 lg:pl-16 flex items-center gap-5 mb-4 group cursor-default">
+            <div class="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                <img src="/images/ui/sidebar/continue.png" 
+                     alt="Continue" 
+                     class="w-full h-full object-contain opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+            <span class="text-lg font-montserrat font-medium leading-none text-white/50 group-hover:text-white transition-colors">
+                Продовжити перегляд
+            </span>
+        </div>
+
+        <div class="px-4 lg:pl-8 lg:pr-6">
+            <div class="relative w-full aspect-video rounded-4xl overflow-hidden group cursor-pointer">
+                <img src="@Model.ContinueWatching.PosterUrl" 
+                     alt="Movie" 
+                     class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+
+                <span class="absolute top-4 left-5 font-montserrat font-semibold text-lg text-white leading-none z-10">
+                    @Model.ContinueWatching.Title
+                </span>
+
+                <button class="absolute left-5 bottom-3 shadow-glass flex-shrink-0 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group">
+                    <svg class="w-8 h-8 text-white fill-current -ml-0.5" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </button>
+
+                <div class="absolute right-3 bottom-3 shadow-glass flex items-center h-7 bg-[#9A9A9A]/18 rounded-full backdrop-blur-md font-light text-sm text-white overflow-hidden w-auto z-10">
+                    <div class="px-3 h-full rounded-full shadow-glass flex items-center shadow-[3px_0_5.5px_rgba(132,132,132,0.42)] z-10">
+                        @Model.ContinueWatching.Duration
+                    </div>
+                    <div class="px-3 h-full flex items-center">
+                        @Model.ContinueWatching.ViewProgress
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
