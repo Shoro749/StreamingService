@@ -146,6 +146,35 @@ namespace StreamingService.Controllers
             return View(groupedReleases);
         }
 
+        [Route("/trending")]
+        public IActionResult Trending(VideoType? category)
+        {
+            if (category == null)
+            {
+                ViewData["Title"] = "У тренді";
+                ViewData["MenuTitle"] = "Усі";
+            }
+            else
+            {
+                ViewData["Title"] = $"{category.Value.GetDisplayName()} - У тренді";
+                ViewData["MenuTitle"] = category.Value.GetShortName();
+                ViewData["Category"] = category;
+
+            }
+
+            var trendingVideos = MockVideoService.GetAllVideos().Take(10).ToList();
+            
+            if (category != null)
+            {
+                trendingVideos = trendingVideos
+                    .Where (video => video.VideoType == category)
+                    .ToList();
+            }
+
+            return View(trendingVideos);
+        }
+        
+
         public IActionResult Privacy()
         {
             return View();
