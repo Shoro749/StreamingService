@@ -25,30 +25,50 @@ namespace StreamingService.Services
 
         public async Task<bool> HandleGoogleAuthAsync(string googleId, string email, string name, string picture)
         {
-            var user = await _profileRepository.GetByGoogleIdAsync(googleId);
-
-            if (user == null)
+            try
             {
-                user = await _profileRepository.GetByEmailAsync(email);
-            }
-
-            if (user == null)
-            {
-                var newProfile = new UserProfile
+                if (string.IsNullOrEmpty(googleId) || string.IsNullOrEmpty(email))
                 {
-                    GoogleId = googleId,
-                    Email = email,
-                    Username = name,
-                    AvatarUrl = picture,
-                };
+                    return false;
+                }
 
-                return await _profileRepository.AddDataAsync(newProfile);
+                var user = await _profileRepository.GetByGoogleIdAsync(googleId);
+
+                if (user == null)
+                {
+                    user = await _profileRepository.GetByEmailAsync(email);
+                }
+
+                if (user == null)
+                {
+                    var newProfile = new UserProfile
+                    {
+                        GoogleId = googleId,
+                        Email = email,
+                        Username = name ?? "Google User",
+                        AvatarUrl = picture,
+                    };
+
+                    var result = await _profileRepository.AddDataAsync(newProfile);
+                    return result;
+                }
+
+                if (string.IsNullOrEmpty(user.GoogleId))
+                {
+                    user.GoogleId = googleId;
+                }
+
+                user.AvatarUrl = picture;
+                user.Username = name ?? user.Username;
+
+                var updateResult = await _profileRepository.UpdateDataAsync(user);
+                return updateResult;
             }
-
-            user.AvatarUrl = picture;
-            user.Username = name;
-
-            return await _profileRepository.UpdateDataAsync(user);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"HandleGoogleAuthAsync Error: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<bool> CreateUserProfileAsync(UserProfile model)

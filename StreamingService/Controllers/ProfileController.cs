@@ -15,10 +15,12 @@ namespace StreamingService.Controllers
     public class ProfileController : Controller
     {
         private readonly ProfileService _profileService;
+        private readonly SubscriptionService _subscriptionService;
 
-        public ProfileController(ProfileService profileService)
+        public ProfileController(ProfileService profileService, SubscriptionService subscriptionService)
         {
             _profileService = profileService;
+            _subscriptionService = subscriptionService;
         }
 
         [HttpPost]
@@ -39,20 +41,22 @@ namespace StreamingService.Controllers
                 return View("~/Views/Account/Login.cshtml", model);
             }
 
-            if (!string.IsNullOrEmpty(user.PasswordHash))
+            if (string.IsNullOrEmpty(user.PasswordHash))
             {
-                bool isPasswordValid = PasswordHasher.VerifyPassword(model.Password, user.PasswordHash);
-                if (!isPasswordValid)
-                {
-                    ModelState.AddModelError("Password", "Невірний пароль");
-                    return View("~/Views/Account/Login.cshtml", model);
-                }
-            }
-            else
-            {
-                ModelState.AddModelError("Password", "Цей акаунт створений через Google. Увійдіть через Google.");
+                ModelState.AddModelError("Password", "Цей акаунт створений через Google. Використайте кнопку 'Увійти через Google'.");
+                model.BackgroundText = AuthTexts.SignInBackground;
                 return View("~/Views/Account/Login.cshtml", model);
             }
+
+            bool isPasswordValid = PasswordHasher.VerifyPassword(model.Password, user.PasswordHash);
+            if (!isPasswordValid)
+            {
+                ModelState.AddModelError("Password", "Невірний пароль");
+                model.BackgroundText = AuthTexts.SignInBackground;
+                return View("~/Views/Account/Login.cshtml", model);
+            }
+
+            var hasSubscription = await _subscriptionService.HasActiveSubscriptionAsync(user.Id);
 
             var claims = new List<Claim>
             {
@@ -82,29 +86,33 @@ namespace StreamingService.Controllers
                 claimsPrincipal,
                 authProperties);
 
+            if (!hasSubscription)
+            {
+                HttpContext.Session.SetInt32("PendingUserId", user.Id);
+                TempData["Info"] = "Для продовження оберіть тарифний план";
+                return RedirectToAction("Subscription", "Account");
+            }
+
             return RedirectToAction("Movies", "Home");
         }
-
-        
 
         [HttpPost]
         public IActionResult GoogleLogin()
         {
-            var redirectUrl = Url.Action("GoogleCallback", "Profile", null, Request.Scheme);
-
-            return Challenge(new AuthenticationProperties
+            var properties = new AuthenticationProperties
             {
-                RedirectUri = redirectUrl
-            }, GoogleDefaults.AuthenticationScheme);
+                RedirectUri = Url.Action("GoogleCallback", "Profile"),  // Зробити реєстрацію для нових акаунтів з гугл
+                IsPersistent = false
+            };
+
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
-        [HttpGet("google-logout")]
-        public IActionResult GoogleLogout()
+        [HttpGet]
+        public async Task<IActionResult> Logout()
         {
-            return SignOut(new AuthenticationProperties
-            {
-                RedirectUri = "/"
-            }, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -114,7 +122,24 @@ namespace StreamingService.Controllers
 
             if (!authenticateResult.Succeeded)
             {
+                TempData["Error"] = "Помилка входу через Google";
                 return RedirectToAction("Login", "Account");
+            }
+
+            var userId = authenticateResult.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["Error"] = "Не вдалося отримати дані користувача";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var hasSubscription = await _subscriptionService.HasActiveSubscriptionAsync(int.Parse(userId));
+
+            if (!hasSubscription)
+            {
+                HttpContext.Session.SetInt32("PendingUserId", int.Parse(userId));
+                return RedirectToAction("Subscription", "Account");
             }
 
             return RedirectToAction("Movies", "Home");

@@ -124,5 +124,10 @@ namespace StreamingService.Services
                 PaymentMethod = s.Payment?.Method ?? "Невідомо"
             }).Cast<object>().ToList();
         }
+
+        public async Task<bool> HasActiveSubscriptionAsync(int profileId)
+        {
+            return await _repository.HasActiveSubscriptionAsync(profileId);
+        }
     }
 }

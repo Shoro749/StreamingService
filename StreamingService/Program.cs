@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.DataProtection;
 using StreamingService.Data;
 using StreamingService.Data.Seeders;
 using StreamingService.DTO.ViewModels;
@@ -35,12 +36,18 @@ namespace StreamingService
             builder.Services.AddScoped<SubscriptionRepository>();
             builder.Services.AddAppRepositories();
 
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "keys")))
+                .SetApplicationName("StreamingService");
+
             builder.Services.AddDistributedMemoryCache(); // Для збереження сесій у пам'яті
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // Час життя сесії
                 options.Cookie.HttpOnly = true; // Захист від XSS
                 options.Cookie.IsEssential = true; // Обов'язковий cookie
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
             builder.Services.AddAuthentication(options =>
@@ -49,23 +56,70 @@ namespace StreamingService
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Profile/Logout";
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            })
             .AddGoogle(options =>
             {
                 options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-                options.CallbackPath = "/Profile/GoogleCallback";
+                //options.CallbackPath = "/Profile/GoogleCallback";
+                options.CallbackPath = "/signin-google";
+                options.SaveTokens = true;
+
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
                 options.Events.OnCreatingTicket = async context =>
                 {
-                    var profileService = context.HttpContext.RequestServices.GetRequiredService<ProfileService>();
+                    try
+                    {
+                        var profileService = context.HttpContext.RequestServices.GetRequiredService<ProfileService>();
 
-                    var googleId = context.Identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    var email = context.Identity.FindFirst(ClaimTypes.Email)?.Value;
-                    var name = context.Identity.FindFirst(ClaimTypes.Name)?.Value;
-                    var picture = context.User.GetProperty("picture").GetString();
+                        var googleId = context.Identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        var email = context.Identity.FindFirst(ClaimTypes.Email)?.Value;
+                        var name = context.Identity.FindFirst(ClaimTypes.Name)?.Value;
+                        var picture = context.User.GetProperty("picture").GetString();
 
-                    await profileService.HandleGoogleAuthAsync(googleId, email, name, picture);
+                        var success = await profileService.HandleGoogleAuthAsync(googleId, email, name, picture);
+
+                        if (!success)
+                        {
+                            context.Fail("Не вдалося створити або оновити користувача");
+                            return;
+                        }
+
+                        var user = await profileService.GetByGoogleIdAsync(googleId);
+                        if (user != null)
+                        {
+                            var identity = (ClaimsIdentity)context.Principal.Identity;
+
+                            var existingClaim = identity.FindFirst(ClaimTypes.NameIdentifier);
+                            if (existingClaim != null)
+                            {
+                                identity.RemoveClaim(existingClaim);
+                            }
+
+                            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+                            identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+                            identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
+
+                            if (!string.IsNullOrEmpty(picture))
+                            {
+                                identity.AddClaim(new Claim("avatar_url", picture));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Google Auth Error: {ex.Message}");
+                        context.Fail(ex);
+                    }
                 };
             });
 

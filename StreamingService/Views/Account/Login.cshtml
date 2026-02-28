@@ -30,11 +30,10 @@
                     </p>
                 </div>
 
-                <form asp-controller="Profile" 
+                <form asp-controller="Profile"
                       asp-action="Login"
-                      method="post" 
-                      class="w-full flex flex-col gap-8"
-                      data-redirect-url="@Url.Action("Movies", "Home")">
+                      method="post"
+                      class="w-full flex flex-col gap-8">
 
                     <div class="flex flex-col gap-2.5 w-full">
                         <label asp-for="Email" class="font-montserrat font-medium text-base text-white">Електронна пошта</label>
@@ -69,26 +68,6 @@
                         <span asp-validation-for="Password" class="text-red-500 text-sm font-montserrat"></span>
                     </div>
 
-                    <div class="flex flex-col gap-4 w-full">
-                        <span class="font-montserrat font-normal text-xl text-white">Увійти з</span>
-                        <div class="flex gap-4">
-                            @* <form asp-controller="Profile" asp-action="GoogleLogin" method="post" class="inline">
-                                <button type="submit" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
-                                    <img src="~/images/ui/socialbtn/googleG.png" alt="Google" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
-                                </button>
-                            </form>
-
-                            <a href="#" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
-                                <img src="~/images/ui/socialbtn/facebookF.png" alt="Facebook" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
-                            </a>
-
-                            <a href="#" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
-                                <img src="~/images/ui/socialbtn/appleIncA.png" alt="Apple" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
-                            </a> *@
-
-                        </div>
-                    </div>
-
                     <div class="flex items-center gap-3 relative">
                         <div class="flex items-center h-6">
                             <input asp-for="IsPersistent" type="checkbox" class="w-[50px] h-[27px] rounded-full bg-[#D0F260]/50 appearance-none checked:bg-[#D0F260] cursor-pointer transition-colors relative after:content-[''] after:absolute after:top-[2.5px] after:left-[2.5px] after:bg-white after:rounded-full after:h-[22px] after:w-[22px] after:transition-all checked:after:translate-x-[23px]" />
@@ -109,6 +88,26 @@
                     </div>
 
                 </form>
+
+                <div class="flex flex-col gap-4 w-full mt-8">
+                    <span class="font-montserrat font-normal text-xl text-white">Увійти з</span>
+                    <div class="flex gap-4">
+
+                        <form asp-controller="Profile" asp-action="GoogleLogin" method="post" class="inline">
+                            <button type="submit" class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center hover:bg-[#D0F260] hover:scale-110 transition-all duration-300 border border-white/5 group">
+                                <img src="~/images/ui/socialbtn/googleG.png" alt="Google" class="w-6 h-6 object-contain brightness-200 group-hover:brightness-0 transition-all duration-300" />
+                            </button>
+                        </form>
+
+                        <button type="button" disabled class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center opacity-50 cursor-not-allowed border border-white/5 group">
+                            <img src="~/images/ui/socialbtn/facebookF.png" alt="Facebook" class="w-6 h-6 object-contain brightness-200" />
+                        </button>
+
+                        <button type="button" disabled class="w-14 h-14 rounded-full bg-[#9A9A9A]/10 shadow-glass flex items-center justify-center opacity-50 cursor-not-allowed border border-white/5 group">
+                            <img src="~/images/ui/socialbtn/appleIncA.png" alt="Apple" class="w-6 h-6 object-contain brightness-200" />
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
