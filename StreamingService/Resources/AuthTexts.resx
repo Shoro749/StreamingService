@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SignupBackground" xml:space="preserve">
+    <value>Ну знову ці форми заповнювати ім’я прізвище пошта пароль і ніби я в банк заходжу а не кіно дивитись але добре хай буде бо без цього ніяк головне щоб потім не питало кожен раз “ви справді це ви?” я просто хочу включити фільм і забути про все навколо бо іноді єдиний нормальний пароль це плед какао і вечір на дивані і головне щоб не треба було кожен раз перевіряти хто я бо я вже тут і просто хочу насолоджуватись переглядом</value>
+  </data>
+  <data name="SubscriberAgreementBackground" xml:space="preserve">
+    <value>О, знову ця Угода про підписку. Таке враження, ніби я землю в оренду беру, а не просто хочу серіальчик подивитись. Ну, гаразд, заради попкорну і нових епізодів я готовий на все. Тільки б після всіх цих слів-паразитів не вилізла ще одна сторінка з умовами, бо мої очі вже бачать субтитри замість літер. Нехай ця папірецька бюрократія дасть мені нарешті спокій, щоб я міг просто насолоджуватись!</value>
+  </data>
+  <data name="SubscriptionConfirmationBackground" xml:space="preserve">
+    <value>О ні це знову воно священне введення картки ніби я таємний агент який розкриває код сейфа а не просто оплачую підписку заради вечірнього відпочинку ну добре хай буде лише б всі цифри співпали і не вискочила помилка 404 мій гаманець не готовий до таких нервів а серіали вже зачекались і нехай цей магічний момент поповнення балансу відкриє мені світ безмежних розваг бо головне не скільки ти заплатив а як багато ти встиг подивитись</value>
+  </data>
+  <data name="SubscriptionConfirmation_error" xml:space="preserve">
+    <value>О ні це знову воно священне введення картки ніби я таємний агент який розкриває код сейфа а не просто оплачую підписку заради вечірнього відпочинку ну добре хай буде лише б всі цифри співпали і не вискочила помилка 404 мій гаманець не готовий до таких нервів а серіали вже зачекались і нехай цей магічний момент поповнення балансу відкриє мені світ безмежних розваг бо головне не скільки ти заплатив а як багато ти встиг подивитись</value>
+  </data>
+  <data name="SubscriptionBackground" xml:space="preserve">
+    <value>О ні знову ці тарифи стандарт преміум мега ультра а може просто дайте мені кнопку “дивитись все” і все але ні треба подумати що справді потрібно я ж не плачу за телевізор який не дивлюсь може й тут обрати своє без реклами без нервів без пауз і хай кожен знайде те що йому підходить бо головне не кількість екранів а кайф від перегляду</value>
+  </data>
+  <data name="SignInBackground" xml:space="preserve">
+    <value>Ще трохи терпіння, і ти всередині! Введи свої дані, натисни “Увійти” — і твої улюблені серіали й фільми вже чекають, як актори на зйомках. Тут без драм із паролями та дивних помилок — тільки ти, плед, попкорн і нескінченний каталог контенту. Якщо введеш пароль не з першого разу — не переживай, ми не знімемо тебе з ролі, просто ще трохи потренуйся перед камерою. І пам’ятай: твоя підписка активна, а серії самі себе не подивляться!</value>
+  </data>
+  <data name="SuccessScreenBackground" xml:space="preserve">
+    <value>Готово! Твоя підписка активна — наче секретний ритуал вводу картки пройшов успішно. Жодної помилки, жодної драми. Тепер можна спокійно відкривати Lumeo й робити вигляд, що подивишся “тільки одну серію”.</value>
+  </data>
+</root>

@@ -1,0 +1,138 @@
+﻿@using StreamingService.DTO.ViewModels;
+@model VideoCardViewModel;
+
+<div id="video-info-modal"
+     class="hidden fixed inset-0 z-[100] flex items-center justify-center opacity-0 transition-opacity duration-300"
+     aria-labelledby="modal-title" role="dialog" aria-modal="true">
+
+    <div class="fixed inset-0 bg-gray-900/20 backdrop-blur-xs transition-opacity"
+         id="modal-backdrop"></div>
+
+    <div class="relative w-full max-w-6xl h-auto aspect-video rounded-4xl overflow-hidden shadow-2xl transform transition-all scale-95 duration-300"
+         id="modal-content">
+
+        <div class="absolute inset-0 select-none pointer-events-none">
+            <img src="/images/placeholders/lilo-stitch-bg.jpg"
+                 class="w-full h-full object-cover"
+                 alt="Background"
+                 id="modal-bg-image">
+
+            <div class="absolute inset-0 z-20"
+                 style="background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 35%, transparent 100%);">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+        </div>
+
+        <div id="modal-meta-tags" class="absolute top-10 left-12 flex flex-wrap items-center gap-1 z-40">
+            @{
+                var tagClasses = "shadow-glass h-9.5 px-4.5 rounded-full bg-[#22223A]/20 backdrop-blur-md text-white font-medium text-sm flex items-center justify-center whitespace-nowrap transition-colors hover:bg-[#22223A]/40";
+            }
+            <span id="modal-duration" class="@tagClasses">125 хв</span>
+            <span id="modal-genres" class="@tagClasses capitalize">сімейний</span>
+            <span id="modal-type" class="@tagClasses capitalize">фільм</span>
+            <span id="modal-year" class="@tagClasses">2025</span>
+            <span id="modal-age" class="@tagClasses">PG</span>
+        </div>
+
+        <button id="modal-close-btn" class="absolute top-8 right-8 z-50 text-white/70 hover:text-white transition-colors cursor-pointer p-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
+
+        <div class="relative z-30 w-full h-full flex pt-24 px-12 pb-12">
+            <div id="tab-content-info" class="w-full h-full flex">
+				<div class="w-[45%] flex flex-col h-full pr-8">
+					<div class="z-40 flex flex-col items-start gap-6 max-w-md">
+						<h2 id="modal-title" class="text-white font-extrabold text-6xl leading-none tracking-tight drop-shadow-xl">
+							Ліло і Стіч
+						</h2>
+						<p id="modal-description" class="text-white font-montserrat font-medium text-base leading-[140%] drop-shadow-md mb-4 max-w-sm">
+							Ліло — маленька дівчинка з Гаваїв, яка відчуває себе самотньою після втрати батьків. Вона заводить дивного синього прибульця Стіча.
+						</p>
+					</div>
+				</div>
+
+				<div class="w-[55%] flex flex-col gap-8 relative pl-6 h-full">
+
+					<div class="mt-1">
+						<h3 class="text-white font-bold text-lg uppercase tracking-wider mb-6 leading-7">Актори у сцені</h3>
+
+						<div class="flex items-center gap-4">
+							<div class="shrink-0">
+								<partial name="Partials/UI/_NavButton" model='new { Id = "modal-actors-left", IsLeft = true, Theme = "modal" }' />
+							</div>
+
+							<div id="modal-actors-container" class="flex gap-6 overflow-x-auto flex-1 scroll-smooth snap-x snap-mandatory custom-scrollbar-hide"></div>
+
+							<div class="shrink-0">
+								<partial name="Partials/UI/_NavButton" model='new { Id = "modal-actors-right", IsLeft = false, Theme = "modal" }' />
+							</div>
+
+						</div>
+					</div>
+
+					<div class="mt-1">
+						<h3 class="text-white font-bold text-lg uppercase tracking-wider mb-6 leading-7">Найкращі сцени</h3>
+
+						<div class="flex items-center gap-4">
+
+							<div class="shrink-0">
+								<partial name="Partials/UI/_NavButton" model='new { Id = "modal-scenes-left", IsLeft = true, Theme = "modal" }' />
+							</div>
+
+							<div id="modal-scenes-container" class="flex gap-3 items-center overflow-x-auto flex-1 p-1 scroll-smooth snap-x snap-mandatory custom-scrollbar-hide h-32"></div>
+
+							<div class="shrink-0">
+								<partial name="Partials/UI/_NavButton" model='new { Id = "modal-scenes-right", IsLeft = false, Theme = "modal" }' />
+							</div>
+
+						</div>
+					</div>
+                </div>
+            </div>
+
+            <div id="tab-content-trailer" class="hidden absolute inset-0 w-full h-full flex items-center justify-center z-40">
+
+                <button id="play-trailer-btn" class="shadow-glass flex-shrink-0 w-20 h-20 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto">
+                    <svg class="w-12 h-12 text-white fill-current -translate-x-0.25" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+        
+
+        <div class="absolute bottom-0 right-0 w-[55%] px-6 pb-2 z-30 pointer-events-none">
+            <div class="relative w-full h-full flex justify-center items-end pointer-events-auto">
+                <div class="flex items-end gap-10 mb-1">
+                    <button id="tab-btn-info" class="group flex flex-col items-center gap-2 cursor-pointer pointer-events-auto">
+                        <span class="text-white font-montserrat text-xs font-semibold uppercase tracking-widest">
+                            Загальна інформація
+                        </span>
+                        <div id="tab-indicator-info" class="w-2 h-2 rounded-full bg-[#D0F260] shadow-[0_0_8px_#D0F260]"></div>
+                    </button>
+
+                    <button id="tab-btn-trailer" class="group flex flex-col items-center gap-2 cursor-pointer pointer-events-auto">
+                        <span class="text-white/50 font-montserrat text-xs font-semibold uppercase tracking-widest hover:text-white transition-colors">
+                            Дивитися трейлер
+                        </span>
+                        <div id="tab-indicator-trailer" class="w-2 h-2 rounded-full bg-[#D0F260] shadow-[0_0_8px_#D0F260] opacity-0"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <button class="js-favorite-btn absolute right-12 bottom-5 z-50 shadow-glass w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:text-[#FF0000] cursor-pointer"
+                data-video-id=""
+                data-is-favorite="false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+            </svg>
+        </button>
+        
+    </div>
+</div>

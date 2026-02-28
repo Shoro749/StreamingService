@@ -1,0 +1,18 @@
+﻿@{
+    var currentPath = Context.Request.Path.ToString().ToLower();
+}
+
+<div class="h-full flex flex-col py-6 overflow-y-auto custom-scrollbar overflow-x-hidden">
+
+    <div class="px-4 lg:pl-16 lg:mt-8 mb-20 flex justify-center lg:justify-start">
+        <a href="/" class="block hover:opacity-80 transition-opacity">
+            <img src="/images/ui/Lumeo_logo.svg" alt="Lumeo" class="h-8 w-auto hidden lg:block" />
+            <div class="lg:hidden w-8 h-8 overflow-hidden relative">
+                <img src="/images/ui/Lumeo_logo.svg" alt="Lumeo" class="h-8 w-auto absolute left-0 max-w-none" />
+            </div>
+        </a>
+    </div>
+
+    @await Component.InvokeAsync("Sidebar")
+
+</div>

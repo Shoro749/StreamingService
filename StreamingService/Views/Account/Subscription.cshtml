@@ -1,0 +1,29 @@
+﻿@model StreamingService.DTO.ViewModels.SubscriptionViewModel
+@{
+	Layout = "~/Views/Shared/Layouts/_LayoutSimple.cshtml";
+	ViewData["Title"] = "Підписки";
+}
+<div class="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center">
+
+   <partial name="~/Views/Shared/Partials/Auth/_AuthBackgroundText.cshtml" 
+            model="Model.BackgroundText" />
+
+    <h2 class="relative z-10 text-5xl md:text-7xl font-black text-white text-center lead uppercase mb-10 drop-shadow-md">
+        Обери свій тарифний план
+    </h2>
+
+    <div class="lumeo-container grid grid-cols-1 xl:grid-cols-3 gap-5 items-start mb-12 z-10 backdrop-blur-xs">
+
+        @foreach (var tier in Model.Plans)
+        {
+            <partial name="~/Views/Shared/Partials/Landing/_PriceCard.cshtml" 
+                     model="tier"
+                     view-data='@new ViewDataDictionary(ViewData) { { "TargetAction", "Agreement" } }' />
+        }
+
+    </div>
+
+</div>
+
+
+

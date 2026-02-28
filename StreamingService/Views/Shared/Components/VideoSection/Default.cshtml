@@ -1,0 +1,51 @@
+﻿@using StreamingService.DTO.ViewModels
+@model VideoSectionViewModel
+
+@{
+    var posterGeometry = "w-64 xl:w-[calc((100%-96px)/5)] aspect-[2/3]";
+    var commonBtnClasses = "absolute top-1/2 -translate-y-1/2 pointer-events-auto hidden md:flex z-40";
+}
+
+<section class="js-carousel-section mb-16 relative" data-section-id="@Model.SectionId">
+   
+    @if (!string.IsNullOrEmpty(Model.Title))
+    {
+        <div class="mb-6 pl-2">
+            <a href="@Model.LinkUrl" class="text-3xl lg:text-4xl font-bold text-white hover:text-[#DCF260] transition-colors font-montserrat">
+                @Model.Title
+            </a>
+        </div>
+    }
+
+    <div class="relative">
+       
+        <div class="absolute top-0 left-0 @posterGeometry z-30 pointer-events-none">
+            <partial name="Partials/UI/_NavButton" model="@(new { 
+                Id = Model.SectionId + "LeftBtn", 
+                IsLeft = true, 
+                Theme = "solid",
+                ExtraClasses = $"{commonBtnClasses} left-0 -translate-x-1/2" 
+            })" />
+        </div>
+
+        <div class="absolute top-0 right-0 @posterGeometry z-30 pointer-events-none">
+            <partial name="Partials/UI/_NavButton" model="@(new { 
+                Id = Model.SectionId + "RightBtn", 
+                IsLeft = false, 
+                Theme = "solid",
+                ExtraClasses = $"{commonBtnClasses} right-0 translate-x-1/2"
+            })" />
+        </div>
+
+        <div id="@(Model.SectionId)List" 
+             class="flex gap-6 overflow-x-auto custom-scrollbar-hide snap-x snap-mandatory scroll-smooth pb-4 relative z-0">
+            
+            @foreach (var videoItem in Model.Videos)
+            {
+                @await Component.InvokeAsync("VideoCard", videoItem)
+            }
+
+        </div>
+
+    </div>
+</section>
