@@ -1,0 +1,106 @@
+﻿@model List<StreamingService.DTO.ViewModels.HeroItemViewModel>
+
+<div class="relative w-full h-full">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        var item = Model[i];
+        string positionClass;
+
+        switch (i)
+        {
+            case 0: positionClass = "left-0 top-8 w-[1109px] h-[533px] z-30 opacity-100"; break;
+            case 1: positionClass = "left-80 top-13 w-[1020px] h-[491px] z-20 opacity-100"; break;
+            case 2: positionClass = "right-0 top-20 w-[909px] h-[437px] z-10 opacity-100"; break;
+            default: positionClass = "-right-48 top-30 w-[800px] h-[350px] z-0 opacity-0"; break;
+        }
+
+        <div class="absolute js-hero-slide @positionClass transition-all duration-500 ease-out" data-index="@i">
+
+            @if (i == 0)
+            {
+                <div class="absolute -inset-[50px] z-0 pointer-events-none"
+                     style="-webkit-mask-image: radial-gradient(closest-side, black 40%, transparent 100%);
+                                    mask-image: radial-gradient(closest-side, black 40%, transparent 100%);">
+                    <img src="@item.ImageUrl" class="w-full h-full object-cover blur-[100px] opacity-60" />
+                </div>
+            }
+
+            <div class="relative w-full h-full rounded-4xl overflow-hidden bg-gray-900 z-10">
+                <img src="@item.ImageUrl" alt="@item.Title" class="absolute inset-0 w-full h-full object-cover" />
+
+                <div class="js-hero-content opacity-0 transition-opacity duration-500 absolute inset-0 z-20 pointer-events-none">
+
+                    @* Градієнт *@
+                    <div class="absolute inset-0 z-20"
+                         style="background: linear-gradient(90deg, transparent 0%, transparent 40%, #000000 100%);">
+                    </div>
+
+                    @* Текстовий блок всередині *@
+                    <div class="absolute inset-0 p-12 flex flex-col justify-end z-40">
+                        @* --- ВЕРХ: Теги --- *@
+                        <div class="absolute top-7 left-6 flex items-center gap-2.5">
+                            @{
+                                var tagClasses = "shadow-glass h-9.5 px-4.5 rounded-full bg-[#22223A]/20 backdrop-blur-md text-white font-bold text-sm flex items-center justify-center whitespace-nowrap transition-colors hover:bg-[#22223A]/40";
+                            }
+                            <span class="@tagClasses">@item.Duration</span>
+                            <span class="@tagClasses">@item.Year</span>
+                            @foreach (var genre in item.Genres)
+                            {
+                                <span class="@tagClasses capitalize">@genre</span>
+                            }
+                            <span class="@tagClasses">@item.AgeRating</span>
+                        </div>
+
+                        @* --- НИЗ: Кнопки та Інфо --- *@
+                        <div class="absolute bottom-9 left-0 w-full px-7 flex justify-between items-end">
+                            <div class="flex items-center gap-5">
+                                <button class="shadow-glass flex-shrink-0 w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group">
+                                    <svg class="w-8 h-8 text-white fill-current -ml-0.5" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                </button>
+                                <div class="flex flex-col justify-center pb-1">
+                                    <h2 class="text-2xl font-semibold text-white font-montserrat leading-none mb-1 drop-shadow-md">
+                                        @item.Title
+                                    </h2>
+                                    <a href="@item.TrailerUrl" class="text-white/80 text-base font-lg font-montserrat hover:text-[#DCF260] hover:underline transition-colors">
+                                        Програти трейлер @item.TrailerDuration
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="mb-1 mr-7">
+                                <button class="shadow-glass w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all hover:bg-white/20 group">
+                                    @if (item.IsFavorite)
+                                    {
+                                        <svg class="w-6 h-6 text-[#FF0000] drop-shadow-md transition-transform duration-300 scale-110" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    }
+                                    else
+                                    {
+                                        <svg class="w-6 h-6 text-white drop-shadow-md transition-colors duration-300 group-hover:text-[#FF0000]" fill="currentColor" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    }
+
+    <div class="absolute top-4 right-10 flex items-center gap-3 z-50">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var dotClass = (i == 0)
+            ? "w-3 h-3 bg-[#DCF260] shadow-[0_0_10px_#DCF260]"
+            : "w-2 h-2 bg-white/50";
+
+            <button class="js-hero-dot transition-all duration-300 rounded-full @dotClass"
+                    data-index="@i"></button>
+        }
+    </div>
+</div>

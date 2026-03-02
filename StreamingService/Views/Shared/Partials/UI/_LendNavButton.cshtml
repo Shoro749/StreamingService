@@ -1,0 +1,14 @@
+﻿@model dynamic
+@{
+    var btnId = Model.Id as string;
+    var isLeft = Model.IsLeft as bool? ?? false;
+    var positionClass = isLeft ? "-left-30" : "-right-30";
+    var visibilityClass = isLeft ? "hidden" : "";
+    var rotateClass = isLeft ? "rotate-180" : "";
+}
+
+<button id="@btnId" class="@visibilityClass @positionClass absolute top-1/2 z-40 -translate-y-1/2 w-17 h-15 bg-[#48485D] rounded-2xl flex items-center justify-center hover:bg-[#5a5a75] transition-colors">
+    <svg class="@rotateClass" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+</button>

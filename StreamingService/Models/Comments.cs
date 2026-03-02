@@ -18,10 +18,6 @@ namespace StreamingService.Models
         [Required, Column("update_at")]
         public DateTime UpdateAt { get; set; }
 
-        [Column("parent_id")]
-        public int? ParentId { get; set; }
-        public Comment Parent { get; set; }
-
         [Required, Column("user_profile_id")]
         public int UserProfileId { get; set; }
         public UserProfile? UserProfile { get; set; }
@@ -29,5 +25,11 @@ namespace StreamingService.Models
         [Required, Column("video_id")]
         public int VideoId { get; set; }
         public Video Video { get; set; }
+
+        [Column("parent_id")]
+        public int? ParentId { get; set; }
+        public Comment Parent { get; set; }
+
+        public ICollection<Comment> Children { get; set; } = new List<Comment>();
     }
 }

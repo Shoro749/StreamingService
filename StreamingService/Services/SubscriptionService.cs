@@ -28,9 +28,23 @@ namespace StreamingService.Services
             if (plan == null || !plan.IsEnabled)
                 return false;
 
+            var currentSub = await _repository.GetActiveSubscriptionAsync(profileId);
+
+            if (currentSub != null)
+            {
+                if (Enum.TryParse(currentSub.SubscriptionPlan.SubscriptionLevel.Code, out SubscriptionLevelCode currentLevel) &&
+                    Enum.TryParse(newPlan.SubscriptionLevel.Code, out SubscriptionLevelCode newLevel))
+                {
+                    if (newLevel < currentLevel)
+                    {
+                        return false;
+                    }
+                }
+            }
+
             var payment = new Payment
             {
-                Amount = plan.Price,
+                Amount = newPlan.Price,
                 Currency = "UAH",
                 Provider = GetProviderFromMethod(paymentMethod),
                 Method = paymentMethod,
@@ -51,7 +65,7 @@ namespace StreamingService.Services
                 Status = "Active",
                 AutoRenew = true,
                 SubscriptionStart = DateTime.UtcNow,
-                SubscriptionEnd = DateTime.UtcNow.AddDays(plan.PeriodDays)
+                SubscriptionEnd = DateTime.UtcNow.AddDays(newPlan.PeriodDays)
             };
 
             return await _repository.CreateSubscriptionAsync(subscription);
@@ -61,6 +75,8 @@ namespace StreamingService.Services
         {
             var sub = await _repository.GetActiveSubscriptionAsync(profileId);
             if (sub == null) return null;
+
+            var currentCode = sub.SubscriptionPlan.SubscriptionLevel.Code;
 
             return new
             {
@@ -128,6 +144,17 @@ namespace StreamingService.Services
         public async Task<bool> HasActiveSubscriptionAsync(int profileId)
         {
             return await _repository.HasActiveSubscriptionAsync(profileId);
+        }
+
+        private bool UserHasAccess(string? userLevelCode, SubscriptionLevelCode requiredLevel)
+        {
+            if (string.IsNullOrEmpty(userLevelCode)) return false;
+
+            if (Enum.TryParse(userLevelCode, out SubscriptionLevelCode userLevel))
+            {
+                return userLevel >= requiredLevel;
+            }
+            return false;
         }
     }
 }

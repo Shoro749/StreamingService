@@ -1,0 +1,9 @@
+﻿@using StreamingService.DTO.ViewModels
+
+@model SceneViewModel
+
+<div class="js-carousel-item relative w-40 shrink-0 h-24 rounded snap-start cursor-pointer overflow-hidden transition-all duration-300 brightness-75 hover:brightness-100">
+    <img src="@Model.SceneImageUrl"
+         class="w-full h-full object-cover"
+         alt="@Model.SceneName">
+</div>
