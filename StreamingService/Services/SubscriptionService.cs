@@ -28,23 +28,9 @@ namespace StreamingService.Services
             if (plan == null || !plan.IsEnabled)
                 return false;
 
-            var currentSub = await _repository.GetActiveSubscriptionAsync(profileId);
-
-            if (currentSub != null)
-            {
-                if (Enum.TryParse(currentSub.SubscriptionPlan.SubscriptionLevel.Code, out SubscriptionLevelCode currentLevel) &&
-                    Enum.TryParse(newPlan.SubscriptionLevel.Code, out SubscriptionLevelCode newLevel))
-                {
-                    if (newLevel < currentLevel)
-                    {
-                        return false;
-                    }
-                }
-            }
-
             var payment = new Payment
             {
-                Amount = newPlan.Price,
+                Amount = plan.Price,
                 Currency = "UAH",
                 Provider = GetProviderFromMethod(paymentMethod),
                 Method = paymentMethod,
@@ -65,7 +51,7 @@ namespace StreamingService.Services
                 Status = "Active",
                 AutoRenew = true,
                 SubscriptionStart = DateTime.UtcNow,
-                SubscriptionEnd = DateTime.UtcNow.AddDays(newPlan.PeriodDays)
+                SubscriptionEnd = DateTime.UtcNow.AddDays(plan.PeriodDays)
             };
 
             return await _repository.CreateSubscriptionAsync(subscription);

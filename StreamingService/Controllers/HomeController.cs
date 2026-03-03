@@ -9,6 +9,7 @@ using StreamingService.Extensions;
 using StreamingService.Models;
 using StreamingService.Services;
 using System.Diagnostics;
+using System.Globalization;
 using System.Xml.Linq;
 
 namespace StreamingService.Controllers
@@ -16,45 +17,80 @@ namespace StreamingService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly MoviesService _moviesService;
         private readonly PricingService _pricingService;
-        
 
         public HomeController(ILogger<HomeController> logger, PricingService pricingService)
         {
             _logger = logger;
             _pricingService = pricingService;
         }
-        
-        public IActionResult Index()
+
+        [Authorize]
+        //[RequireActiveSubscription]
+        public async Task<IActionResult> Movies()
         {
-            var plans = _pricingService.GetPricingPlans();
-            var studios = StudioItem.GetStudios();
-            var features = FeatureItem.GetFeatures();
-            var questions = FaqItem.GetQuestions();
-            var topMovies = TopMovieSeeder.Seed();
-            var model = new HomePageViewModel
+            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+
+            var model = new MoviesPageViewModel
             {
-                PricingTiers = plans,
-                Studios = studios,
-                Features = features,
-                Questions = questions,
-                TopMovies = topMovies,
+                SliderVideos = await _moviesService.GetSliderAsync(locale),
+                PopularVideos = await _moviesService.GetPopularAsync(locale),
+                TrendingVideos = await _moviesService.GetTrendingAsync(locale),
+                NewReleases = await _moviesService.GetNewReleasesAsync(locale),
+                WeeklyHits = await _moviesService.GetWeeklyHitsAsync(locale)
             };
+
             return View(model);
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+
+            var model = new MoviesPageViewModel
+            {
+                SliderVideos = await _moviesService.GetSliderAsync(locale),
+                PopularVideos = await _moviesService.GetPopularAsync(locale),
+                TrendingVideos = await _moviesService.GetTrendingAsync(locale),
+                NewReleases = await _moviesService.GetNewReleasesAsync(locale),
+                WeeklyHits = await _moviesService.GetWeeklyHitsAsync(locale)
+            };
+
+            return View(model);
+
+            //var plans = _pricingService.GetPricingPlans();
+            //var studios = StudioItem.GetStudios();
+            //var features = FeatureItem.GetFeatures();
+            //var questions = FaqItem.GetQuestions();
+            //var topMovies = TopMovieSeeder.Seed();
+            //var model = new HomePageViewModel
+            //{
+            //    PricingTiers = plans,
+            //    Studios = studios,
+            //    Features = features,
+            //    Questions = questions,
+            //    TopMovies = topMovies,
+            //};
+            //return View(model);
         }
         
         public IActionResult Auth()
         {
             return View();
         }
-        
-        public IActionResult Movies()
-        {
-            return View();
-        }
 
-        public IActionResult Catalog(VideoType? category)
+        //public IActionResult Movies()
+        //{
+        //    return View();
+        //}
+
+        [Authorize]
+        //[RequireActiveSubscription]
+        public async Task<IActionResult> Catalog(VideoType? category)
         {
+            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+
             if (category == null)
             {
                 ViewData["Title"] = "Каталог";
@@ -66,7 +102,21 @@ namespace StreamingService.Controllers
                 ViewData["MenuTitle"] = category.Value.GetShortName();
                 ViewData["Category"] = category;
             }
-            return View();
+
+            if (_moviesService == null)
+            {
+                _logger.LogError("MoviesService is null!");
+                return View(new CatalogPageViewModel()); // Повертаємо порожню модель
+            }
+
+            var model = new CatalogPageViewModel
+            {
+                PopularVideos = await _moviesService.GetPopularAsync(locale),
+                NewReleases = await _moviesService.GetNewReleasesAsync(locale),
+                TrendingVideos = await _moviesService.GetTrendingAsync(locale)
+            };
+
+            return View(model);
         }
 
         [Route("/favorites")]

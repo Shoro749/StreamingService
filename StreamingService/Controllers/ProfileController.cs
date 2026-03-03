@@ -93,7 +93,7 @@ namespace StreamingService.Controllers
                 return RedirectToAction("Subscription", "Account");
             }
 
-            return RedirectToAction("Movies", "Home");
+            return RedirectToAction("Catalog", "Home");
         }
 
         [HttpPost]
@@ -101,7 +101,7 @@ namespace StreamingService.Controllers
         {
             var properties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action("GoogleCallback", "Profile"),  // Зробити реєстрацію для нових акаунтів з гугл
+                RedirectUri = Url.Action("GoogleCallback", "Profile"),
                 IsPersistent = false
             };
 

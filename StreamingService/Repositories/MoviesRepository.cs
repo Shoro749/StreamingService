@@ -12,6 +12,58 @@ namespace StreamingService.Repositories
             _context = context;
         }
 
+        public async Task<List<HeroItemViewModel>> GetHeroSlidersAsync(string locale)
+        {
+            return await _context.Videos
+                .Where(v => v.Seasons.Any(s => s.Episodes.Any()))
+                .OrderByDescending(v => v.RatingSum / (v.RatingCount == 0 ? 1 : v.RatingCount))
+                .Take(5)
+                .Select(v => new HeroItemViewModel
+                {
+                    Id = v.Id,
+
+                    Title = v.Translations
+                        .Where(t => t.LocaleCode == locale)
+                        .Select(t => t.Title)
+                        .FirstOrDefault() ?? "Без назви",
+
+                    ImageUrl = v.Images
+                        .Where(i => i.Type == "banner" || i.Type == "backdrop")
+                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .FirstOrDefault() ?? "/images/placeholder-banner.jpg",
+
+                    Duration = v.Seasons
+                        .OrderBy(s => s.NumberOfSeason)
+                        .SelectMany(s => s.Episodes)
+                        .OrderBy(e => e.EpisodeNumber)
+                        .Select(e => e.Duration > 0 ? $"{e.Duration} хвилин" : "")
+                        .FirstOrDefault() ?? "",
+
+                    Year = v.Seasons
+                        .OrderBy(s => s.NumberOfSeason)
+                        .SelectMany(s => s.Episodes)
+                        .Where(e => e.ReleaseDate != default(DateOnly))
+                        .OrderBy(e => e.ReleaseDate)
+                        .Select(e => e.ReleaseDate.Year)
+                        .FirstOrDefault(),
+
+                    AgeRating = /*v.AgeRating ??*/ "0+",
+
+                    Genres = v.GenreVideos
+                        .Select(gv => gv.Genre.GenreTranslations
+                        .Where(gt => gt.LocaleCode == locale)
+                        .Select(gt => gt.Name)
+                        .FirstOrDefault())
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .ToList(),
+
+                    TrailerUrl = "#",
+                    TrailerDuration = "2:30",
+                    IsFavorite = false
+                })
+                .ToListAsync();
+        }
+
         public IQueryable<VideoCardViewModel> GetVideoProjections(string locale)
         {
             return _context.Videos

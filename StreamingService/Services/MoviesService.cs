@@ -12,6 +12,11 @@ namespace StreamingService.Services
             _repository = repository;
         }
 
+        public Task<List<HeroItemViewModel>> GetHeroSlidersAsync(string locale)
+        {
+            return _repository.GetHeroSlidersAsync(locale);
+        }
+
         public Task<List<VideoCardViewModel>> GetSliderAsync(string locale)
         {
             return _repository.GetSliderVideosAsync(locale);
