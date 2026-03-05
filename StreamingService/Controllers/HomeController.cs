@@ -20,17 +20,18 @@ namespace StreamingService.Controllers
         private readonly MoviesService _moviesService;
         private readonly PricingService _pricingService;
 
-        public HomeController(ILogger<HomeController> logger, PricingService pricingService)
+        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService)
         {
             _logger = logger;
             _pricingService = pricingService;
+            _moviesService = moviesService;
         }
 
         [Authorize]
         //[RequireActiveSubscription]
         public async Task<IActionResult> Movies()
         {
-            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+            var locale = CultureInfo.CurrentCulture.Name;
 
             var model = new MoviesPageViewModel
             {
@@ -46,33 +47,22 @@ namespace StreamingService.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+            var plans = _pricingService.GetPricingPlans();
+            var studios = StudioItem.GetStudios();
+            var features = FeatureItem.GetFeatures();
+            var questions = FaqItem.GetQuestions();
+            var topMovies = TopMovieSeeder.Seed();
 
-            var model = new MoviesPageViewModel
+            var model = new HomePageViewModel
             {
-                SliderVideos = await _moviesService.GetSliderAsync(locale),
-                PopularVideos = await _moviesService.GetPopularAsync(locale),
-                TrendingVideos = await _moviesService.GetTrendingAsync(locale),
-                NewReleases = await _moviesService.GetNewReleasesAsync(locale),
-                WeeklyHits = await _moviesService.GetWeeklyHitsAsync(locale)
+                PricingTiers = plans,
+                Studios = studios,
+                Features = features,
+                Questions = questions,
+                TopMovies = topMovies,
             };
 
             return View(model);
-
-            //var plans = _pricingService.GetPricingPlans();
-            //var studios = StudioItem.GetStudios();
-            //var features = FeatureItem.GetFeatures();
-            //var questions = FaqItem.GetQuestions();
-            //var topMovies = TopMovieSeeder.Seed();
-            //var model = new HomePageViewModel
-            //{
-            //    PricingTiers = plans,
-            //    Studios = studios,
-            //    Features = features,
-            //    Questions = questions,
-            //    TopMovies = topMovies,
-            //};
-            //return View(model);
         }
         
         public IActionResult Auth()

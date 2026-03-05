@@ -34,100 +34,31 @@
 </section>
 
 <div id="video-collections">
-    
-    <!-- Popular Videos -->
-    @* @if (Model.PopularVideos != null && Model.PopularVideos.Any())
-    {
-        <section class="mb-12">
-            <h2 class="text-3xl font-bold text-white mb-6">Популярне</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                @foreach (var video in Model.PopularVideos)
-                {
-                    <div class="group">
-                        <a href="/video/@video.Id">
-                            <img src="@video.PosterUrl"
-                                 alt="@video.Title"
-                                 class="w-full h-96 object-cover rounded-lg group-hover:scale-105 transition" />
-                            <h3 class="text-white mt-2 font-semibold truncate">@video.Title</h3>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-[#D0F260]">⭐ @video.Rating.ToString("F1")</span>
-                                @if (video.Genres != null && video.Genres.Any())
-                                {
-                                    <span class="text-white/60 text-sm">@video.Genres.First()</span>
-                                }
-                            </div>
-                        </a>
-                    </div>
-                }
-            </div>
-        </section>
-    } *@
 
-    <!-- New Releases -->
-    @* @if (Model.NewReleases != null && Model.NewReleases.Any())
-    {
-        <section class="mb-12">
-            <h2 class="text-3xl font-bold text-white mb-6">Нові релізи</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                @foreach (var video in Model.NewReleases)
-                {
-                    <div class="group">
-                        <a href="/video/@video.Id">
-                            <img src="@video.PosterUrl"
-                                 alt="@video.Title"
-                                 class="w-full h-96 object-cover rounded-lg group-hover:scale-105 transition" />
-                            <h3 class="text-white mt-2 font-semibold truncate">@video.Title</h3>
-                        </a>
-                    </div>
-                }
-            </div>
-        </section>
-    } *@
-
-    <!-- Trending -->
-    @* @if (Model.TrendingVideos != null && Model.TrendingVideos.Any())
-    {
-        <section class="mb-12">
-            <h2 class="text-3xl font-bold text-white mb-6">У тренді</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                @foreach (var video in Model.TrendingVideos)
-                {
-                    <div class="group">
-                        <a href="/video/@video.Id">
-                            <img src="@video.PosterUrl"
-                                 alt="@video.Title"
-                                 class="w-full h-96 object-cover rounded-lg group-hover:scale-105 transition" />
-                            <h3 class="text-white mt-2 font-semibold truncate">@video.Title</h3>
-                        </a>
-                    </div>
-                }
-            </div>
-        </section>
-    } *@
-
-    @* @await Component.InvokeAsync("VideoSection", new { 
+    @await Component.InvokeAsync("VideoSection", new { 
         Title = "", // вибір редакції
         SectionId = "featured", 
         LinkUrl = "/featured"  
     })
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "Вибух емоцій у кожному кадрі", 
-        SectionId = "action", 
-        LinkUrl = "/action" 
+    @await Component.InvokeAsync("VideoSection", new {
+        Title = "Вибух емоцій у кожному кадрі",
+        SectionId = "action",
+        LinkUrl = "/action",
+        Genre = "екшн"
     })
 
     @await Component.InvokeAsync("VideoSection", new { 
         Title = "Те, що всі обговорюють", 
-    SectionId = "popular", 
-    LinkUrl = "/popular" 
+        SectionId = "popular", 
+        LinkUrl = "/popular" 
     })
 
     @await Component.InvokeAsync("VideoSection", new { 
         Title = "Не пропусти цього тижня!", 
-    SectionId = "newReleases", 
-    LinkUrl = "/new-releases" 
-    }) *@
+        SectionId = "newReleases", 
+        LinkUrl = "/new-releases" 
+    })
 
 </div>
 

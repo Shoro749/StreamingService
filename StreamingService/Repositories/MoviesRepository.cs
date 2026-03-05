@@ -25,7 +25,9 @@ namespace StreamingService.Repositories
                     Title = v.Translations
                         .Where(t => t.LocaleCode == locale)
                         .Select(t => t.Title)
-                        .FirstOrDefault() ?? "Без назви",
+                        .FirstOrDefault()
+                        ?? v.Translations.Select(t => t.Title).FirstOrDefault()
+                        ?? "Без назви",
 
                     ImageUrl = v.Images
                         .Where(i => i.Type == "banner" || i.Type == "backdrop")
@@ -157,6 +159,40 @@ namespace StreamingService.Repositories
 
             return await GetVideoProjections(locale)
                 .Where(v => videoIds.Contains(v.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VideoCardViewModel>> GetVideosByGenreAsync(string genre, string locale, int count = 20)
+        {
+            return await _context.Videos
+                .Where(v => v.GenreVideos.Any(gv => gv.Genre.GenreTranslations
+                    .Any(gt => gt.LocaleCode == locale && gt.Name.ToLower().Contains(genre.ToLower()))))
+                .OrderByDescending(v => v.RatingCount == 0 ? 0 : (double)v.RatingSum / v.RatingCount)
+                .Take(count)
+                .Select(v => new VideoCardViewModel
+                {
+                    Id = v.Id,
+                    Title = v.Translations
+                        .Where(t => t.LocaleCode == locale)
+                        .Select(t => t.Title)
+                        .FirstOrDefault()
+                        ?? v.Translations.Select(t => t.Title).FirstOrDefault()
+                        ?? "Без назви",
+                    PosterUrl = v.Images
+                        .Where(i => i.Type == "poster")
+                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .FirstOrDefault()
+                        ?? "/images/placeholder-poster.jpg",
+                    Rating = v.RatingCount == 0 ? 0 : (double)v.RatingSum / v.RatingCount,
+                    Genres = v.GenreVideos
+                        .Select(gv => gv.Genre.GenreTranslations
+                            .Where(gt => gt.LocaleCode == locale)
+                            .Select(gt => gt.Name)
+                            .FirstOrDefault()
+                            ?? gv.Genre.GenreTranslations.Select(gt => gt.Name).FirstOrDefault())
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .ToList()
+                })
                 .ToListAsync();
         }
     }

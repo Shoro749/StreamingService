@@ -41,5 +41,10 @@ namespace StreamingService.Services
         {
             return _repository.GetWeeklyHitsVideosAsync(locale);
         }
+
+        public Task<List<VideoCardViewModel>> GetByGenreAsync(string genre, string locale)
+        {
+            return _repository.GetVideosByGenreAsync(genre, locale);
+        }
     }
 }
