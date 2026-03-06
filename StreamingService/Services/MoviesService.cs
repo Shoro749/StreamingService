@@ -17,34 +17,39 @@ namespace StreamingService.Services
             return _repository.GetHeroSlidersAsync(locale);
         }
 
-        public Task<List<VideoCardViewModel>> GetSliderAsync(string locale)
+        public Task<List<VideoCardViewModel>> GetSliderAsync(string locale, int? userId = null)
         {
-            return _repository.GetSliderVideosAsync(locale);
+            return _repository.GetSliderVideosAsync(locale, userId);
         }
 
-        public Task<List<VideoCardViewModel>> GetPopularAsync(string locale)
+        public Task<List<VideoCardViewModel>> GetPopularAsync(string locale, int? userId = null)
         {
-            return _repository.GetPopularVideosAsync(locale);
+            return _repository.GetPopularVideosAsync(locale, userId);
         }
 
-        public Task<List<VideoCardViewModel>> GetTrendingAsync(string locale)
+        public Task<List<VideoCardViewModel>> GetTrendingAsync(string locale, int? userId = null)
         {
-            return _repository.GetTrendingVideosAsync(locale);
+            return _repository.GetTrendingVideosAsync(locale, userId);
         }
 
-        public Task<List<VideoCardViewModel>> GetNewReleasesAsync(string locale)
+        public Task<List<VideoCardViewModel>> GetNewReleasesAsync(string locale, int? userId = null)
         {
-            return _repository.GetNewReleasesVideosAsync(locale);
+            return _repository.GetNewReleasesVideosAsync(locale, userId);
         }
 
-        public Task<List<VideoCardViewModel>> GetWeeklyHitsAsync(string locale)
+        public Task<List<VideoCardViewModel>> GetWeeklyHitsAsync(string locale, int? userId = null)
         {
-            return _repository.GetWeeklyHitsVideosAsync(locale);
+            return _repository.GetWeeklyHitsVideosAsync(locale, userId);
         }
 
-        public Task<List<VideoCardViewModel>> GetByGenreAsync(string genre, string locale)
+        public Task<List<VideoCardViewModel>> GetByGenreAsync(string genre, string locale, int? userId = null)
         {
-            return _repository.GetVideosByGenreAsync(genre, locale);
+            return _repository.GetVideosByGenreAsync(genre, locale, 20);
+        }
+
+        public Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale)
+        {
+            return _repository.GetUpcomingReleasesAsync(locale);
         }
     }
 }

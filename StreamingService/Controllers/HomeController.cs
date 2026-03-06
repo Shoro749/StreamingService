@@ -10,6 +10,7 @@ using StreamingService.Models;
 using StreamingService.Services;
 using System.Diagnostics;
 using System.Globalization;
+using System.Security.Claims;
 using System.Xml.Linq;
 
 namespace StreamingService.Controllers
@@ -19,27 +20,29 @@ namespace StreamingService.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly MoviesService _moviesService;
         private readonly PricingService _pricingService;
+        private readonly FavoritesService _favoritesService;
 
-        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService)
+        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService, FavoritesService favoritesService)
         {
             _logger = logger;
             _pricingService = pricingService;
             _moviesService = moviesService;
+            _favoritesService = favoritesService;
         }
 
         [Authorize]
-        //[RequireActiveSubscription]
         public async Task<IActionResult> Movies()
         {
             var locale = CultureInfo.CurrentCulture.Name;
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             var model = new MoviesPageViewModel
             {
-                SliderVideos = await _moviesService.GetSliderAsync(locale),
-                PopularVideos = await _moviesService.GetPopularAsync(locale),
-                TrendingVideos = await _moviesService.GetTrendingAsync(locale),
-                NewReleases = await _moviesService.GetNewReleasesAsync(locale),
-                WeeklyHits = await _moviesService.GetWeeklyHitsAsync(locale)
+                SliderVideos = await _moviesService.GetSliderAsync(locale, userId),
+                PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
+                TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId),
+                NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId),
+                WeeklyHits = await _moviesService.GetWeeklyHitsAsync(locale, userId)
             };
 
             return View(model);
@@ -96,7 +99,7 @@ namespace StreamingService.Controllers
             if (_moviesService == null)
             {
                 _logger.LogError("MoviesService is null!");
-                return View(new CatalogPageViewModel()); // Повертаємо порожню модель
+                return View(new CatalogPageViewModel());
             }
 
             var model = new CatalogPageViewModel
@@ -109,9 +112,13 @@ namespace StreamingService.Controllers
             return View(model);
         }
 
+        [Authorize]
         [Route("/favorites")]
-        public IActionResult Favorites(VideoType? category)
+        public async Task<IActionResult> Favorites(VideoType? category)
         {
+            var locale = CultureInfo.CurrentCulture.Name;
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
             if (category == null)
             {
                 ViewData["Title"] = "Улюблене";
@@ -124,32 +131,20 @@ namespace StreamingService.Controllers
                 ViewData["Category"] = category;
             }
 
-            var favoriteVideos = MockVideoService.GetAllVideos()
-                .Where(video => video.IsFavorite)
-                .ToList();
+            var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, locale);
 
-            var postponedVideos = MockUpcomingService.GetUpcomingReleases()
-                .Where(video => video.IsSavedForLater)
-                .ToList();
-
-            if (category != null)
-            {
-                favoriteVideos = favoriteVideos
-                    .Where(video => video.VideoType == category)
-                    .ToList();
-
-                postponedVideos = postponedVideos
-                    .Where (video => video.VideoType == category)
-                    .ToList();
-            }
-            ViewBag.PostponedVideos = postponedVideos;
+            // TODO: Додати postponed videos з БД
+            ViewBag.PostponedVideos = new List<VideoCardViewModel>();
 
             return View(favoriteVideos);
         }
 
+        [Authorize]
         [Route("/upcoming")]
-        public IActionResult Upcoming(VideoType? category)
+        public async Task<IActionResult> Upcoming(VideoType? category)
         {
+            var locale = CultureInfo.CurrentCulture.Name;
+
             if (category == null)
             {
                 ViewData["Title"] = "Незабаром";
@@ -162,34 +157,17 @@ namespace StreamingService.Controllers
                 ViewData["Category"] = category;
             }
 
-            var upcomingVideos = MockUpcomingService.GetUpcomingReleases();
-
-            if (category != null)
-            {
-                upcomingVideos = upcomingVideos
-                    .Where(video => video.VideoType == category)
-                    .ToList();
-            }
-
-            var culture = new System.Globalization.CultureInfo("uk-UA");
-
-            var groupedReleases = upcomingVideos
-                .Where(v => v.ReleaseDate.HasValue)
-                .OrderBy(v => v.ReleaseDate.Value.Date)
-                .GroupBy(v => v.ReleaseDate.Value.Date)
-                .ToDictionary(
-                g => g.Key.ToString("dd MMM, yyyy", culture)
-                .Replace(".", "")
-                .ToLower(),
-                g => g.ToList()
-                );
+            var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale);
 
             return View(groupedReleases);
         }
 
+        [Authorize]
         [Route("/trending")]
-        public IActionResult Trending(VideoType? category)
+        public async Task<IActionResult> Trending(VideoType? category)
         {
+            var locale = CultureInfo.CurrentCulture.Name;
+
             if (category == null)
             {
                 ViewData["Title"] = "У тренді";
@@ -200,21 +178,15 @@ namespace StreamingService.Controllers
                 ViewData["Title"] = $"{category.Value.GetDisplayName()} - У тренді";
                 ViewData["MenuTitle"] = category.Value.GetShortName();
                 ViewData["Category"] = category;
-
             }
 
-            var trendingVideos = MockVideoService.GetAllVideos().Take(10).ToList();
-            
-            if (category != null)
-            {
-                trendingVideos = trendingVideos
-                    .Where (video => video.VideoType == category)
-                    .ToList();
-            }
+            var trendingVideos = await _moviesService.GetTrendingAsync(locale);
+
+            // TODO: Додати фільтр за category
 
             return View(trendingVideos);
         }
-        
+
 
         public IActionResult Privacy()
         {
