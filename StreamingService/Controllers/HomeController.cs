@@ -83,6 +83,7 @@ namespace StreamingService.Controllers
         public async Task<IActionResult> Catalog(VideoType? category)
         {
             var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             if (category == null)
             {
@@ -104,9 +105,9 @@ namespace StreamingService.Controllers
 
             var model = new CatalogPageViewModel
             {
-                PopularVideos = await _moviesService.GetPopularAsync(locale),
-                NewReleases = await _moviesService.GetNewReleasesAsync(locale),
-                TrendingVideos = await _moviesService.GetTrendingAsync(locale)
+                PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
+                NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId),
+                TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId)
             };
 
             return View(model);
@@ -167,6 +168,7 @@ namespace StreamingService.Controllers
         public async Task<IActionResult> Trending(VideoType? category)
         {
             var locale = CultureInfo.CurrentCulture.Name;
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             if (category == null)
             {
@@ -180,7 +182,7 @@ namespace StreamingService.Controllers
                 ViewData["Category"] = category;
             }
 
-            var trendingVideos = await _moviesService.GetTrendingAsync(locale);
+            var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId);
 
             // TODO: Додати фільтр за category
 

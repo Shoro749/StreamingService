@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StreamingService.DTO;
 using StreamingService.Repositories;
 using StreamingService.Services;
+using System.Security.Claims;
 
 namespace StreamingService.Controllers
 {
@@ -20,30 +21,51 @@ namespace StreamingService.Controllers
         [HttpGet]
         public async Task<IActionResult> Index([FromQuery] string locale = "uk")
         {
-            var userProfileIdClaim = User.FindFirst("UserProfileId")?.Value;
-
-            if (userProfileIdClaim == null || !int.TryParse(userProfileIdClaim, out int userProfileId))
-            {
-                return RedirectToAction("Create", "Profile");
-            }
-
-            var favorites = await _service.GetUserFavoritesAsync(userProfileId, locale);
-
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var favorites = await _service.GetUserFavoritesAsync(userId, locale);
             return View(favorites);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddToFavorites(int userProfileId, int videoId)
+        public async Task<IActionResult> Toggle([FromBody] ToggleFavoriteRequest request)
         {
-            await _service.AddToFavoritesAsync(userProfileId, videoId);
-            return Ok(new { message = "Video added to favorites" });
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            var favorites = await _service.GetUserFavoritesAsync(userId, "uk");
+            var isFavorite = favorites.Any(f => f.Id == request.VideoId);
+
+            bool success;
+            if (isFavorite)
+            {
+                success = await _service.RemoveFromFavoritesAsync(userId, request.VideoId);
+            }
+            else
+            {
+                success = await _service.AddToFavoritesAsync(userId, request.VideoId);
+            }
+
+            return Json(new { success, isFavorite = !isFavorite });
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> RemoveFromFavoritesAsync(int userProfileId, int videoId)
+        [HttpPost]
+        public async Task<IActionResult> Add(int videoId)
         {
-            await _service.RemoveFromFavoritesAsync(userProfileId, videoId);
-            return Ok(new { message = "Video removed from favorites" });
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var success = await _service.AddToFavoritesAsync(userId, videoId);
+            return Json(new { success });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(int videoId)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var success = await _service.RemoveFromFavoritesAsync(userId, videoId);
+            return Json(new { success });
+        }
+    }
+
+    public class ToggleFavoriteRequest
+    {
+        public int VideoId { get; set; }
     }
 }

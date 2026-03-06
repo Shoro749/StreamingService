@@ -68,7 +68,7 @@ namespace StreamingService.Repositories
                 .ToListAsync();
         }
 
-        public IQueryable<VideoCardViewModel> GetVideoProjections(string locale)
+        public IQueryable<VideoCardViewModel> GetVideoProjections(string locale, int? userId = null)
         {
             return _context.Videos
                 .Select(v => new VideoCardViewModel
@@ -153,7 +153,9 @@ namespace StreamingService.Repositories
                     TrailerUrl = "#", // TODO
                     TrailerDuration = "2:30", // TODO
 
-                    IsFavorite = false, // TODO
+                    IsFavorite = userId.HasValue && v.Favorites
+                        .Any(f => f.UserProfileId == userId.Value),
+
                     IsSavedForLater = false, // TODO
 
                     VideoType = VideoType.Movie, // TODO
