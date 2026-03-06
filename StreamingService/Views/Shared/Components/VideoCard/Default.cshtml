@@ -59,7 +59,7 @@
             Payload = new Dictionary<string, string> {
                 { "data-video-id", Model.Id.ToString() },
                 { "data-title", Model.Title },
-                { "data-year", Model.Year },
+                { "data-year", Model.Year.ToString() },
                 { "data-rating", Model.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) },
                 { "data-duration", Model.Duration },
                 { "data-description", Model.Description }, 

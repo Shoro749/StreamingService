@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
+using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
 
 namespace StreamingService.Repositories
@@ -76,23 +77,113 @@ namespace StreamingService.Repositories
                     Title = v.Translations
                         .Where(t => t.LocaleCode == locale)
                         .Select(t => t.Title)
-                        .FirstOrDefault(),
+                        .FirstOrDefault()
+                        ?? v.Translations.Select(t => t.Title).FirstOrDefault()
+                        ?? "Без назви",
+
+                    Description = v.Translations
+                        .Where(t => t.LocaleCode == locale)
+                        .Select(t => t.Description)
+                        .FirstOrDefault()
+                        ?? v.Translations.Select(t => t.Description).FirstOrDefault()
+                        ?? "",
 
                     PosterUrl = v.Images
                         .Where(i => i.Type == "poster")
-                        .Select(i => i.BlobContainer + "/" + i.BlobPath)
-                        .FirstOrDefault(),
+                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .FirstOrDefault()
+                        ?? "/images/placeholder-poster.jpg",
+
+                    BackdropUrl = v.Images
+                        .Where(i => i.Type == "backdrop" || i.Type == "banner")
+                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .FirstOrDefault()
+                        ?? "/images/placeholder-backdrop.jpg",
+
+                    ThumbnailUrl = v.Images
+                        .Where(i => i.Type == "thumbnail")
+                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .FirstOrDefault()
+                        ?? v.Images
+                            .Where(i => i.Type == "poster")
+                            .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                            .FirstOrDefault()
+                        ?? "/images/placeholder-thumbnail.jpg",
 
                     Rating = v.RatingCount == 0
                         ? 0
                         : (double)v.RatingSum / v.RatingCount,
 
+                    Year = v.Seasons
+                        .OrderBy(s => s.NumberOfSeason)
+                        .SelectMany(s => s.Episodes)
+                        .Where(e => e.ReleaseDate != default(DateOnly))
+                        .OrderBy(e => e.ReleaseDate)
+                        .Select(e => e.ReleaseDate.Year)
+                        .FirstOrDefault(),
+
+                    ReleaseDate = v.Seasons
+                        .OrderBy(s => s.NumberOfSeason)
+                        .SelectMany(s => s.Episodes)
+                        .Where(e => e.ReleaseDate != default(DateOnly))
+                        .OrderBy(e => e.ReleaseDate)
+                        .Select(e => e.ReleaseDate.ToDateTime(TimeOnly.MinValue))
+                        .FirstOrDefault(),
+
+                    Duration = v.Seasons
+                        .OrderBy(s => s.NumberOfSeason)
+                        .SelectMany(s => s.Episodes)
+                        .OrderBy(e => e.EpisodeNumber)
+                        .Select(e => e.Duration > 0 ? $"{e.Duration} хв" : "")
+                        .FirstOrDefault()
+                        ?? "",
+
+                    AgeRating = "0+",
+
+                    // Жанри
                     Genres = v.GenreVideos
                         .Select(g => g.Genre.GenreTranslations
                             .Where(t => t.LocaleCode == locale)
                             .Select(t => t.Name)
-                            .FirstOrDefault())
-                        .ToList()
+                            .FirstOrDefault()
+                            ?? g.Genre.GenreTranslations.Select(t => t.Name).FirstOrDefault())
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .ToList(),
+
+                    TrailerUrl = "#",
+                    TrailerDuration = "2:30",
+
+                    // Стан (фаворити, збережене на потім)
+                    IsFavorite = false, // Буде заповнюватись окремо для користувача
+                    IsSavedForLater = false, // TODO: Додати таблицю
+
+                    VideoType = VideoType.Movie, // TODO: Додати поле VideoType у Video або визначати за кількістю сезонів
+
+                    Actors = v.PersonVideos
+                        .Where(pv => pv.PersonRole.Code == "actor")
+                        .Select(pv => new ActorViewModel
+                        {
+                            //Id = pv.Person.Id,
+                            Name = pv.Person.PersonTranslations
+                                .Where(pt => pt.LocaleCode == locale)
+                                .Select(pt => pt.Name)
+                                .FirstOrDefault()
+                                ?? pv.Person.PersonTranslations.Select(pt => pt.Name).FirstOrDefault()
+                                ?? "",
+                            //ImageUrl = pv.Person.Images
+                            //    .Where(i => i.Type == "profile")
+                            //    .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                            //    .FirstOrDefault()
+                            //    ?? "/images/placeholder-actor.jpg",
+                            Character = pv.Person.PersonTranslations
+                                .Where(pt => pt.LocaleCode == locale)
+                                .Select(pt => pt.Name)
+                                .FirstOrDefault()
+                                ?? ""
+                        })
+                        .ToList(),
+
+                    Scenes = new List<SceneViewModel>()
                 });
         }
 

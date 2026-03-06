@@ -18,7 +18,7 @@ public static class MockUpcomingService
                 VideoType = VideoType.Movie, Genres = new List<string> { "екшн", "фантастика", "трилер" },
                 IsSavedForLater = true,
                 ReleaseDate = new DateTime(2026, 4, 6),
-                Year = "2026", Duration = "115 хв", AgeRating = "18+",
+                Year = 2026, Duration = "115 хв", AgeRating = "18+",
                 Description = "Дія розгортається в майбутньому на віддаленій планеті, де молодий Хижак, вигнаний зі свого клану, знаходить малоймовірного союзника в особі Тії та вирушає в підступну подорож на пошуки свого остаточного супротивника.",
                 TrailerUrl = "https://www.youtube.com/watch?v=0", TrailerDuration = "02:15",
                 Actors = new List<ActorViewModel>
@@ -39,7 +39,7 @@ public static class MockUpcomingService
                 VideoType = VideoType.Movie, Genres = new List<string> { "фантастика", "пригоди" },
                 IsSavedForLater = true,
                 ReleaseDate = new DateTime(2026, 4, 6),
-                Year = "2025", Duration = "192 хв", AgeRating = "12+",
+                Year = 2025, Duration = "192 хв", AgeRating = "12+",
                 Description = "Джейк Саллі та Нейтірі стикаються з новим, войовничим плем'ям На'ві — Людьми Попелу, які представляють набагато темнішу та жорстокішу сторону Пандори.",
                 TrailerUrl = "https://www.youtube.com/watch?v=1", TrailerDuration = "02:40",
                 Actors = new List<ActorViewModel>
@@ -90,7 +90,7 @@ public static class MockUpcomingService
                 VideoType = VideoType.Movie, Genres = new List<string> { "бойовик", "трилер" },
                 IsSavedForLater = true,
                 ReleaseDate = new DateTime(2026, 4, 13),
-                Year = "2026", Duration = "120 хв", AgeRating = "16+",
+                Year = 2026, Duration = "120 хв", AgeRating = "16+",
                 Description = "Після катастрофічного удару комети сім'я Герріті залишає свій бункер у Гренландії та вирушає у небезпечну подорож через спустошені землі Європи в пошуках нового дому.",
                 TrailerUrl = "https://www.youtube.com/watch?v=2", TrailerDuration = "02:05",
                 Actors = new List<ActorViewModel>
@@ -141,7 +141,7 @@ public static class MockUpcomingService
                 VideoType = VideoType.Movie, Genres = new List<string> { "екшн", "комедія" },
                 IsSavedForLater = true,
                 ReleaseDate = new DateTime(2026, 4, 20),
-                Year = "2026", Duration = "110 хв", AgeRating = "16+",
+                Year = 2026, Duration = "110 хв", AgeRating = "16+",
                 Description = "Два зведені брати — розкутий поліцейський та суворий військовий дисциплінатор — змушені об'єднати свої зусилля, щоб розслідувати вбивство їхнього спільного батька.",
                 TrailerUrl = "https://www.youtube.com/watch?v=3", TrailerDuration = "01:55",
                 Actors = new List<ActorViewModel>
@@ -206,7 +206,7 @@ public static class MockUpcomingService
                 VideoType = VideoType.Movie, Genres = new List<string> { "драма", "кримінал" },
                 IsSavedForLater = true,
                 ReleaseDate = new DateTime(2026, 5, 4),
-                Year = "2026", Duration = "135 хв", AgeRating = "18+",
+                Year = 2026, Duration = "135 хв", AgeRating = "18+",
                 Description = "Епічне кінопродовження культового серіалу. Томмі Шелбі знову повертається у розпалі Другої світової війни для своєї останньої та найнебезпечнішої місії.",
                 TrailerUrl = "https://www.youtube.com/watch?v=4", TrailerDuration = "02:30",
                 Actors = new List<ActorViewModel>

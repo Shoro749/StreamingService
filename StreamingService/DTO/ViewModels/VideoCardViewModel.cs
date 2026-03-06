@@ -9,7 +9,7 @@ namespace StreamingService.DTO.ViewModels
         public string BackdropUrl { get; set; } = "";    // Горизонтальний (для хіро/модалки)
         public string ThumbnailUrl { get; set; } = "";   // Маленький (для списків)
         public double Rating { get; set; }
-        public string Year { get; set; } = "";
+        public int Year { get; set; } = 0;
         public DateTime? ReleaseDate { get; set; }
         public string Description { get; set; } = "";
         public string Duration { get; set; } = "";
