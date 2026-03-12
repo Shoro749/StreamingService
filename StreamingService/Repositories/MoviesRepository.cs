@@ -369,5 +369,67 @@ namespace StreamingService.Repositories
 
             return videos;
         }
+
+        public async Task<List<GenreViewModel>> GetAllGenresAsync(string locale)
+        {
+            return await _context.Genres
+                .Select(g => new GenreViewModel
+                {
+                    Id = g.Id,
+                    Code = g.Code,
+                    Name = g.GenreTranslations
+                        .Where(t => t.LocaleCode == locale)
+                        .Select(t => t.Name)
+                        .FirstOrDefault()
+                        ?? g.GenreTranslations.Select(t => t.Name).FirstOrDefault()
+                        ?? g.Code
+                })
+                .OrderBy(g => g.Name)
+                .ToListAsync();
+        }
+
+        public async Task<List<VideoCardViewModel>> GetVideosByGenresAsync(List<string> genreCodes, string locale, int? userId = null)
+        {
+            var query = _context.Videos
+                .Where(v => v.GenreVideos.Any(gv => genreCodes.Contains(gv.Genre.Code)))
+                .Select(v => new VideoCardViewModel
+                {
+                    Id = v.Id,
+
+                    Title = v.Translations
+                        .Where(t => t.LocaleCode == locale)
+                        .Select(t => t.Title)
+                        .FirstOrDefault()
+                        ?? v.Translations.Select(t => t.Title).FirstOrDefault()
+                        ?? "Без назви",
+
+                    PosterUrl = v.Images
+                        .Where(i => i.Type == "poster")
+                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .FirstOrDefault()
+                        ?? "/images/placeholder-poster.jpg",
+
+                    Rating = v.RatingCount == 0 ? 0 : (double)v.RatingSum / v.RatingCount,
+
+                    Year = v.Seasons
+                        .OrderBy(s => s.NumberOfSeason)
+                        .SelectMany(s => s.Episodes)
+                        .Where(e => e.ReleaseDate != default(DateOnly))
+                        .OrderBy(e => e.ReleaseDate)
+                        .Select(e => e.ReleaseDate.Year)
+                        .FirstOrDefault(),
+
+                    Genres = v.GenreVideos
+                        .Select(gv => gv.Genre.GenreTranslations
+                            .Where(gt => gt.LocaleCode == locale)
+                            .Select(gt => gt.Name)
+                            .FirstOrDefault()
+                            ?? gv.Genre.GenreTranslations.Select(gt => gt.Name).FirstOrDefault())
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .ToList()
+                });
+
+            return await GetVideosWithUserDataAsync(query, userId, locale);
+        }
     }
 }

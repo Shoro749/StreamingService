@@ -51,5 +51,15 @@ namespace StreamingService.Services
         {
             return _repository.GetUpcomingReleasesAsync(locale);
         }
+
+        public Task<List<GenreViewModel>> GetAllGenresAsync(string locale)
+        {
+            return _repository.GetAllGenresAsync(locale);
+        }
+
+        public Task<List<VideoCardViewModel>> GetVideosByGenresAsync(List<string> genreCodes, string locale, int? userId = null)
+        {
+            return _repository.GetVideosByGenresAsync(genreCodes, locale, userId);
+        }
     }
 }

@@ -38,6 +38,7 @@ namespace StreamingService.Controllers
 
             var model = new MoviesPageViewModel
             {
+                Genres = await _moviesService.GetAllGenresAsync(locale),
                 SliderVideos = await _moviesService.GetSliderAsync(locale, userId),
                 PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
                 TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId),
@@ -105,6 +106,7 @@ namespace StreamingService.Controllers
 
             var model = new CatalogPageViewModel
             {
+                Genres = await _moviesService.GetAllGenresAsync(locale),
                 PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
                 NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId),
                 TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId)
@@ -134,7 +136,7 @@ namespace StreamingService.Controllers
 
             var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, locale);
 
-            // TODO: Додати postponed videos з БД
+            ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
             ViewBag.PostponedVideos = new List<VideoCardViewModel>();
 
             return View(favoriteVideos);
@@ -184,11 +186,24 @@ namespace StreamingService.Controllers
 
             var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId);
 
-            // TODO: Додати фільтр за category
-
             return View(trendingVideos);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> FilterByGenres([FromBody] FilterByGenresRequest request)
+        {
+            var locale = CultureInfo.CurrentCulture.Name;
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            var videos = await _moviesService.GetVideosByGenresAsync(request.GenreCodes, locale, userId);
+
+            return Json(new { success = true, videos });
+        }
+
+        public class FilterByGenresRequest
+        {
+            public List<string> GenreCodes { get; set; } = new();
+        }
 
         public IActionResult Privacy()
         {
