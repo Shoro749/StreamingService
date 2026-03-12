@@ -142,7 +142,7 @@ namespace StreamingService.Controllers
                 return RedirectToAction("Subscription", "Account");
             }
 
-            return RedirectToAction("Movies", "Home");
+            return RedirectToAction("Catalog", "Home");
         }
     }
 }
