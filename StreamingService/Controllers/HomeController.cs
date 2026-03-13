@@ -205,6 +205,32 @@ namespace StreamingService.Controllers
             public List<string> GenreCodes { get; set; } = new();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RenderVideoCard([FromBody] VideoCardViewModel video)
+        {
+            return ViewComponent("VideoCard", video);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> FilterFavoritesByGenres([FromBody] FilterByGenresRequest request)
+        {
+            var locale = CultureInfo.CurrentCulture.Name;
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            var allFavorites = await _favoritesService.GetUserFavoritesAsync(userId, locale);
+
+            var filteredVideos = allFavorites
+                .Where(v => v.Genres != null && v.Genres.Any(genre =>
+                    request.GenreCodes.Any(code =>
+                        genre.ToLower().Contains(code.ToLower())
+                    )
+                ))
+                .ToList();
+
+            return Json(new { success = true, videos = filteredVideos });
+        }
+
         public IActionResult Privacy()
         {
             return View();

@@ -1,6 +1,6 @@
 ﻿// Масив обраних жанрів
 let selectedGenres = [];
-let originalSections = null; // Зберігаємо оригінальні секції
+let originalContent = null;
 
 // Обробка кліків на жанри
 document.addEventListener('click', async (e) => {
@@ -25,15 +25,40 @@ document.addEventListener('click', async (e) => {
         if (selectedGenres.length > 0) {
             await filterVideosByGenres();
         } else {
-            restoreOriginalSections();
+            restoreOriginalContent();
         }
     }
 });
 
-// Функція фільтрації
+// Визначення типу сторінки
+function getPageType() {
+    if (document.getElementById('video-collections')) {
+        return 'movies'; // Сторінка Movies з каруселями
+    } else if (window.location.pathname.includes('/favorites')) {
+        return 'favorites'; // Сторінка Favorites
+    } else if (document.querySelector('section.mb-16 .grid')) {
+        return 'catalog'; // Сторінка Catalog
+    }
+    return null;
+}
+
+// Функція фільтрації (визначає тип сторінки автоматично)
 async function filterVideosByGenres() {
+    const pageType = getPageType();
+
+    if (pageType === 'movies') {
+        await filterCarousels('/Home/FilterByGenres');
+    } else if (pageType === 'favorites') {
+        await filterGrid('/Home/FilterFavoritesByGenres'); // ОКРЕМИЙ ENDPOINT
+    } else if (pageType === 'catalog') {
+        await filterGrid('/Home/FilterByGenres');
+    }
+}
+
+// Фільтрація для каруселей (Movies)
+async function filterCarousels(endpoint) {
     try {
-        const response = await fetch('/Home/FilterByGenres', {
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -45,7 +70,7 @@ async function filterVideosByGenres() {
             const result = await response.json();
 
             if (result.success && result.videos) {
-                updateVideoSections(result.videos);
+                updateCarousels(result.videos);
             }
         }
     } catch (error) {
@@ -53,35 +78,55 @@ async function filterVideosByGenres() {
     }
 }
 
-// Оновлення секцій зі збереженням структури
-function updateVideoSections(filteredVideos) {
+// Фільтрація для сітки (Favorites/Catalog)
+async function filterGrid(endpoint) {
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ genreCodes: selectedGenres })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+
+            if (result.success && result.videos) {
+                updateGrid(result.videos);
+            }
+        }
+    } catch (error) {
+        console.error('Помилка фільтрації:', error);
+    }
+}
+
+// Оновлення каруселей
+function updateCarousels(filteredVideos) {
     const videoCollections = document.getElementById('video-collections');
     if (!videoCollections) return;
 
-    // Зберігаємо оригінал при першій фільтрації
-    if (!originalSections) {
-        originalSections = videoCollections.innerHTML;
+    // Зберігаємо оригінал
+    if (!originalContent) {
+        originalContent = videoCollections.innerHTML;
     }
 
     // Знаходимо всі секції
-    const sections = videoCollections.querySelectorAll('section');
+    const sections = videoCollections.querySelectorAll('.js-carousel-section');
 
     sections.forEach(section => {
-        const carousel = section.querySelector('.flex.gap-5, .grid');
+        const carousel = section.querySelector('[id$="List"]');
         if (!carousel) return;
 
-        // Очищаємо контент секції
         carousel.innerHTML = '';
 
-        // Заповнюємо відфільтрованими відео
         if (filteredVideos.length > 0) {
             filteredVideos.forEach(video => {
-                const videoCard = createVideoCardForCarousel(video);
-                carousel.appendChild(videoCard);
+                carousel.insertAdjacentHTML('beforeend', createVideoCard(video));
             });
         } else {
             carousel.innerHTML = `
-                <div class="col-span-full flex justify-center items-center py-10">
+                <div class="w-full flex justify-center items-center py-10">
                     <p class="text-white/50 text-lg">Немає відео з обраними жанрами</p>
                 </div>
             `;
@@ -89,58 +134,90 @@ function updateVideoSections(filteredVideos) {
     });
 }
 
-// Відновлення оригінальних секцій
-function restoreOriginalSections() {
-    const videoCollections = document.getElementById('video-collections');
-    if (videoCollections && originalSections) {
-        videoCollections.innerHTML = originalSections;
-        originalSections = null;
+// Оновлення сітки
+function updateGrid(filteredVideos) {
+    const grid = document.querySelector('section.mb-16 .grid');
+    if (!grid) return;
+
+    // Зберігаємо оригінал
+    if (!originalContent) {
+        originalContent = grid.innerHTML;
+    }
+
+    grid.innerHTML = '';
+
+    if (filteredVideos.length > 0) {
+        filteredVideos.forEach(video => {
+            grid.insertAdjacentHTML('beforeend', createVideoCard(video));
+        });
+    } else {
+        const pageType = getPageType();
+        const message = pageType === 'favorites'
+            ? 'Немає улюблених відео з обраними жанрами'
+            : 'Немає відео з обраними жанрами';
+
+        grid.innerHTML = `
+            <div class="col-span-full flex justify-center items-center py-20">
+                <p class="text-white/50 text-xl font-montserrat">${message}</p>
+            </div>
+        `;
     }
 }
 
-// Створення картки для каруселі (в стилі сайту)
-function createVideoCardForCarousel(video) {
-    const div = document.createElement('div');
-    div.className = 'flex-shrink-0 w-[220px] group relative snap-start';
+// Відновлення оригінального контенту
+function restoreOriginalContent() {
+    if (!originalContent) return;
 
-    div.innerHTML = `
-        <div class="relative w-full h-[326px] rounded-2xl overflow-hidden shadow-glass">
-            <img src="${video.posterUrl}" 
-                 alt="${video.title}" 
-                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-            
-            <!-- Градієнт знизу -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-            
-            <!-- Кнопки зверху -->
-            <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                    class="js-favorite-btn w-10 h-10 rounded-full bg-black/50 backdrop-blur flex items-center justify-center ${video.isFavorite ? 'text-[#FF0000]' : 'text-white'} hover:scale-110 transition-all"
-                    data-video-id="${video.id}"
-                    data-is-favorite="${video.isFavorite}">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                        <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+    const videoCollections = document.getElementById('video-collections');
+    const grid = document.querySelector('section.mb-16 .grid');
+
+    if (videoCollections) {
+        videoCollections.innerHTML = originalContent;
+    } else if (grid) {
+        grid.innerHTML = originalContent;
+    }
+
+    originalContent = null;
+}
+
+// Створення картки відео (універсальна для каруселей і сітки)
+function createVideoCard(video) {
+    const heartColor = video.isFavorite ? 'text-[#FF0000]' : 'text-white';
+
+    return `
+        <div class="flex-shrink-0 w-64 xl:w-[calc((100%-96px)/5)] flex flex-col gap-3 group snap-start cursor-pointer transition-all duration-300">
+            <div class="relative w-full aspect-[2/3] rounded-3xl overflow-hidden bg-gray-800">
+                <img src="${video.posterUrl}" 
+                     alt="${video.title}" 
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                
+                <button class="js-favorite-btn absolute top-3 right-4 z-10 transition-transform duration-300 hover:scale-110 ${heartColor} hover:text-[#FF0000]"
+                        data-video-id="${video.id}"
+                        data-is-favorite="${video.isFavorite}">
+                    <svg class="w-8 h-8 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                     </svg>
                 </button>
+                
+                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
             </div>
             
-            <!-- Інформація знизу -->
-            <div class="absolute bottom-0 left-0 right-0 p-4">
-                <h3 class="text-white font-semibold text-base mb-1 line-clamp-2">${video.title}</h3>
-                <div class="flex items-center gap-2 text-sm text-white/70">
-                    ${video.year ? `<span>${video.year}</span>` : ''}
-                    ${video.rating > 0 ? `<span>⭐ ${video.rating.toFixed(1)}</span>` : ''}
+            <div class="flex items-start justify-between pl-3 pr-2">
+                <div class="min-w-0">
+                    <h4 class="text-white font-montserrat font-semibold text-xl leading-none mb-2.5 truncate w-full" title="${video.title}">
+                        ${video.title}
+                    </h4>
+                    <div class="flex items-center gap-4 font-montserrat font-semibold text-xl leading-none text-white/50">
+                        <span>${video.year || ''}</span>
+                        ${video.rating > 0 ? `
+                            <span class="flex items-center gap-1 text-[#DCF260]">
+                                <img src="/images/ui/symbols/star.svg" alt="Rating" class="w-5 h-5" />
+                                ${video.rating.toFixed(1)}
+                            </span>
+                        ` : ''}
+                    </div>
                 </div>
             </div>
         </div>
     `;
-
-    // Додаємо клік на картку для переходу
-    div.addEventListener('click', (e) => {
-        if (!e.target.closest('.js-favorite-btn')) {
-            window.location.href = `/video/${video.id}`;
-        }
-    });
-
-    return div;
 }
