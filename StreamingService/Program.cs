@@ -21,6 +21,8 @@ namespace StreamingService
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddAppDbContext(builder.Configuration);
+            builder.Services.AddScoped<VideoRepository>();
+            builder.Services.AddScoped<VideoService>();
             builder.Services.AddScoped<MoviesRepository>();
             builder.Services.AddScoped<MoviesService>();
             builder.Services.AddScoped<FavoritesRepository>();

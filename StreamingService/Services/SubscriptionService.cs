@@ -111,6 +111,24 @@ namespace StreamingService.Services
             return await _repository.UpdateSubscriptionStatusAsync(sub.Id, "Cancelled", false);
         }
 
+        public async Task<bool> HasAccessToVideoAsync(int userId, int videoId)
+        {
+            var hasSubscription = await HasActiveSubscriptionAsync(userId);
+            if (!hasSubscription) return false;
+
+            // додати перевірку рівня підписки
+
+            return true;
+        }
+
+        public async Task<bool> HasAccessToEpisodeAsync(int userId, int episodeId)
+        {
+            var episode = await _repository.GetEpisodeByIdAsync(episodeId);
+            if (episode == null) return false;
+
+            return await HasAccessToVideoAsync(userId, episode.VideoSeason.VideoId);
+        }
+
         public async Task<List<object>> GetSubscriptionHistoryAsync(int profileId)
         {
             var subscriptions = await _repository.GetUserSubscriptionsAsync(profileId);

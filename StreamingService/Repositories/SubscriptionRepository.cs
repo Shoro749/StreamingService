@@ -90,6 +90,13 @@ namespace StreamingService.Repositories
                 .ToListAsync();
         }
 
+        public async Task<VideoEpisode?> GetEpisodeByIdAsync(int episodeId)
+        {
+            return await _context.VideoEpisode
+                .Include(e => e.VideoSeason)
+                .FirstOrDefaultAsync(e => e.Id == episodeId);
+        }
+
         public async Task<bool> UpdateSubscriptionStatusAsync(int subscriptionId, string status, bool autoRenew)
         {
             try
