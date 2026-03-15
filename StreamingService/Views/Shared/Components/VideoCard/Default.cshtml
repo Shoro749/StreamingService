@@ -2,21 +2,26 @@
 @model StreamingService.DTO.ViewModels.VideoCardViewModel
 @{ 
     var heartColorClass = Model.IsFavorite ? "text-[#FF0000]" : "text-white";
+    var btnTitle = Model.IsFavorite ? "Видалити з улюбленого" : "Додати до улюбленого";
  }
 
 <div class="flex-shrink-0 w-64 xl:w-[calc((100%-96px)/5)] flex flex-col gap-3 group snap-start cursor-pointer transition-all duration-300">
      
     <div class="relative w-full aspect-[2/3] rounded-3xl overflow-hidden bg-gray-800">
 
-        <img src="@Model.PosterUrl"
-             alt="@Model.Title"
-             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.Id">
+            <img src="@Model.PosterUrl"
+                 alt="@Model.Title"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        </a>
+        
 
         @if (!Model.IsSavedForLater)
         {
             <button class="js-favorite-btn absolute top-3 right-4 z-10 transition-transform duration-300 hover:scale-110 @heartColorClass hover:text-[#FF0000]"
                 data-video-id="@Model.Id"
-                data-is-favorite="@Model.IsFavorite.ToString().ToLower()">
+                data-is-favorite="@Model.IsFavorite.ToString().ToLower()"
+                title="@btnTitle">
 
                 <svg class="w-8 h-8 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -29,9 +34,11 @@
 
     <div class="flex items-start justify-between pl-3 pr-2">
         <div class="min-w-0">
-            <h4 class="text-white font-montserrat font-semibold text-xl leading-none mb-2.5 truncate w-full" title="@Model.Title">
-                @Model.Title
-            </h4>
+            <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.Id" class="hover:text-[#DCF260] transition-colors">
+                <h4 class="text-white font-montserrat font-semibold text-xl leading-none mb-2.5 truncate w-full" title="@Model.Title">
+                    @Model.Title
+                </h4>
+            </a>
 
             <div class="flex items-center gap-4 font-montserrat font-semibold text-xl leading-none text-white/50">
                 <span>@Model.Year</span>

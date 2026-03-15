@@ -1,18 +1,26 @@
 ﻿@model StreamingService.DTO.ViewModels.SidebarViewModel
 
+@{
+    var isMini = ViewData["IsMiniSidebar"] as bool? == true;
+    var activeMenuOverride = ViewData["ActiveMenu"] as string;
+}
+
 <div class="flex flex-col">
     @foreach (var item in Model.MenuItems)
     {
+        var isItemActive = item.IsActive || 
+        (!string.IsNullOrEmpty(activeMenuOverride) && 
+        item.PageUrl.Contains(activeMenuOverride, StringComparison.OrdinalIgnoreCase));
 
-        var textClass = item.IsActive
+        var textClass = isItemActive
         ? "text-[#DCF260] text-lg font-montserrat font-medium leading-none"
         : "text-white/50 group-hover:text-white transition-colors text-lg font-montserrat font-medium leading-none";
 
-        var imgClass = item.IsActive
+        var imgClass = isItemActive
         ? ""
         : "opacity-50 group-hover:opacity-100 transition-opacity duration-300";
 
-        var currentIcon = item.IsActive ? item.ActiveIcon : item.InactiveIcon;
+        var currentIcon = isItemActive ? item.ActiveIcon : item.InactiveIcon;
 
         <a href="@item.PageUrl" class="group flex items-center justify-center lg:justify-start gap-5 py-3 transition-all px-4 lg:pl-16">
 
@@ -20,9 +28,14 @@
                 <img src="@currentIcon" alt="@item.PageName" class="w-full h-full object-contain @imgClass" />
             </div>
 
-            <span class="hidden lg:block @textClass">
-                @item.PageName
-            </span>
+            @if (!isMini)
+            {
+			    <span class="hidden lg:block @textClass">
+				    @item.PageName
+			    </span>
+            }
+           
+
         </a>
 
         @if (item.HasSeparator)
@@ -33,7 +46,7 @@
 </div>
        
 
-@if (Model.ContinueWatching != null)
+@if (Model.ContinueWatching != null && !isMini)
 {
     <div class="mt-8 hidden lg:block">
         

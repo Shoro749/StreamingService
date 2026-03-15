@@ -1,6 +1,7 @@
 ﻿@using StreamingService.DTO.Enums
 @using StreamingService.Extensions
 @using System.Diagnostics.Metrics
+@model List<StreamingService.DTO.ViewModels.VideoCardViewModel>
 @{
     Layout = "~/Views/Shared/Layouts/_LayoutApp.cshtml";
 }
@@ -38,25 +39,29 @@
     @await Component.InvokeAsync("VideoSection", new { 
         Title = "", // вибір редакції
         SectionId = "featured", 
-        LinkUrl = "/featured"  
+        LinkUrl = "/featured",
+        Videos = Model
     })
 
     @await Component.InvokeAsync("VideoSection", new { 
         Title = "Вибух емоцій у кожному кадрі", 
         SectionId = "action", 
-        LinkUrl = "/action" 
+        LinkUrl = "/action",
+        Videos = Model
     })
 
     @await Component.InvokeAsync("VideoSection", new { 
         Title = "Те, що всі обговорюють", 
-    SectionId = "popular", 
-    LinkUrl = "/popular" 
+        SectionId = "popular", 
+        LinkUrl = "/popular",
+        Videos = Model
     })
 
     @await Component.InvokeAsync("VideoSection", new { 
         Title = "Не пропусти цього тижня!", 
-    SectionId = "newReleases", 
-    LinkUrl = "/new-releases" 
+        SectionId = "newReleases", 
+        LinkUrl = "/new-releases",
+        Videos = Model
     })
 
 </div>

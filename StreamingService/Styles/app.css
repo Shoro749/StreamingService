@@ -141,3 +141,19 @@
         @apply text-[#FF0000] text-sm font-montserrat;
     }
 }
+/* 5. Стилі слайдерів акторів та сцен */
+@layer utilities {
+    .grid-slider-4 {
+        display: grid !important;
+        grid-auto-flow: column;
+        grid-auto-columns: calc(25% - 0.75rem);
+        gap: 1rem;
+    }
+
+    .grid-slider-3 {
+        display: grid !important;
+        grid-auto-flow: column;
+        grid-auto-columns: calc(33.3333% - 0.6667rem);
+        gap: 1rem;
+    }
+}

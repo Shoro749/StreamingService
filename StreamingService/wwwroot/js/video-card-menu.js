@@ -4,6 +4,7 @@
     const modal = document.getElementById('video-info-modal');
     const infoBtn = document.getElementById('menu-action-info');
     const trailerBtn = document.getElementById('menu-action-trailer');
+    const watchBtn = document.getElementById('menu-action-watch');
     const closeModalBtn = document.getElementById('modal-close-btn');
     const modalBackdrop = document.getElementById('modal-backdrop');
 
@@ -179,6 +180,14 @@
             e.preventDefault();
             e.stopPropagation();
             openVideoModal('trailer');
+        });
+    }
+
+    if (watchBtn) {
+        watchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = `/Movies/Details/${globalMenu.dataset.currentVideoId}`;
         });
     }
 
