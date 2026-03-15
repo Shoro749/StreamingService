@@ -153,7 +153,7 @@
     .grid-slider-3 {
         display: grid !important;
         grid-auto-flow: column;
-        grid-auto-columns: calc(33.3333% - 0.6667rem);
+        grid-auto-columns: calc((100% - 2rem) / 3);
         gap: 1rem;
     }
 }
