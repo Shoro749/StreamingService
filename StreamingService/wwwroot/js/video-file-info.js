@@ -15,6 +15,49 @@
         }
     });
 
+    const cards = document.querySelectorAll('.recommended-card');
+    let currentIndex = 0;
+
+    function updateCards() {
+        cards.forEach((card, index) => {
+            if (index === currentIndex) {
+                card.classList.add('w-[204px]', 'h-[230px]');
+                card.classList.remove('w-[162px]', 'h-[187px]');
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+            } else {
+                card.classList.add('w-[162px]', 'h-[187px]');
+                card.classList.remove('w-[204px]', 'h-[230px]');
+            }
+        });
+    }
+
+    updateCards();
+
+    document.addEventListener('keydown', function (event) {
+        if (isVisible && cards.length > 0) {
+            if (event.key === 'ArrowRight') {
+                if (currentIndex < cards.length - 1) {
+                    currentIndex++;
+                    event.preventDefault();
+                    updateCards();
+                }
+            } else if (event.key === 'ArrowLeft') {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    event.preventDefault();
+                    updateCards();
+                }
+            }
+        }
+    });               
+    
+    cards.forEach((card, index) => {
+        card.addEventListener('click', function () {
+            currentIndex = index;
+            updateCards();
+        });
+    });
+
     setupScrollableCarousel('video-actors-container', 'video-actors-left', 'video-actors-right', 150, false);
 
     const sceneSlider = new SceneStepper('video-scenes-container', {

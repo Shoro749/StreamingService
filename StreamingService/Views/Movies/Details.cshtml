@@ -146,13 +146,28 @@
     </div>
 
     <div id="recommended-videos-container" 
-         class="absolute bottom-0 left-0 w-full z-40 pb-6 pt-20 bg-gradient-to-t from-[#22223A] via-[#22223A]/80 to-transparent opacity-0 translate-y-full transition-all duration-700 ease-in-out">
-        @await Component.InvokeAsync("VideoSection", new {
-            Title = "Також дивляться", 
-            SectionId = "recommended",
-            LinkUrl = "",
-            Videos = ViewBag.RecommendedVideos
-            })
+         class="fixed bottom-0 left-0 w-screen z-50 pb-6 pt-20 px-10 bg-gradient-to-t from-[#22223A] via-[#22223A]/90 to-transparent opacity-0 translate-y-full transition-all duration-700 ease-in-out">
+        <h2 class="font-bold text-3xl leading-none text-white mb-6">Також дивляться</h2>
+        <div id="recommended-slider" class="flex items-center h-[230px] gap-7 overflow-x-auto custom-scrollbar-hide">
+             
+             @if(ViewBag.RecommendedVideos != null)
+             {
+                var recommendedVideos = ViewBag.RecommendedVideos as IEnumerable<StreamingService.DTO.ViewModels.VideoCardViewModel>;
+                if (recommendedVideos != null)
+                {
+                    foreach (var video in recommendedVideos)
+                    {
+                        <div class="recommended-card shrink-0 w-[162px] h-[187px] rounded-lg transition-all duration-300 cursor-pointer"
+                              data-video-id="@video.Id">
+                        <img src="@video.PosterUrl"
+                              alt="@video.Title" 
+                              class="w-full h-full object-cover rounded-lg shadow-lg">
+                        </div>
+                    }
+			    }
+             }
+         </div>
+              
     </div>
 
 </section>
