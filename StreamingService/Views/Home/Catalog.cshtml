@@ -36,32 +36,32 @@
 
 <div id="video-collections">
     
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "", // вибір редакції
-        SectionId = "featured", 
-        LinkUrl = "/featured",
-        Videos = Model
+    @await Component.InvokeAsync("VideoSection", new {
+        category = ViewBag.CurrentCategory, // вибір редакції
+        sectionId = "featured", 
+        linkUrl = "/featured",
+        videos = Model
     })
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "Вибух емоцій у кожному кадрі", 
-        SectionId = "action", 
-        LinkUrl = "/action",
-        Videos = Model
+    @await Component.InvokeAsync("VideoSection", new {
+        category = ViewBag.CurrentCategory,
+        sectionId = "action",
+        linkUrl = "/action",
+        videos = Model
     })
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "Те, що всі обговорюють", 
-        SectionId = "popular", 
-        LinkUrl = "/popular",
-        Videos = Model
+    @await Component.InvokeAsync("VideoSection", new {
+        category = ViewBag.CurrentCategory,
+        sectionId = "popular",
+        linkUrl = "/popular",
+        videos = Model
     })
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "Не пропусти цього тижня!", 
-        SectionId = "newReleases", 
-        LinkUrl = "/new-releases",
-        Videos = Model
+    @await Component.InvokeAsync("VideoSection", new {
+        category = ViewBag.CurrentCategory,
+        sectionId = "newReleases",
+        linkUrl = "/new-releases",
+        videos = Model
     })
 
 </div>

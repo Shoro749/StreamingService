@@ -60,6 +60,8 @@ namespace StreamingService.Controllers
             var catalogVideos = MockVideoService.GetAllVideos();
 
             catalogVideos = FilterByCategory(catalogVideos, category);
+            
+            ViewBag.CurrentCategory = category;
 
             return View(catalogVideos);
         }
