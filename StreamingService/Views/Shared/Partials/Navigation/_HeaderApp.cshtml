@@ -1,7 +1,10 @@
 ﻿@using StreamingService.DTO.Enums
 @using StreamingService.Extensions
 @{
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "Catalog";
+	var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = currentController == "Home"
+        ? (ViewContext.RouteData.Values["action"]?.ToString() ?? "Catalog")
+        : "Catalog";
 }
 
 <div class="flex items-center w-full h-16 gap-4">

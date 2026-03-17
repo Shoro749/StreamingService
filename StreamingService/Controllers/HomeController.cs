@@ -7,6 +7,7 @@ using StreamingService.DTO.ViewModels;
 using StreamingService.Extensions;
 using StreamingService.Models;
 using StreamingService.Services;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml.Linq;
 
@@ -31,7 +32,7 @@ namespace StreamingService.Controllers
             var features = FeatureItem.GetFeatures();
             var questions = FaqItem.GetQuestions();
             var topMovies = TopMovieSeeder.Seed();
-            var model = new HomePageViewModel
+            var model = new LandingPageViewModel
             {
                 PricingTiers = plans,
                 Studios = studios,
@@ -54,35 +55,20 @@ namespace StreamingService.Controllers
 
         public IActionResult Catalog(VideoType? category)
         {
-            if (category == null)
-            {
-                ViewData["Title"] = "Каталог";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - Каталог";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-            }
-            return View();
+            SetPageHeaders(category, "Каталог");
+            
+            var catalogVideos = MockVideoService.GetAllVideos();
+
+            catalogVideos = FilterByCategory(catalogVideos, category);
+
+            return View(catalogVideos);
         }
 
         [Route("/favorites")]
         public IActionResult Favorites(VideoType? category)
         {
-            if (category == null)
-            {
-                ViewData["Title"] = "Улюблене";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - Улюблене";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-            }
-
+            SetPageHeaders(category, "Улюблене");
+            
             var favoriteVideos = MockVideoService.GetAllVideos()
                 .Where(video => video.IsFavorite)
                 .ToList();
@@ -91,16 +77,9 @@ namespace StreamingService.Controllers
                 .Where(video => video.IsSavedForLater)
                 .ToList();
 
-            if (category != null)
-            {
-                favoriteVideos = favoriteVideos
-                    .Where(video => video.VideoType == category)
-                    .ToList();
+            favoriteVideos = FilterByCategory(favoriteVideos, category);
+            postponedVideos = FilterByCategory(postponedVideos, category);
 
-                postponedVideos = postponedVideos
-                    .Where (video => video.VideoType == category)
-                    .ToList();
-            }
             ViewBag.PostponedVideos = postponedVideos;
 
             return View(favoriteVideos);
@@ -109,26 +88,10 @@ namespace StreamingService.Controllers
         [Route("/upcoming")]
         public IActionResult Upcoming(VideoType? category)
         {
-            if (category == null)
-            {
-                ViewData["Title"] = "Незабаром";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - Незабаром";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-            }
+            SetPageHeaders(category, "Незабаром"); 
 
             var upcomingVideos = MockUpcomingService.GetUpcomingReleases();
-
-            if (category != null)
-            {
-                upcomingVideos = upcomingVideos
-                    .Where(video => video.VideoType == category)
-                    .ToList();
-            }
+            upcomingVideos = FilterByCategory(upcomingVideos, category);
 
             var culture = new System.Globalization.CultureInfo("uk-UA");
 
@@ -149,27 +112,11 @@ namespace StreamingService.Controllers
         [Route("/trending")]
         public IActionResult Trending(VideoType? category)
         {
-            if (category == null)
-            {
-                ViewData["Title"] = "У тренді";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - У тренді";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-
-            }
+            SetPageHeaders(category, "У тренді");
 
             var trendingVideos = MockVideoService.GetAllVideos().Take(10).ToList();
-            
-            if (category != null)
-            {
-                trendingVideos = trendingVideos
-                    .Where (video => video.VideoType == category)
-                    .ToList();
-            }
+
+            trendingVideos = FilterByCategory(trendingVideos, category);
 
             return View(trendingVideos);
         }
@@ -184,6 +131,34 @@ namespace StreamingService.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private void SetPageHeaders(VideoType? category, string pageTitle)
+        {
+            if (category == null)
+            {
+                ViewData["Title"] = pageTitle;
+                ViewData["MenuTitle"] = "Усі";
+            }
+            else
+            {
+                ViewData["Title"] = $"{category.Value.GetDisplayName()} - { pageTitle}";
+                ViewData["MenuTitle"] = category.Value.GetShortName();
+                ViewData["Category"] = category;
+            }
+        }
+
+        private List<VideoCardViewModel> FilterByCategory(List<VideoCardViewModel> videos, VideoType? category)
+        {
+            
+            if (category != null)
+            {
+                videos = videos
+                    .Where(video => video.VideoType == category)
+                    .ToList();
+            }
+
+            return videos;
         }
     }
 }

@@ -7,17 +7,14 @@ namespace StreamingService.ViewComponents;
 
 public class VideoSectionViewComponent : ViewComponent
 {
-    public IViewComponentResult Invoke(string title, string sectionId, string linkUrl)
+    public IViewComponentResult Invoke(string title, string sectionId, string linkUrl, List<VideoCardViewModel> videos)
     {        
-
-        
-
         var model = new VideoSectionViewModel
         {
             Title = title,
             SectionId = sectionId,
             LinkUrl = linkUrl,
-            Videos = MockVideoService.GetAllVideos()
+            Videos = videos
         };
 
         return View(model);
