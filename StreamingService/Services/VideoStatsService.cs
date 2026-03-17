@@ -8,33 +8,27 @@ namespace StreamingService.Services
         private readonly VideoStatsRepository _repository;
         public VideoStatsService(VideoStatsRepository repository) => _repository = repository;
 
-        public async Task<bool> UpdateWatchProgressAsync(int profileId, int episodeId, int currentTime, int totalDuration)
+        public async Task<int> GetDailyViewsAsync(int episodeId)
         {
-            var history = await _repository.GetHistoryAsync(profileId, episodeId);
+            return await _repository.GetEpisodeDailyViewsAsync(episodeId, DateTime.UtcNow);
+        }
 
-            if (history == null)
+        public Task AddTimedLogAsync(int userId, int episodeId)
+        {
+            var log = new VideoEpisodeViewTimedLog
             {
-                history = new UserEpisodesHistory
-                {
-                    UserProfileId = profileId,
-                    VideoEpisodeId = episodeId
-                };
-            }
-
-            history.PausedWatchTime = currentTime;
-            history.LastWatchedAt = DateTime.UtcNow;
-
-            history.IsFullyWatched = (totalDuration - currentTime) < 120;
-
-            await _repository.AddViewLogAsync(new VideoEpisodeViewTimedLog
-            {
-                UserProfileId = profileId,
+                UserProfileId = userId,
                 VideoEpisodeId = episodeId,
                 CreateAt = DateTime.UtcNow
-            });
+            };
+            }
 
-            await _repository.SaveChangesAsync();
-            return true;
+            return _repository.AddViewLogAsync(log);
+        }
+
+        public async Task<List<VideoEpisodeDailyStats>> GetTopEpisodesAsync(int limit)
+        {
+            return await _repository.GetTopEpisodesAsync(limit);
         }
     }
 }

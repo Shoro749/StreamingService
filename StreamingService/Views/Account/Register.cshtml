@@ -1,0 +1,119 @@
+﻿@model StreamingService.DTO.ViewModels.AuthPageViewModel
+
+@{
+    Layout = "~/Views/Shared/Layouts/_LayoutSimple.cshtml";
+    ViewData["Title"] = "Реєстрація";
+}
+
+<div class="relative min-h-screen w-full overflow-hidden">
+
+    <partial name="~/Views/Shared/Partials/Auth/_AuthBackgroundText.cshtml" 
+             model="Model.BackgroundText" />
+
+    <div class="relative min-h-screen w-full flex items-center justify-center p-4">
+
+        <div class="z-10 w-full max-w-screen-md bg-[#9A9A9A]/10 backdrop-blur-xs border border-white/5 shadow-glass rounded-3xl p-8 md:p-12 flex flex-col items-center gap-12">
+
+            <img src="~/images/ui/Lumeo_logo.svg" alt="Lumeo" class="h-8 mb-4" />
+
+            <div class="w-full flex flex-col gap-10">
+                <div class="flex flex-col gap-4">
+                    <h2 class="font-bold text-3xl leading-10 text-[#D0F260] text-center">
+                        Створи обліковий запис, щоб продовжити
+                    </h2>
+                    <p class="font-montserrat font-normal text-xl leading-6 text-white">
+                        З обліковим записом Lumeo ти зможеш дивитися фільми, серіали та шоу без обмежень — на будь-якому пристрої.
+                    </p>
+                </div>
+
+                <form asp-controller="Account" asp-action="Register" method="post" class="w-full flex flex-col gap-12">
+
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        @* ВАРІАНТ 1: Пошта прийшла з лендінгу *@
+                        <div class="text-left">
+                            <p class="font-montserrat font-normal text-xl leading-6 text-white">
+                                Створи акаунт, використовуючи: <span class="font-bold">@Model.Email</span>
+                                <a href="#" class="text-[#D0F260] underline hover:text-white transition-colors">(edit)</a>
+                            </p>
+                            <input type="hidden" asp-for="Email" />
+                        </div>
+                    }
+                    else
+                    {
+                        @* ВАРІАНТ 2: Пошти немає, показуємо поле введення *@
+                        <div class="flex flex-col gap-2.5 w-full">
+                            <label asp-for="Email" class="font-montserrat font-medium text-base text-white">Електронна пошта</label>
+                            <div class="relative w-full">
+                                <input asp-for="Email" type="email" placeholder="example@gmail.com"
+                                       class="shadow-glass w-full h-16 bg-[#9A9A9A]/10 rounded-2xl px-6 text-white font-montserrat text-base focus:outline-none focus:ring-2 focus:ring-[#D0F260] transition-all" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-[#FF0000] text-sm font-montserrat"></span>
+                        </div>
+                    }
+
+                    @* План підписки, якщо буде обраний *@
+                    <input type="hidden" asp-for="SubscriptionPlan" />
+                    
+                    <div class="flex flex-col gap-2.5 w-full">
+                        <label asp-for="Password" class="font-montserrat font-medium text-base text-white">Пароль</label>
+                        <div class="relative w-full">
+                            <input asp-for="Password" id="passwordInput" type="password" class="shadow-glass w-full h-16 bg-[#9A9A9A]/10 rounded-2xl px-6 text-white font-montserrat text-base focus:outline-none focus:ring-2 focus:ring-[#D0F260] transition-all pr-12" />
+                            <button type="button" onclick="togglePassword()" class="absolute right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors cursor-pointer outline-none">
+                                <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hidden">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                                <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 block">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="font-montserrat font-normal text-sm text-[#D3D3D3]">Мінімум 6 символів, хоча б одна цифра або спеціальний знак.</span>
+                        <span asp-validation-for="Password" class="text-red-500 text-sm font-montserrat"></span>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-2.5 w-full">
+                        <div class="flex flex-col gap-2.5 w-full md:w-1/2">
+                            <label asp-for="Name" class="font-montserrat font-medium text-base text-white">Імʼя</label>
+                            <input asp-for="Name" class="shadow-glass w-full h-16 bg-[#9A9A9A]/10 rounded-2xl px-6 text-white font-montserrat text-base focus:outline-none focus:ring-2 focus:ring-[#D0F260] transition-all" />
+                            <span asp-validation-for="Name" class="text-red-500 text-sm font-montserrat"></span>
+                        </div>
+                        <div class="flex flex-col gap-2.5 w-full md:w-1/2">
+                            <label asp-for="Surname" class="font-montserrat font-medium text-base text-white">Прізвище</label>
+                            <input asp-for="Surname" class="shadow-glass w-full h-16 bg-[#9A9A9A]/10 rounded-2xl px-6 text-white font-montserrat text-base focus:outline-none focus:ring-2 focus:ring-[#D0F260] transition-all" />
+                            <span asp-validation-for="Surname" class="text-red-500 text-sm font-montserrat"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 relative">
+                        <div class="flex items-center h-6">
+                            <input asp-for="IsSubscribed" type="checkbox" class="w-[50px] h-[27px] rounded-full bg-[#D0F260]/50 appearance-none checked:bg-[#D0F260] cursor-pointer transition-colors relative after:content-[''] after:absolute after:top-[2.5px] after:left-[2.5px] after:bg-white after:rounded-full after:h-[22px] after:w-[22px] after:transition-all checked:after:translate-x-[23px]" />
+                        </div>
+                        <label asp-for="IsSubscribed" class="font-montserrat font-normal text-xl leading-6 text-white cursor-pointer select-none">
+                            Так, я хочу отримувати оновлення та спеціальні пропозиції від <span class="font-bold">Lumeo</span> електронною поштою.
+                        </label>
+                    </div>
+
+
+                    <p class="font-montserrat font-normal text-xl leading-6 text-white opacity-80">
+                        Натискаючи «Увімкнути магію кіно», ти створюєш обліковий запис Lumeo, погоджуєшся з <a href="#" class="underline hover:text-[#D0F260]">Умовами користування</a> та підтверджуєш, що прочитав(-ла) <a href="#" class="underline hover:text-[#D0F260]">Політику конфіденційності</a>.
+                    </p>
+
+                    <div class="flex justify-center">
+                        <button type="submit" class="w-full max-w-lg h-14 bg-[#D0F260] text-[#22223A] font-black text-2xl uppercase rounded-xl shadow-glass cursor-pointer hover:bg-white hover:scale-105 transition-all duration-300">
+                            Увімкнути магію кіно
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

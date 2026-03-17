@@ -18,18 +18,17 @@
     /* Додаємо новий розмір "116" для карток лендігу, який дорівнює 465px */
     --spacing-116: 465px;
     /* Тінь для ефекту скла */
-    --shadow-glass: inset 1px 1px 0 0 rgba(255,255,255,0.2), 
-                    inset -1px -1px 0 0 rgba(255,255,255,0.2), 
-                    inset -1px 1px 0 0 rgba(0,0,0,0.5),
-                    inset 1px -1px 0 0 rgba(0,0,0,0.5);
+    --shadow-glass: inset 1px 1px 0 0 rgba(255,255,255,0.2), inset -1px -1px 0 0 rgba(255,255,255,0.2), inset -1px 1px 0 0 rgba(0,0,0,0.5), inset 1px -1px 0 0 rgba(0,0,0,0.5);
+    /* Текст для заголовків */
+    --text-10xl: 140px;
+    /* Текст для номерів */
+    --text-11xl: 150px;
 }
 
 /* 3. Власні компоненти */
 @layer components {
     .lumeo-container {
-        /* Едині відступи */
         @apply w-full px-6 md:px-12 xl:px-36 mx-auto;
-        /* mx-auto для екранів ширших за 4k, щоб контент був по центру */
         max-width: 1920px;
     }
     
@@ -37,8 +36,124 @@
         @apply w-full min-h-20 rounded-3xl bg-[#3A3A61]/50 backdrop-blur-md border border-white/5 shadow-glass overflow-hidden transition-all duration-300;
     }
 
-    /* Активний стан (коли відкрито) */
     .faq-item.active {
         @apply bg-[#3A3A61]/70;
+    }
+
+    .movie-rank-number {
+        @apply absolute -left-7 -bottom-2 text-11xl font-extrabold text-white/75 leading-none z-10 select-none drop-shadow-xl;
+        -webkit-text-stroke: 0.5px rgba(255,255,255,0.8);
+        paint-order: stroke fill;
+    }
+
+    .movie-card {
+        @apply relative flex-shrink-0 w-80 h-116 cursor-pointer;
+    }
+
+    .movie-poster {
+        @apply w-full h-full object-cover rounded-3xl transition-transform duration-300 group-hover:scale-105;
+    }
+
+    .studio-card {
+        @apply aspect-[324/259] bg-black/11 flex items-center justify-center border border-white/10 backdrop-blur-sm hover:bg-black/20 transition-colors cursor-pointer;
+    }
+    
+    .studio-logo {
+        @apply w-full object-contain opacity-80 hover:opacity-100 transition-opacity;
+    }
+
+    .feature-card {
+        @apply relative w-full max-w-lg h-72 rounded-4xl bg-[#9A9A9A]/10 backdrop-blur-md border border-white/5 overflow-hidden shadow-glass;
+    }
+
+    .fade-mask-right {
+        mask-image: linear-gradient(to right, black calc(100% - 200px), transparent calc(100% - 130px) );
+        -webkit-mask-image: linear-gradient(to right, black calc(100% - 200px), transparent calc(100% - 130px) );
+    }
+
+    .nav-btn-glass,
+    .nav-btn-solid {
+        @apply w-15 h-13 rounded-xl flex items-center justify-center;
+        @apply transition-all active:scale-95 pointer-events-auto cursor-pointer;
+    }
+
+    .nav-btn-glass {
+        @apply bg-[#9A9A9A]/10 backdrop-blur-md text-white;
+        @apply hover:bg-white/20 hover:text-[#DCF260];
+    }
+
+    .nav-btn-solid {
+        @apply bg-[#2E2E4D] text-white shadow-lg;
+        @apply hover:bg-[#3E3E61] hover:text-[#DCF260];
+    }
+}
+
+/* 4. Спеціальний скролбар */
+@layer utilities {
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(154, 154, 154, 0.1);
+        border-radius: 10px;
+        margin-block: 80px;
+        border-right: 2px solid transparent;
+        background-clip: padding-box; 
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(208, 242, 96, 0.5);
+        border-radius: 10px;
+        border-right: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #D0F260;
+        border-right: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .custom-scrollbar-hide {
+        -ms-overflow-style: none; 
+        scrollbar-width: none; 
+    }
+
+    .custom-scrollbar-hide::-webkit-scrollbar {
+        display: none; 
+    }
+}
+/* 5. Стилі валідації форм */
+@layer utilities {
+    .input-validation-error {
+        @apply !border-2 !border-[#FF0000];
+        @apply !shadow-none;
+    }
+
+    .input-validation-error:focus {
+        @apply !border-[#FF0000] !ring-[#FF0000];
+    }
+
+    /* Стиль тексту помилки під полем */
+    .field-validation-error {
+        @apply text-[#FF0000] text-sm font-montserrat;
+    }
+}
+/* 5. Стилі слайдерів акторів та сцен */
+@layer utilities {
+    .grid-slider-4 {
+        display: grid !important;
+        grid-auto-flow: column;
+        grid-auto-columns: calc(25% - 0.75rem);
+        gap: 1rem;
+    }
+
+    .grid-slider-3 {
+        display: grid !important;
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - 2rem) / 3);
+        gap: 1rem;
     }
 }

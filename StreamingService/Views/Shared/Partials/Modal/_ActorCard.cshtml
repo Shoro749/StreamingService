@@ -1,0 +1,11 @@
+﻿@using StreamingService.DTO.ViewModels
+
+@model ActorViewModel
+
+<div class="flex flex-col items-center text-center min-w-24 snap-start">
+    <div class="w-20 h-20 rounded-full overflow-hidden mb-3 shadow-xl">
+        <img src="@(Model.ImageUrl ?? "/images/default-actor.jpg")" class="w-full h-full object-cover" alt="@Model.Name">
+    </div>
+    <span class="text-white font-montserrat text-xs font-bold">@Model.Name</span>
+    <span class="text-white/70 font-montserrat text-xs font-bold mt-1">@Model.Character</span>
+</div>

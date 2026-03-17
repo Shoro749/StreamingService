@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StreamingService.DTO.Requests;
 using StreamingService.Services;
 
 namespace StreamingService.Controllers
@@ -12,18 +13,25 @@ namespace StreamingService.Controllers
             _statsService = statsService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SyncProgress(int profileId, int episodeId, int currentTime, int totalDuration)
+        [HttpGet("daily/{episodeId}")]
+        public async Task<IActionResult> GetDailyViews(int episodeId)
         {
-            var success = await _statsService.UpdateWatchProgressAsync(profileId, episodeId, currentTime, totalDuration);
-            if (success) return Ok();
-            return BadRequest("Не вдалося зберегти прогрес перегляду");
+            var views = await _statsService.GetDailyViewsAsync(episodeId);
+            return Ok(new { episodeId, views });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetContinueWatching(int profileId)
+        [HttpPost("log")]
+        public async Task<IActionResult> LogView([FromBody] LogViewDto dto)
         {
-            return Ok()
+            await _statsService.AddTimedLogAsync(dto.UserId, dto.EpisodeId);
+            return Ok(new { message = "View logged" });
+        }
+
+        [HttpGet("top")]
+        public async Task<IActionResult> GetTopEpisodes([FromQuery] int limit = 20)
+        {
+            var list = await _statsService.GetTopEpisodesAsync(limit);
+            return Ok(list);
         }
     }
 }
