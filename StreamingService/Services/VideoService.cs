@@ -136,19 +136,26 @@ namespace StreamingService.Services
             }
         }
 
-        public async Task<string?> GetVideoFilePathAsync(int episodeId)
+        public async Task<string?> GetVideoFilePathAsync(int episodeId, string type = "mp4")
         {
             var episode = await _videoRepository.GetEpisodeByIdAsync(episodeId);
             if (episode == null) return null;
 
-            // зробити ынтеграція з Blob Storage або локальне сховище
             var basePath = _configuration["VideoStoragePath"] ?? "wwwroot/videos";
-            var videoPath = Path.Combine(
+
+            if (type == "hls")
+            {
+                return Path.Combine(
+                    basePath,
+                    $"video_{episode.VideoSeason.VideoId}_s{episode.VideoSeason.NumberOfSeason}_e{episode.EpisodeNumber}",
+                    "playlist.m3u8"
+                );
+            }
+
+            return Path.Combine(
                 basePath,
                 $"video_{episode.VideoSeason.VideoId}_s{episode.VideoSeason.NumberOfSeason}_e{episode.EpisodeNumber}.mp4"
             );
-
-            return videoPath;
         }
 
         private string GenerateToken(string data, string secretKey)
