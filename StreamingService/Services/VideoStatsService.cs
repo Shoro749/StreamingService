@@ -21,7 +21,6 @@ namespace StreamingService.Services
                 VideoEpisodeId = episodeId,
                 CreateAt = DateTime.UtcNow
             };
-            }
 
             return _repository.AddViewLogAsync(log);
         }

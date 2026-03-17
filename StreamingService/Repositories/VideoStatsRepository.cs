@@ -10,10 +10,13 @@ namespace StreamingService.Repositories
         public VideoStatsRepository(AppDbContext context) => _context = context;
 
         public async Task<UserEpisodesHistory?> GetHistoryAsync(int profileId, int episodeId)
-        public async Task<int> GetEpisodeDailyViewsAsync(int episodeId, DateTime date)
         {
             return await _context.UserEpisodesHistories
                 .FirstOrDefaultAsync(h => h.UserProfileId == profileId && h.VideoEpisodeId == episodeId);
+        }
+
+        public async Task<int> GetEpisodeDailyViewsAsync(int episodeId, DateTime date)
+        {
             return await _context.VideoEpisodeDailyStats
                 .Where(x => x.VideoEpisodeId == episodeId && x.Date == date.Date)
                 .Select(x => x.TotalUserViews)
