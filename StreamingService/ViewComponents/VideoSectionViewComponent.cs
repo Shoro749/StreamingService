@@ -9,21 +9,21 @@ public class VideoSectionViewComponent : ViewComponent
 {
     private static readonly Dictionary<(string, VideoType?), string> SectionTitles = new()
     {
-        { ("action", VideoType.AnimatedSeries), "Герої поруч із тобою."},
-        { ("action", VideoType.AnimatedMovie), "Фантазія на повну."},
-        { ("action", VideoType.Series), "Один епізод — і ти в історії."},
+        { ("action", VideoType.AnimatedSeries), "Герої поруч із тобою"},
+        { ("action", VideoType.AnimatedMovie), "Фантазія на повну"},
+        { ("action", VideoType.Series), "Один епізод — і ти в історії"},
         { ("action", VideoType.Movie), "Вибух емоцій у кожному кадрі"},
         { ("action", null), "Вибух емоцій у кожному кадрі"},
 
         { ("popular", VideoType.AnimatedSeries), "Лови пригоди!" },
-        { ("popular", VideoType.AnimatedMovie), "Миттєво в казці." },
-        { ("popular", VideoType.Series), "Залежність на всю ніч." },
+        { ("popular", VideoType.AnimatedMovie), "Миттєво в казці" },
+        { ("popular", VideoType.Series), "Залежність на всю ніч" },
         { ("popular", VideoType.Movie), "Те, що всі обговорюють" },
         { ("popular", null), "Те, що всі обговорюють" },
 
-        { ("newReleases", VideoType.AnimatedSeries), "Барви твоєї уяви." },
-        { ("newReleases", VideoType.AnimatedMovie), "Маленькі пригоди — велике задоволення." },
-        { ("newReleases", VideoType.Series), "Драма, шок, емоції." },
+        { ("newReleases", VideoType.AnimatedSeries), "Барви твоєї уяви" },
+        { ("newReleases", VideoType.AnimatedMovie), "Маленькі пригоди — велике задоволення" },
+        { ("newReleases", VideoType.Series), "Драма, шок, емоції" },
         { ("newReleases", VideoType.Movie), "Не пропусти цього тижня!" },
         { ("newReleases", null), "Не пропусти цього тижня!" }
     };

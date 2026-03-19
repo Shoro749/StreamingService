@@ -32,6 +32,7 @@ public class MoviesController : Controller
     public IActionResult Details(int id)
     {
         var movie = MockVideoService.GetAllVideos()
+            .Concat(MockUpcomingService.GetUpcomingReleases())
             .FirstOrDefault(v => v.Id == id);
 
         if (movie == null)
