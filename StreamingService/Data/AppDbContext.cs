@@ -30,6 +30,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Person> Persons { get; set; }
 
+    public virtual DbSet<PersonImage> PersonImages { get; set; }
+
     public virtual DbSet<PersonRole> PersonRoles { get; set; }
 
     public virtual DbSet<PersonTranslation> PersonsTranslations { get; set; }

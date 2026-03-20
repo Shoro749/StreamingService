@@ -125,8 +125,8 @@ namespace StreamingService
                 };
             });
 
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddEndpointsApiExplorer();
+            //builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -155,11 +155,11 @@ namespace StreamingService
             app.UseAuthentication();
             app.UseAuthorization();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            //if (app.Environment.IsDevelopment())
+            //{
+            //    app.UseSwagger();
+            //    app.UseSwaggerUI();
+            //}
 
             app.MapControllerRoute(
                 name: "default",

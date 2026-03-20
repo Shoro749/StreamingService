@@ -2,6 +2,7 @@
 using StreamingService.DTO.ViewModels;
 using StreamingService.Services;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace StreamingService.ViewComponents
 {
@@ -23,7 +24,17 @@ namespace StreamingService.ViewComponents
                 locale = locale.Split('-')[0];
             }
 
-            var heroItems = await _moviesService.GetHeroSlidersAsync(locale);
+            int? userId = null;
+            if (UserClaimsPrincipal?.Identity?.IsAuthenticated ?? false)
+            {
+                var userIdClaim = UserClaimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(userIdClaim))
+                {
+                    userId = int.Parse(userIdClaim);
+                }
+            }
+
+            var heroItems = await _moviesService.GetHeroSlidersAsync(locale, userId);
 
             if (heroItems == null || !heroItems.Any())
             {

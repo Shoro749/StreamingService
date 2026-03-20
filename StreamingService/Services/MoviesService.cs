@@ -12,9 +12,9 @@ namespace StreamingService.Services
             _repository = repository;
         }
 
-        public Task<List<HeroItemViewModel>> GetHeroSlidersAsync(string locale)
+        public Task<List<HeroItemViewModel>> GetHeroSlidersAsync(string locale, int? userId = null)
         {
-            return _repository.GetHeroSlidersAsync(locale);
+            return _repository.GetHeroSlidersAsync(locale, userId);
         }
 
         public Task<List<VideoCardViewModel>> GetSliderAsync(string locale, int? userId = null)

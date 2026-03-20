@@ -14,7 +14,7 @@ namespace StreamingService.Repositories
             _context = context;
         }
 
-        public async Task<List<HeroItemViewModel>> GetHeroSlidersAsync(string locale)
+        public async Task<List<HeroItemViewModel>> GetHeroSlidersAsync(string locale, int? userId = null)
         {
             return await _context.Videos
                 .Where(v => v.Seasons.Any(s => s.Episodes.Any()))
@@ -51,7 +51,7 @@ namespace StreamingService.Repositories
                         .Select(e => e.ReleaseDate.Year)
                         .FirstOrDefault(),
 
-                    AgeRating = /*v.AgeRating ??*/ "0+",
+                    AgeRating = v.AgeRating ?? "0+",
 
                     Genres = v.GenreVideos
                         .Select(gv => gv.Genre.GenreTranslations
@@ -62,8 +62,9 @@ namespace StreamingService.Repositories
                         .ToList(),
 
                     TrailerUrl = "#",
-                    TrailerDuration = "2:30",
-                    IsFavorite = false
+                    TrailerDuration = v.TrailerDuration.ToString(),
+                    IsFavorite = userId.HasValue && v.Favorites
+                        .Any(f => f.UserProfileId == userId.Value),
                 })
                 .ToListAsync();
         }
@@ -150,8 +151,8 @@ namespace StreamingService.Repositories
                         .Where(name => !string.IsNullOrEmpty(name))
                         .ToList(),
 
-                    TrailerUrl = "#", // TODO
-                    TrailerDuration = "2:30", // TODO
+                    TrailerUrl = "#",
+                    TrailerDuration = v.TrailerDuration.ToString(),
 
                     IsFavorite = userId.HasValue && v.Favorites
                         .Any(f => f.UserProfileId == userId.Value),

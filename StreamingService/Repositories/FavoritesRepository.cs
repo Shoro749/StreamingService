@@ -14,14 +14,13 @@ namespace StreamingService.Repositories
             _context = context;
         }
 
-        public async Task<List<VideoCardViewModel>> GetFavoritesByProfileIdAsync(int userProfileId, string locale = "uk")
+        public async Task<List<VideoCardViewModel>> GetFavoritesByProfileIdAsync(int userProfileId, string locale)
         {
             return await _context.UserVideoFavorites
                 .Where(f => f.UserProfileId == userProfileId)
                 .Select(f => new VideoCardViewModel
                 {
                     Id = f.Video.Id,
-
                     Title = f.Video.Translations
                         .Where(t => t.LocaleCode == locale)
                         .Select(t => t.Title)
@@ -35,9 +34,7 @@ namespace StreamingService.Repositories
                         .FirstOrDefault()
                         ?? "/images/placeholder-poster.jpg",
 
-                    Rating = f.Video.RatingCount == 0
-                        ? 0
-                        : (double)f.Video.RatingSum / f.Video.RatingCount,
+                    Rating = f.Video.RatingCount == 0 ? 0 : (double)f.Video.RatingSum / f.Video.RatingCount,
 
                     Year = f.Video.Seasons
                         .OrderBy(s => s.NumberOfSeason)
@@ -48,13 +45,15 @@ namespace StreamingService.Repositories
                         .FirstOrDefault(),
 
                     Genres = f.Video.GenreVideos
-                        .Select(g => g.Genre.GenreTranslations
-                            .Where(t => t.LocaleCode == locale)
-                            .Select(t => t.Name)
+                        .Select(gv => gv.Genre.GenreTranslations
+                            .Where(gt => gt.LocaleCode == locale)
+                            .Select(gt => gt.Name)
                             .FirstOrDefault()
-                            ?? g.Genre.GenreTranslations.Select(t => t.Name).FirstOrDefault())
+                            ?? gv.Genre.GenreTranslations.Select(gt => gt.Name).FirstOrDefault())
                         .Where(name => !string.IsNullOrEmpty(name))
-                        .ToList()
+                        .ToList(),
+
+                    IsFavorite = true
                 })
                 .ToListAsync();
         }

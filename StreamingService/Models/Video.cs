@@ -13,7 +13,8 @@ public partial class Video
     public int Id { get; set; }
     public long RatingCount { get; set; }
     public long RatingSum { get; set; }
-
+    public string? AgeRating { get; set; }
+    public int? TrailerDuration { get; set; }
 
     [ForeignKey(nameof(SubscriptionLevel))]
     public int MinAccess { get; set; }
