@@ -61,5 +61,15 @@ namespace StreamingService.Services
         {
             return _repository.GetVideosByGenresAsync(genreCodes, locale, userId);
         }
+
+        public async Task<SearchResultsViewModel> SearchVideosAsync(string? query, int? genreId, string? sortBy, int page, int pageSize, string locale, int? userId)
+        {
+            return await _repository.SearchVideosAsync(query, genreId, sortBy, page, pageSize, locale, userId);
+        }
+
+        public async Task<List<string>> GetSearchSuggestionsAsync(string query, string locale, int limit)
+        {
+            return await _repository.GetSearchSuggestionsAsync(query, locale, limit);
+        }
     }
 }

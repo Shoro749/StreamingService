@@ -396,5 +396,74 @@ namespace StreamingService.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<SearchResultsViewModel> SearchVideosAsync(string? query, int? genreId, string? sortBy, int page, int pageSize, string locale, int? userId)
+        {
+            var baseQuery = GetVideoProjections(locale, userId);
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                baseQuery = baseQuery.Where(v =>
+                    v.Title.Contains(query) ||
+                    v.Description.Contains(query) ||
+                    v.Genres.Any(g => g.Contains(query))
+                );
+            }
+
+            if (genreId.HasValue)
+            {
+                baseQuery = _context.Videos
+                    .Where(v => v.GenreVideos.Any(gv => gv.GenreId == genreId.Value))
+                    .Select(v => baseQuery.FirstOrDefault(bq => bq.Id == v.Id))
+                    .Where(v => v != null);
+            }
+
+            baseQuery = sortBy switch
+            {
+                "rating" => baseQuery.OrderByDescending(v => v.Rating),
+                "year" => baseQuery.OrderByDescending(v => v.Year),
+                "title" => baseQuery.OrderBy(v => v.Title),
+                "newest" => baseQuery.OrderByDescending(v => v.Id),
+                _ => baseQuery.OrderByDescending(v => v.Rating)
+            };
+
+            var totalCount = await baseQuery.CountAsync();
+
+            var videos = await baseQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new SearchResultsViewModel
+            {
+                Query = query,
+                SelectedGenreId = genreId,
+                SortBy = sortBy,
+                Videos = videos,
+                TotalResults = totalCount,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<List<string>> GetSearchSuggestionsAsync(string query, string locale, int limit)
+        {
+            var normalizedQuery = query.ToLower().Trim();
+
+            var videoTitles = await _context.VideoTranslations
+                .Where(vt => vt.LocaleCode.StartsWith(locale) && vt.Title.ToLower().Contains(normalizedQuery))
+                .Select(vt => vt.Title)
+                .Distinct()
+                .Take(limit / 2)
+                .ToListAsync();
+
+            var genreNames = await _context.GenresTranslations
+                .Where(gt => gt.LocaleCode.StartsWith(locale) && gt.Name.ToLower().Contains(normalizedQuery))
+                .Select(gt => gt.Name)
+                .Distinct()
+                .Take(limit / 2)
+                .ToListAsync();
+            var suggestions = videoTitles.Concat(genreNames).Distinct().Take(limit).ToList();
+
+            return suggestions;
+        }
     }
 }

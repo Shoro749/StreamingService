@@ -231,6 +231,47 @@ namespace StreamingService.Controllers
             return Json(new { success = true, videos = filteredVideos });
         }
 
+        [HttpGet]
+        [Route("search")]
+        public async Task<IActionResult> Search(string? query, int? genreId, string? sortBy, int page = 1)
+        {
+            if (string.IsNullOrWhiteSpace(query) && !genreId.HasValue)
+            {
+                return View(new SearchResultsViewModel
+                {
+                    Query = query,
+                    Videos = new List<VideoCardViewModel>(),
+                    TotalResults = 0
+                });
+            }
+
+            var locale = CultureInfo.CurrentCulture.Name;
+            var userId = User?.Identity?.IsAuthenticated ?? false
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
+                : (int?)null;
+
+            var results = await _moviesService.SearchVideosAsync(query, genreId, sortBy, page, 20, locale, userId);
+
+            ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
+
+            return View(results);
+        }
+
+        [HttpGet]
+        [Route("api/search/suggestions")]
+        public async Task<IActionResult> GetSearchSuggestions(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+            {
+                return Json(new List<string>());
+            }
+
+            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+            var suggestions = await _moviesService.GetSearchSuggestionsAsync(query, locale, 10);
+
+            return Json(suggestions);
+        }
+
         public IActionResult Privacy()
         {
             return View();
