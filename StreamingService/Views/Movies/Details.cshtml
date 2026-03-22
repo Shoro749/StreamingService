@@ -66,14 +66,16 @@
 
             <div class="flex items-center gap-10 mt-5">
                 <div>
-					<button id="play-video-btn" class="shadow-glass flex-shrink-0 w-full h-16 rounded-full p-5 bg-white/10 backdrop-blur-md flex items-center justify-center gap-4 transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto">
+                    <a asp-action="Play" asp-route-id="@Model.Id" 
+                    id="play-video-btn" 
+                    class="shadow-glass flex-shrink-0 w-full h-16 rounded-full p-5 bg-white/10 backdrop-blur-md flex items-center justify-center gap-4 transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto">
 						<svg class="w-8 h-8 text-white fill-current -translate-x-1" viewBox="0 0 24 24">
 							<path d="M8 5v14l11-7z" />
 						</svg>
                         <span class="items-center text-white font-medium">
                             @(isAvailable ? "Дивитися зараз" : "Дивитись трейлер")
                         </span>
-					</button>
+					</a>
                 </div>
                 @if (isAvailable)
                 {

@@ -20,7 +20,7 @@ public static class MockUpcomingService
                 ReleaseDate = new DateTime(2026, 4, 6),
                 Year = "2026", Duration = "115 хв", AgeRating = "18+",
                 Description = "Дія розгортається в майбутньому на віддаленій планеті, де молодий Хижак, вигнаний зі свого клану, знаходить малоймовірного союзника в особі Тії та вирушає в підступну подорож на пошуки свого остаточного супротивника.",
-                TrailerUrl = "https://www.youtube.com/watch?v=0", TrailerDuration = "02:15",
+                TrailerUrl = "https://www.youtube.com/watch?v=1r_kvwIMqvs", TrailerDuration = "02:15",
                 Actors = new List<ActorViewModel>
                 {
                    new ActorViewModel { Name = "Елль Фаннінґ", Character = "Thia / Tessa", ImageUrl = "https://media.themoviedb.org/t/p/w276_and_h350_face/e8CUyxQSE99y5IOfzSLtHC0B0Ch.jpg" },
@@ -41,7 +41,7 @@ public static class MockUpcomingService
                 ReleaseDate = new DateTime(2026, 4, 6),
                 Year = "2025", Duration = "192 хв", AgeRating = "12+",
                 Description = "Джейк Саллі та Нейтірі стикаються з новим, войовничим плем'ям На'ві — Людьми Попелу, які представляють набагато темнішу та жорстокішу сторону Пандори.",
-                TrailerUrl = "https://www.youtube.com/watch?v=1", TrailerDuration = "02:40",
+                TrailerUrl = "https://www.youtube.com/watch?v=os_CcXsSHPM", TrailerDuration = "02:40",
                 Actors = new List<ActorViewModel>
                 {
                     new ActorViewModel { Name = "Сем Вортінгтон", Character = "Джейк Саллі", ImageUrl = "https://media.themoviedb.org/t/p/w276_and_h350_face/mflBcox36s9ZPbsZPVOuhf6axaJ.jpg" },
@@ -92,7 +92,7 @@ public static class MockUpcomingService
                 ReleaseDate = new DateTime(2026, 4, 13),
                 Year = "2026", Duration = "120 хв", AgeRating = "16+",
                 Description = "Після катастрофічного удару комети сім'я Герріті залишає свій бункер у Гренландії та вирушає у небезпечну подорож через спустошені землі Європи в пошуках нового дому.",
-                TrailerUrl = "https://www.youtube.com/watch?v=2", TrailerDuration = "02:05",
+                TrailerUrl = "https://www.youtube.com/watch?v=V1LA1moMeOk", TrailerDuration = "02:05",
                 Actors = new List<ActorViewModel>
                 {
                     new ActorViewModel { Name = "Джерард Батлер", Character = "Джон Герріті", ImageUrl = "https://media.themoviedb.org/t/p/w276_and_h350_face/i54XoxYieuff2w6MwyfwVUBvmR0.jpg" },
@@ -143,7 +143,7 @@ public static class MockUpcomingService
                 ReleaseDate = new DateTime(2026, 4, 20),
                 Year = "2026", Duration = "110 хв", AgeRating = "16+",
                 Description = "Два зведені брати — розкутий поліцейський та суворий військовий дисциплінатор — змушені об'єднати свої зусилля, щоб розслідувати вбивство їхнього спільного батька.",
-                TrailerUrl = "https://www.youtube.com/watch?v=3", TrailerDuration = "01:55",
+                TrailerUrl = "https://www.youtube.com/watch?v=v8R0xDczERo", TrailerDuration = "01:55",
                 Actors = new List<ActorViewModel>
                 {
                     new ActorViewModel { Name = "Джейсон Момоа", Character = "Поліцейський", ImageUrl = "https://media.themoviedb.org/t/p/w276_and_h350_face/3troAR6QbSb6nUFMDu61YCCWLKa.jpg" },
@@ -208,7 +208,7 @@ public static class MockUpcomingService
                 ReleaseDate = new DateTime(2026, 5, 4),
                 Year = "2026", Duration = "135 хв", AgeRating = "18+",
                 Description = "Епічне кінопродовження культового серіалу. Томмі Шелбі знову повертається у розпалі Другої світової війни для своєї останньої та найнебезпечнішої місії.",
-                TrailerUrl = "https://www.youtube.com/watch?v=4", TrailerDuration = "02:30",
+                TrailerUrl = "https://www.youtube.com/watch?v=OStkX1HsAM4", TrailerDuration = "02:30",
                 Actors = new List<ActorViewModel>
                 {
                     new ActorViewModel { Name = "Кілліан Мерфі", Character = "Томмі Шелбі", ImageUrl = "https://media.themoviedb.org/t/p/w276_and_h350_face/llkbyWKwpfowZ6C8peBjIV9jj99.jpg" },
