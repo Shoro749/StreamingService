@@ -32,16 +32,17 @@ public class MoviesController : Controller
     public IActionResult Details(int id)
     {
         var movie = MockVideoService.GetAllVideos()
+            .Concat(MockUpcomingService.GetUpcomingReleases())
             .FirstOrDefault(v => v.Id == id);
 
         if (movie == null)
         {
             return NotFound();
         }
-        
+
         ViewData["MenuTitle"] = movie.VideoType.GetShortName();
         ViewData["Category"] = movie.VideoType;
-        
+
         var recommendedVideos = MockVideoService.GetAllVideos()
             .Where(video => video.Id != id)
             .Take(10)
@@ -50,5 +51,18 @@ public class MoviesController : Controller
         ViewBag.RecommendedVideos = recommendedVideos;
 
         return View(movie);
+    }
+
+    public IActionResult Play(int id)
+    {
+        var video = MockVideoService.GetAllVideos()
+            .FirstOrDefault(v => v.Id == id);
+
+        if (video == null)
+        {
+            return NotFound();
+        }
+
+        return View(video);
     }
 }

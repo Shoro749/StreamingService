@@ -1,0 +1,58 @@
+﻿@using StreamingService.DTO.Enums;
+@model StreamingService.DTO.ViewModels.VideoCardViewModel;
+
+@{
+	Layout = null;
+    ViewData["Title"] = Model.Title + " - Грає зараз";
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+        <partial name="~/Views/Shared/Partials/Base/_Head.cshtml" />
+        <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    </head>
+
+    <body class="bg-black text-white overflow-hidden relative w-screen h-screen">
+        <div class="w-full h-full bg-black flex items-center justify-center">
+
+            <video id="main-player" playsinline controls>
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+            </video>
+
+            <div class="absolute top-10 left-10 z-50 pointer-events-auto">
+                <a href="#" class="text-white text-2xl font-bold flex items-center gap-2 hover:text-[#DCF260] transition-colors drop-shadow-md">
+                    <span>
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                             <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                        </svg>
+                    </span>
+                    @Model.Title
+                </a>
+            </div>
+
+        @if (Model.VideoType == VideoType.Series || Model.VideoType == VideoType.AnimatedSeries)
+        {
+            <div class="absolute bottom-24 left-10 right-10 z-50 flex justify-between pointer-events-auto">
+                <div class="flex gap-4">
+                    <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
+                        Пропустити заставку
+                    </button>
+                    <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
+                        Попередня серія
+                    </button>
+                </div>
+                <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
+                    Наступна серія
+                </button>
+            </div>
+        }
+
+        </div>
+    
+        
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="~/js/video-player.js" asp-append-version="true"></script>
+
+    </body>
+</html>
