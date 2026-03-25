@@ -8,6 +8,7 @@ using StreamingService.DTO.ViewModels;
 using StreamingService.Extensions;
 using StreamingService.Models;
 using StreamingService.Services;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Claims;
@@ -281,6 +282,34 @@ namespace StreamingService.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private void SetPageHeaders(VideoType? category, string pageTitle)
+        {
+            if (category == null)
+            {
+                ViewData["Title"] = pageTitle;
+                ViewData["MenuTitle"] = "Óñ³";
+            }
+            else
+            {
+                ViewData["Title"] = $"{category.Value.GetDisplayName()} - { pageTitle}";
+                ViewData["MenuTitle"] = category.Value.GetShortName();
+                ViewData["Category"] = category;
+            }
+        }
+
+        private List<VideoCardViewModel> FilterByCategory(List<VideoCardViewModel> videos, VideoType? category)
+        {
+            
+            if (category != null)
+            {
+                videos = videos
+                    .Where(video => video.VideoType == category)
+                    .ToList();
+            }
+
+            return videos;
         }
     }
 }

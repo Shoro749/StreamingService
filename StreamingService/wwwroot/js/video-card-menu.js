@@ -4,6 +4,7 @@
     const modal = document.getElementById('video-info-modal');
     const infoBtn = document.getElementById('menu-action-info');
     const trailerBtn = document.getElementById('menu-action-trailer');
+    const watchBtn = document.getElementById('menu-action-watch');
     const closeModalBtn = document.getElementById('modal-close-btn');
     const modalBackdrop = document.getElementById('modal-backdrop');
 
@@ -14,7 +15,11 @@
     const tabIndicatorInfo = document.getElementById('tab-indicator-info');
     const tabBtnTrailer = document.getElementById('tab-btn-trailer');
     const tabIndicatorTrailer = document.getElementById('tab-indicator-trailer');
-    
+
+    const playTrailerBtn = document.getElementById('play-trailer-btn');
+    const youtubeTrailerPlayer = document.getElementById('youtube-trailer-player');
+    const modalTabsContainer = document.getElementById('modal-tabs-container');
+    const modalFavBtn = modal.querySelector('.js-favorite-btn');
 
     let currentVideoId = null;
 
@@ -138,7 +143,6 @@
         }
 
         // 2.7 Кнопка "Улюблене"
-        const modalFavBtn = modal.querySelector('.js-favorite-btn');
         const originalFavBtn = document.querySelector(`.js-favorite-btn[data-video-id="${videoId}"]:not(#video-info-modal .js-favorite-btn)`);
 
         if (modalFavBtn) {
@@ -182,11 +186,57 @@
         });
     }
 
-    // === 3. ЛОГІКА ЗАКРИТТЯ МОДАЛЬНОГО ВІКНА ===
+    if (watchBtn) {
+        watchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = `/Movies/Details/${globalMenu.dataset.currentVideoId}`;
+        });
+    }
+
+    //=== ЛОГІКА ПРОГРАМУВАННЯ ТРАЙЛЕРА В МОДАЛЬНОМУ ВІКНІ ===
+    if (playTrailerBtn) {
+        playTrailerBtn.addEventListener('click', () => {
+            const trailerUrl = globalMenu.dataset.trailer;
+
+            if (!trailerUrl) return;
+
+            let videoId = null;
+            if (trailerUrl.includes('youtube.com/watch?v=')) {
+                videoId = trailerUrl.split('v=')[1].split('&')[0];
+            } else if (trailerUrl.includes('youtu.be/')) {
+                videoId = trailerUrl.split('youtu.be/')[1].split('?')[0];
+            }
+
+            if (videoId) {
+                playTrailerBtn.classList.add('hidden');
+                modalTabsContainer.classList.add('hidden');
+                modalFavBtn.classList.add('hidden');
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+
+                youtubeTrailerPlayer.src = embedUrl;
+                youtubeTrailerPlayer.classList.remove('hidden');
+            } else {
+                console.error("Не вдалося розпізнати посилання на YouTube:", trailerUrl);
+            }
+        });
+    }
+
+    // === ЛОГІКА ЗАКРИТТЯ МОДАЛЬНОГО ВІКНА ===
     function closeModal() {
         modal.classList.add('opacity-0');
         setTimeout(() => {
             modal.classList.add('hidden');
+
+            if (youtubeTrailerPlayer) {
+                youtubeTrailerPlayer.src = '';
+                youtubeTrailerPlayer.classList.add('hidden');
+            }
+            if (playTrailerBtn) {
+                playTrailerBtn.classList.remove('hidden');
+                modalTabsContainer.classList.remove('hidden');
+                modalFavBtn.classList.remove('hidden');
+            }
         }, 300);
     }
 

@@ -42,7 +42,7 @@ public class VideoSectionViewComponent : ViewComponent
 
         var model = new VideoSectionViewModel
         {
-            Title = title,
+            Title = currentTitle,
             SectionId = sectionId,
             LinkUrl = linkUrl,
             Videos = videos ?? new List<VideoCardViewModel>()

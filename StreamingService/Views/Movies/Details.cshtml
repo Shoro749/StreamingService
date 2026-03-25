@@ -1,0 +1,194 @@
+﻿@using StreamingService.Extensions
+@model StreamingService.DTO.ViewModels.VideoCardViewModel
+
+@{
+    Layout = "~/Views/Shared/Layouts/_LayoutVideo.cshtml";
+
+    ViewData["IsMiniSidebar"] = true;
+    ViewData["FullscreenBackdrop"] = Model.BackdropUrl;
+
+    var refererUrl = Context.Request.Headers["Referer"].ToString();
+    if (!string.IsNullOrEmpty(refererUrl))
+    {
+        try
+        {
+            var uri = new Uri(refererUrl);
+            ViewData["ActiveMenu"] = uri.AbsolutePath;
+        } 
+        catch{}
+    }
+
+    var heartColorClass = Model.IsFavorite ? "text-[#FF0000]" : "text-white";
+    var btnTitle = Model.IsFavorite ? "Видалити з улюбленого" : "Додати до улюбленого";
+
+    bool isAvailable = Model.ReleaseDate == null || Model.ReleaseDate <= DateTime.Now;
+}
+
+<section class="relative w-full h-full flex flex-col">
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 w-full">
+        <div class="lg:col-span-7 flex flex-col pt-8 pl-0 -ml-12 lg:-ml-24">
+            
+            <h1 class="text-5xl md:text-7xl lg:text-[90px] xl:text-[110px] font-extrabold text-white leading-none tracking-tight break-words">
+				@Model.Title
+            </h1>
+
+            @* --- Теги жанрів --- *@
+            <div class="flex items-center gap-2.5 mt-5">
+                @{
+                    var tagClasses = "shadow-glass h-9.5 px-4.5 rounded-full bg-[#22223A]/20 backdrop-blur-md text-white font-bold text-sm flex items-center justify-center whitespace-nowrap transition-colors hover:bg-[#22223A]/40";
+                }
+                @foreach (var genre in Model.Genres)
+                {
+                    <span class="@tagClasses capitalize">@genre</span>
+                }
+            </div>
+            <div class="flex items-center gap-3 mt-5 text-white font-medium">
+                <span class="@tagClasses capitalize">@Model.AgeRating</span>
+                <span class=""> @Model.VideoType.GetSingularName()</span>
+                <span class=""> • @Model.Year</span>
+                @if (isAvailable)
+                {
+                    <span class="flex items-center gap-1 text-[#DCF260]">
+                        <img src="/images/ui/symbols/star.svg" alt="Rating" class="w-5 h-5" />
+                        @Model.Rating
+                    </span>
+                }
+                else
+                {
+                    <span>NR</span>
+                }
+            </div>
+
+            <div class="mt-5 max-w-3xl">
+                <h3 class="text-white font-bold text-lg mb-4 uppercase">Про @Model.VideoType.GetSingularName()</h3>
+                <p class="text-white/80 text-lg leading-relaxed">@Model.Description</p>
+            </div>
+
+            <div class="flex items-center gap-10 mt-5">
+                <div>
+                    <a asp-action="Play" asp-route-id="@Model.Id" 
+                    id="play-video-btn" 
+                    class="shadow-glass flex-shrink-0 w-full h-16 rounded-full p-5 bg-white/10 backdrop-blur-md flex items-center justify-center gap-4 transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto">
+						<svg class="w-8 h-8 text-white fill-current -translate-x-1" viewBox="0 0 24 24">
+							<path d="M8 5v14l11-7z" />
+						</svg>
+                        <span class="items-center text-white font-medium">
+                            @(isAvailable ? "Дивитися зараз" : "Дивитись трейлер")
+                        </span>
+					</a>
+                </div>
+                @if (isAvailable)
+                {
+                    <div class="flex items-center gap-3">
+                        <button class="js-favorite-btn shadow-glass w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110  @heartColorClass hover:text-[#FF0000] cursor-pointer"
+                                data-video-id="@Model.Id"
+                                data-is-favorite="@Model.IsFavorite.ToString().ToLower()"
+                                title="@btnTitle">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+                            </svg>
+                        </button>
+                        <button class="js-share-btn group shadow-glass w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 cursor-pointer"
+                                data-video-id="@Model.Id">
+                            <div class="w-7 h-7 bg-white group-hover:bg-[#DCF260] transition-colors"
+                                 style="-webkit-mask-image: url('/images/ui/share.png'); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; mask-image: url('/images/ui/share.png'); mask-size: contain; mask-repeat: no-repeat; mask-position: center;">
+                            </div>
+                        </button>
+                        <button class="js-download-btn group shadow-glass w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 cursor-pointer"
+                                data-video-id="@Model.Id">
+                            <div class="w-7 h-7 bg-white group-hover:bg-[#DCF260] transition-colors"
+                                 style="-webkit-mask-image: url('/images/ui/download.png'); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; mask-image: url('/images/ui/download.png'); mask-size: contain; mask-repeat: no-repeat; mask-position: center;">
+                            </div>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 flex flex-col pt-10 pr-6 md:pr-12">
+
+            <div class="mt-4">
+                <h3 class="text-white font-bold text-lg mb-4 uppercase">Актори у сцені</h3>
+                <div class="flex items-center gap-4 w-full">
+
+                    <div class="shrink-0">
+                        <partial name="Partials/UI/_NavButton" model='new { Id = "video-actors-left", IsLeft = true, Theme = "modal" }' />
+                    </div>
+
+                    <div id="video-actors-container" 
+                         class="grid-slider-4 h-36 overflow-x-auto flex-1 scroll-smooth snap-x snap-mandatory custom-scrollbar-hide">
+                        @foreach (var actor in Model.Actors)
+                        {
+                            <div class="h-full">
+                                <partial name="Partials/Modal/_ActorCard" model="actor" />
+                            </div>
+                        }
+                    </div>
+
+                    <div class="shrink-0">
+                        <partial name="Partials/UI/_NavButton" model='new { Id = "video-actors-right", IsLeft = false, Theme = "modal" }' />
+                    </div>
+                </div>
+            </div>
+
+            @if (isAvailable && Model.Scenes != null && Model.Scenes.Any())
+            {
+                <div class="mt-8">
+                    <h3 class="text-white font-bold text-lg mb-4 uppercase">Найкращі сцени</h3>
+                    <div class="flex items-center gap-2 w-full">
+                        <div class="shrink-0">
+                            <partial name="Partials/UI/_NavButton" model='new { Id = "video-scenes-left", IsLeft = true, Theme = "modal" }' />
+                        </div>
+
+                        <div id="video-scenes-container"
+                             class="flex gap-3 overflow-x-auto flex-1 min-w-0 scroll-smooth snap-x snap-mandatory custom-scrollbar-hide h-32 py-4">
+                            @foreach (var scene in Model.Scenes)
+                            {
+                                <div class="h-full w-[calc((100%-2rem)/3)] shrink-0">
+                                    <partial name="Partials/Modal/_SceneCard" model="scene" />
+                                </div>
+                            }
+                        </div>
+
+                        <div class="shrink-0">
+                            <partial name="Partials/UI/_NavButton" model='new { Id = "video-scenes-right", IsLeft = false, Theme = "modal" }' />
+                        </div>
+                    </div>
+                </div>
+            }
+            
+
+        </div>
+        
+    </div>
+
+    <div id="recommended-videos-container" 
+         class="fixed bottom-0 left-0 w-screen z-50 pb-6 pt-20 px-10 bg-gradient-to-t from-[#22223A] via-[#22223A]/90 to-transparent opacity-0 translate-y-full transition-all duration-700 ease-in-out">
+        <h2 class="font-bold text-3xl leading-none text-white mb-6">Також дивляться</h2>
+        <div id="recommended-slider" class="flex items-center h-[230px] gap-7 overflow-x-auto custom-scrollbar-hide">
+             
+             @if(ViewBag.RecommendedVideos != null)
+             {
+                var recommendedVideos = ViewBag.RecommendedVideos as IEnumerable<StreamingService.DTO.ViewModels.VideoCardViewModel>;
+                if (recommendedVideos != null)
+                {
+                    foreach (var video in recommendedVideos)
+                    {
+                        <div class="recommended-card shrink-0 w-[162px] h-[187px] rounded-lg transition-all duration-300 cursor-pointer"
+                              data-video-id="@video.Id">
+                        <img src="@video.PosterUrl"
+                              alt="@video.Title" 
+                              class="w-full h-full object-cover rounded-lg shadow-lg">
+                        </div>
+                    }
+			    }
+             }
+         </div>
+              
+    </div>
+
+</section>
+
+@section Scripts {
+    <script src="~/js/video-file-info.js" asp-append-version="true"></script>
+}
