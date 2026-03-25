@@ -58,7 +58,7 @@ namespace StreamingService.Controllers
             var questions = FaqItem.GetQuestions();
             var topMovies = TopMovieSeeder.Seed();
 
-            var model = new HomePageViewModel
+            var model = new LandingPageViewModel
             {
                 PricingTiers = plans,
                 Studios = studios,
