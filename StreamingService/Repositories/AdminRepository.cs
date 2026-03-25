@@ -1,5 +1,6 @@
 ﻿//using Microsoft.EntityFrameworkCore;
 //using StreamingService.Data;
+//using StreamingService.DTO.ViewModels;
 //using StreamingService.Models;
 
 //namespace StreamingService.Repositories
@@ -17,7 +18,7 @@
 //        {
 //            var totalVideos = await _context.Videos.CountAsync();
 //            var totalUsers = await _context.UserProfiles.CountAsync();
-//            var totalSubscriptions = await _context.UserSubscriptions
+//            var totalSubscriptions = await _context.UsersSubscriptions
 //                .Where(s => s.Status == "Active")
 //                .CountAsync();
 
@@ -161,7 +162,6 @@
 //            {
 //                Id = video.Id,
 //                AgeRating = video.AgeRating ?? "12+",
-//                TrailerUrl = video.TrailerUrl,
 //                TrailerDuration = video.TrailerDuration,
 //                Translations = video.Translations.Select(t => new VideoTranslationViewModel
 //                {
@@ -213,7 +213,6 @@
 //            if (video == null) return;
 
 //            video.AgeRating = model.AgeRating;
-//            video.TrailerUrl = model.TrailerUrl;
 //            video.TrailerDuration = model.TrailerDuration;
 
 //            foreach (var translation in model.Translations)
@@ -237,10 +236,10 @@
 //                }
 //            }
 
-//            _context.GenreVideos.RemoveRange(video.GenreVideos);
+//            _context.GenresVideos.RemoveRange(video.GenreVideos);
 //            foreach (var genreId in model.SelectedGenreIds)
 //            {
-//                _context.GenreVideos.Add(new GenreVideo
+//                _context.GenresVideos.Add(new GenreVideo
 //                {
 //                    VideoId = id,
 //                    GenreId = genreId
@@ -340,7 +339,7 @@
 
 //            foreach (var translation in model.Translations)
 //            {
-//                _context.GenreTranslations.Add(new GenreTranslation
+//                _context.GenresTranslations.Add(new GenreTranslation
 //                {
 //                    GenreId = genre.Id,
 //                    LocaleCode = translation.LocaleCode,
@@ -368,12 +367,12 @@
 //                {
 //                    Id = p.Id,
 //                    Name = p.PersonTranslations.Select(pt => pt.Name).FirstOrDefault() ?? "Невідомо",
-//                    BirthDate = p.BirthDate,
+//                    BirthDate = p.Birthday,
 //                    PhotoUrl = p.Images
 //                        .Where(i => i.Type == "profile")
 //                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
 //                        .FirstOrDefault() ?? "/images/placeholder-actor.jpg",
-//                    MoviesCount = p.PersonVideos.Count()
+//                    MoviesCount = p.PersonsVideos.Count()
 //                })
 //                .ToListAsync();
 //        }
@@ -394,7 +393,7 @@
 //        {
 //            var person = new Person
 //            {
-//                BirthDate = model.BirthDate
+//                Birthday = model.BirthDate
 //            };
 
 //            _context.Persons.Add(person);
@@ -402,7 +401,7 @@
 
 //            foreach (var translation in model.Translations)
 //            {
-//                _context.PersonTranslations.Add(new PersonTranslation
+//                _context.PersonsTranslations.Add(new PersonTranslation
 //                {
 //                    PersonId = person.Id,
 //                    LocaleCode = translation.LocaleCode,
@@ -415,13 +414,13 @@
 
 //        public async Task SavePersonImagePathAsync(int personId, string container, string path, string type)
 //        {
-//            var oldImages = await _context.PersonsImages
+//            var oldImages = await _context.PersonImages
 //                .Where(i => i.PersonId == personId && i.Type == type)
 //                .ToListAsync();
 
-//            _context.PersonsImages.RemoveRange(oldImages);
+//            _context.PersonImages.RemoveRange(oldImages);
 
-//            _context.PersonsImages.Add(new PersonImage
+//            _context.PersonImages.Add(new PersonImage
 //            {
 //                PersonId = personId,
 //                BlobContainer = container,
