@@ -25,14 +25,13 @@
 }
 
 <section class="relative w-full h-full flex flex-col">
-    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 w-full">
+    <div class="relative z-50 grid grid-cols-1 lg:grid-cols-12 gap-10 w-full">
         <div class="lg:col-span-7 flex flex-col pt-8 pl-0 -ml-12 lg:-ml-24">
             
             <h1 class="text-5xl md:text-7xl lg:text-[90px] xl:text-[110px] font-extrabold text-white leading-none tracking-tight break-words">
 				@Model.Title
             </h1>
 
-            @* --- Теги жанрів --- *@
             <div class="flex items-center gap-2.5 mt-5">
                 @{
                     var tagClasses = "shadow-glass h-9.5 px-4.5 rounded-full bg-[#22223A]/20 backdrop-blur-md text-white font-bold text-sm flex items-center justify-center whitespace-nowrap transition-colors hover:bg-[#22223A]/40";
@@ -42,6 +41,7 @@
                     <span class="@tagClasses capitalize">@genre</span>
                 }
             </div>
+
             <div class="flex items-center gap-3 mt-5 text-white font-medium">
                 <span class="@tagClasses capitalize">@Model.AgeRating</span>
                 <span class=""> @Model.VideoType.GetSingularName()</span>
@@ -67,8 +67,8 @@
             <div class="flex items-center gap-10 mt-5">
                 <div>
                     <a asp-action="Play" asp-route-id="@Model.Id" 
-                    id="play-video-btn" 
-                    class="shadow-glass flex-shrink-0 w-full h-16 rounded-full p-5 bg-white/10 backdrop-blur-md flex items-center justify-center gap-4 transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto">
+                       id="play-video-btn" 
+                       class="shadow-glass flex-shrink-0 w-full h-16 rounded-full p-5 bg-white/10 backdrop-blur-md flex items-center justify-center gap-4 transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto">
 						<svg class="w-8 h-8 text-white fill-current -translate-x-1" viewBox="0 0 24 24">
 							<path d="M8 5v14l11-7z" />
 						</svg>

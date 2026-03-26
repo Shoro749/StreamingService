@@ -76,6 +76,7 @@ namespace StreamingService.Controllers
                 .ToList();
 
             var postponedVideos = MockUpcomingService.GetUpcomingReleases()
+                .Concat(MockVideoService.GetAllVideos())
                 .Where(video => video.IsSavedForLater)
                 .ToList();
 

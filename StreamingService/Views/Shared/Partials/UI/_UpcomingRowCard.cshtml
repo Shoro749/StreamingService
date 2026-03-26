@@ -36,7 +36,9 @@
         </p>
     </div>
 
-    <button class="shadow-glass flex-shrink-0 w-14 h-14 rounded-full @btnBgClass flex items-center justify-center hover:bg-white/20 transition-all ml-7 group/btn"
+    <button class="js-save-for-later-btn shadow-glass flex-shrink-0 w-14 h-14 rounded-full @btnBgClass flex items-center justify-center hover:bg-white/20 transition-all ml-7 group/btn"
+            data-video-id = "@Model.Id"
+            data-is-saved = "@Model.IsSavedForLater.ToString().ToLower()"
             title="@btnTitle">
 
         <div class="w-7 h-7 @iconColorClass transition-colors"
