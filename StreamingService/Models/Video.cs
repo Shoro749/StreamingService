@@ -18,6 +18,7 @@ public partial class Video
 
     [ForeignKey(nameof(SubscriptionLevel))]
     public int MinAccess { get; set; }
+    public string? VideoType { get; set; }
     [Required]
     public required SubscriptionLevel SubscriptionLevel { get; set; }
 

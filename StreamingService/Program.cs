@@ -38,6 +38,8 @@ namespace StreamingService
             builder.Services.AddScoped<SubscriptionRepository>();
             //builder.Services.AddScoped<AdminRepository>();
             //builder.Services.AddScoped<AdminService>();
+            builder.Services.AddScoped<VideoDetailsRepository>();
+            builder.Services.AddScoped<VideoDetailsService>();
             builder.Services.AddAppRepositories();
 
             builder.Services.AddDataProtection()

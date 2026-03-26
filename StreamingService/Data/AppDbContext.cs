@@ -251,6 +251,12 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Video>(entity =>
         {
             entity.HasKey(e => e.Id);
+
+            //entity.Property(e => e.VideoType).HasColumnName("video_type").HasMaxLength(20);
+            //entity.Property(e => e.VideoType)
+            //  .HasColumnName("video_type")
+            //  .HasMaxLength(20)
+            //  .HasConversion<string>();
         });
 
         modelBuilder.Entity<VideoEpisode>(entity =>

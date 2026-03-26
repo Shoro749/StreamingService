@@ -28,4 +28,5 @@ public partial class Person
 
     public List<PersonTranslation> PersonTranslations { get; set; } = new();
     public List<PersonVideo> PersonsVideos { get; set; } = new();
+    public virtual ICollection<PersonImage> Images { get; set; } = new List<PersonImage>();
 }
