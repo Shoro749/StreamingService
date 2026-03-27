@@ -1,21 +1,25 @@
 ﻿document.addEventListener('click', async (e) => {
     const saveForLaterBtn = e.target.closest('.js-save-for-later-btn');
+
     if (!saveForLaterBtn) return;
 
+    if (saveForLaterBtn.dataset.isFavorite === 'true') {
+        alert('Не можна любити в два рази сильніше!');
+        return;
+    }
+    
     const videoId = saveForLaterBtn.dataset.videoId;
     const isCurrentlySaved = saveForLaterBtn.dataset.isSaved === 'true';
-
-    // ТИМЧАСОВО ЗАКОМЕНТОВАНО ДЛЯ ТЕСТУВАННЯ ВІЗУАЛУ
     
     try {
-        const response = await fetch('/api/saved/toggle', { //// випадкове посилання
+        const response = await fetch('/api/saved/toggle', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ videoId })
         });
 
         if (response.ok) {
-            const result = await response.json(); ////статус з бази
+            const result = await response.json(); 
         }
     } catch (error) {
         console.error('Помилка при зміні статусу:', error);

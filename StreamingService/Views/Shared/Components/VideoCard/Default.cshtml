@@ -75,14 +75,17 @@
                 { "data-genres", Model.Genres.FirstOrDefault() ?? "" },
                 { "data-trailer", Model.TrailerUrl },
                 { "data-trailer-duration", Model.TrailerDuration },
-                { "data-video-type", Model.VideoType.GetSingularName() }
+                { "data-video-type", Model.VideoType.GetSingularName() },
+                { "data-is-upcoming", Model.IsSavedForLater.ToString().ToLower() },
+                { "data-is-saved", Model.IsSavedForLater.ToString().ToLower() },
+                { "data-is-favorite", Model.IsFavorite.ToString().ToLower() }
             }
             })" />
   
         </div>
         
     </div>
-    @* --- ПРИХОВАНИЙ СПИСОК АКТОРІВ (для модального вікна) --- *@
+
     <div id="actors-source-@Model.Id" class="hidden">
         @if (Model.Actors != null)
         {
@@ -93,7 +96,6 @@
         }
     </div>
 
-    @* --- ПРИХОВАНИЙ СПИСОК СЦЕН (для модального вікна) --- *@
     <div id="scenes-source-@Model.Id" class="hidden">
         @if (Model.Scenes != null)
         {

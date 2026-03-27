@@ -49,7 +49,7 @@
                 <div class="flex flex-col gap-4">
                     @foreach (var video in group.Value)
                     {
-                        <partial name="Partials/UI/_UpcomingRowCard" model="video" />
+                        <partial name="Partials/UI/_UpcomingRowCard" model="video" view-data='new ViewDataDictionary(ViewData) { { "IsUpcoming", true } }' />
                     }
                 </div>
             </div>
