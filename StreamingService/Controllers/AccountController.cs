@@ -48,9 +48,9 @@ namespace StreamingService.Controllers
         [HttpGet]
         public async Task<IActionResult> Subscription()
         {
-            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (!pendingUserId.HasValue)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
                 return RedirectToAction("Register", "Account");
             }
@@ -59,7 +59,7 @@ namespace StreamingService.Controllers
 
             var model = new SubscriptionViewModel
             {
-                UserId = pendingUserId.Value,
+                UserId = userId,
                 Plans = plans.Select(p => new SubscriptionPlanDto
                 {
                     Id = p.Id,
@@ -73,19 +73,13 @@ namespace StreamingService.Controllers
             };
 
             return View(model);
-            //var model = new SubscriptionViewModel
-            //{
-            //    BackgroundText = AuthTexts.SubscriptionBackground,
-            //    Plans = _pricingService.GetPricingPlans()
-            //};
-            //return View(model);
         }
         [HttpGet]
         public async Task<IActionResult> Agreement(int planId)
         {
-            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (!pendingUserId.HasValue)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
                 return RedirectToAction("Register", "Account");
             }
@@ -112,10 +106,10 @@ namespace StreamingService.Controllers
         [HttpGet]
         public async Task<IActionResult> SubscriptionConfirmation()
         {
-            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var selectedPlanId = HttpContext.Session.GetInt32("SelectedPlanId");
 
-            if (!pendingUserId.HasValue || !selectedPlanId.HasValue)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId) || !selectedPlanId.HasValue)
             {
                 return RedirectToAction("Index");
             }
@@ -186,6 +180,28 @@ namespace StreamingService.Controllers
             var createdUser = await _profileService.GetByEmailAsync(model.Email);
 
             HttpContext.Session.SetInt32("PendingUserId", createdUser.Id);
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, createdUser.Id.ToString()),
+                new Claim(ClaimTypes.Name, createdUser.Username),
+                new Claim(ClaimTypes.Email, createdUser.Email),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                claimsPrincipal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = false,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(12)
+                }
+            );
 
             return RedirectToAction("Subscription", "Account");
         }

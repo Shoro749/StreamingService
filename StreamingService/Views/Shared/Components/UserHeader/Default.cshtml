@@ -1,0 +1,64 @@
+﻿@model StreamingService.DTO.ViewModels.UserProfileHeaderViewModel
+
+@{
+    var subscriptionColorClass = Model?.SubscriptionLevel switch
+    {
+        "Premium" => "text-[#9333EA]",      // Фіолетовий
+        "Standard" => "text-[#DCF260]",     // Салатовий
+        "Basic" => "text-white",            // Білий
+        _ => "text-white/50"                // Сірий для Free
+    };
+
+    var subscriptionText = Model?.SubscriptionLevel switch
+    {
+        "Premium" => "Преміум",
+        "Standard" => "Стандарт",
+        "Basic" => "Базовий",
+        _ => "Безкоштовно"
+    };
+}
+
+<div class="flex items-center gap-4 ml-auto">
+    @if (Model != null)
+    {
+        <button class="shadow-glass w-16 h-16 bg-white/10 rounded-xl backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all relative">
+            <img src="/images/ui/symbols/bell.svg" class="w-6 h-6 opacity-70" alt="Notification">
+            @* Опціонально: Індикатор нових сповіщень *@
+            @* <span class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full"></span> *@
+        </button>
+
+        <div class="shadow-glass flex items-center gap-6 px-5 w-auto md:max-w-56 h-16 bg-white/10 rounded-xl backdrop-blur-sm cursor-pointer hover:bg-white/20 transition-all group">
+
+            <img src="@Model.AvatarUrl"
+                 class="w-9 h-9 rounded-xl object-cover flex-shrink-0"
+                 alt="@Model.DisplayName"
+                 onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(Model.DisplayName)&background=random&color=fff&size=128'">
+
+            <div class="hidden md:flex flex-col overflow-hidden">
+                <span class="font-medium text-lg leading-tight text-white truncate"
+                      title="@Model.DisplayName">
+                    @Model.DisplayName
+                </span>
+                <span class="font-semibold text-base leading-tight @subscriptionColorClass">
+                    @subscriptionText
+                </span>
+            </div>
+
+            <svg class="hidden md:block w-3 h-2 text-white ml-auto transition-transform group-hover:rotate-180 flex-shrink-0"
+                 viewBox="0 0 13 7" fill="none">
+                <path d="M1 1L6.5 6L12 1"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round" />
+            </svg>
+        </div>
+    }
+    else
+    {
+        <a asp-controller="Account" asp-action="Login"
+           class="shadow-glass px-6 h-16 bg-white/10 rounded-xl backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all">
+            <span class="text-white font-medium">Увійти</span>
+        </a>
+    }
+</div>

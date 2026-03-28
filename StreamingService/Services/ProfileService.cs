@@ -86,5 +86,10 @@ namespace StreamingService.Services
         {
             return await _profileRepository.GetDataAsync(userId);
         }
+
+        public async Task<UserProfileHeaderViewModel?> GetUserHeaderInfoAsync(int userId)
+        {
+            return await _profileRepository.GetUserHeaderInfoAsync(userId);
+        }
     }
 }

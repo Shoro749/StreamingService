@@ -63,7 +63,9 @@ namespace StreamingService.Repositories
 
                 PosterUrl = video.Images
                     .Where(i => i.Type == "poster")
-                    .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                    .Select(i => i.BlobContainer == "external"
+                        ? i.BlobPath
+                        : "/" + i.BlobContainer + "/" + i.BlobPath)
                     .FirstOrDefault()
                     ?? "/images/placeholder-poster.jpg",
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
+using StreamingService.DTO.ViewModels;
 using StreamingService.Models;
 
 namespace StreamingService.Repositories
@@ -28,6 +29,34 @@ namespace StreamingService.Repositories
 
             return await _context.UserProfiles
                 .FirstOrDefaultAsync(p => p.Username.ToLower() == normalizedUsername);
+        }
+
+        public async Task<UserProfileHeaderViewModel?> GetUserHeaderInfoAsync(int userId)
+        {
+            var user = await _context.UserProfiles
+                .Where(u => u.Id == userId)
+                .Select(u => new UserProfileHeaderViewModel
+                {
+                    Username = u.Username,
+                    Email = u.Email,
+                    AvatarUrl = u.AvatarUrl ?? GenerateDefaultAvatar(u.Username, u.Email),
+                    SubscriptionLevel = u.UserSubscriptions
+                        .Where(s => s.Status == "Active" && s.SubscriptionEnd > DateTime.UtcNow)
+                        .OrderByDescending(s => s.SubscriptionEnd)
+                        .Select(s => s.SubscriptionPlan.SubscriptionLevel.Code)
+                        .FirstOrDefault() ?? "Free",
+                    HasActiveSubscription = u.UserSubscriptions
+                        .Any(s => s.Status == "Active" && s.SubscriptionEnd > DateTime.UtcNow)
+                })
+                .FirstOrDefaultAsync();
+
+            return user;
+        }
+
+        private static string GenerateDefaultAvatar(string username, string email)
+        {
+            var name = string.IsNullOrEmpty(username) ? email : username;
+            return $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(name)}&background=random&color=fff&size=128";
         }
     }
 }

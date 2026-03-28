@@ -26,5 +26,7 @@ namespace StreamingService.Models
 
         [StringLength(128), Column("google_id")]
         public string? GoogleId { get; set; }
+
+        public virtual ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
     }
 }
