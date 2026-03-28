@@ -11,6 +11,7 @@ namespace StreamingService.DTO.ViewModels
         public double Rating { get; set; }
         public int Year { get; set; } = 0;
         public DateTime? ReleaseDate { get; set; }
+        public bool IsUpcoming => ReleaseDate.HasValue && ReleaseDate.Value > DateTime.Now;
         public string Description { get; set; } = "";
         public string Duration { get; set; } = "";
         public string AgeRating { get; set; } = "";

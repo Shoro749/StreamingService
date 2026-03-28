@@ -43,7 +43,7 @@
             <div class="flex items-center gap-4 font-montserrat font-semibold text-xl leading-none text-white/50">
                 <span>@Model.Year</span>
                 
-                @if (Model.IsSavedForLater)
+                @if (Model.IsUpcoming)
                 {
                     <span class="flex items-center gap-1 text-white/70 text-sm font-medium">NR</span>
                 }
@@ -76,7 +76,7 @@
                 { "data-trailer", Model.TrailerUrl },
                 { "data-trailer-duration", Model.TrailerDuration },
                 { "data-video-type", Model.VideoType.GetSingularName() },
-                { "data-is-upcoming", Model.IsSavedForLater.ToString().ToLower() },
+                { "data-is-upcoming", Model.IsUpcoming.ToString().ToLower() },
                 { "data-is-saved", Model.IsSavedForLater.ToString().ToLower() },
                 { "data-is-favorite", Model.IsFavorite.ToString().ToLower() }
             }
