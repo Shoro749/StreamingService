@@ -13,30 +13,83 @@ namespace StreamingService.Services
             _profileRepository = profileRepository;
         }
 
-        public async Task<bool> CreateUserProfileAsync(UserProfileViewModel model)
+        public async Task<UserProfile?> GetByGoogleIdAsync(string googleId)
         {
-            var existingProfile = await _profileRepository.GetByUsernameAsync(model.Username);
+            return await _profileRepository.GetByGoogleIdAsync(googleId);
+        }
 
-            if (existingProfile != null)
+        public async Task<UserProfile?> GetByEmailAsync(string email)
+        {
+            return await _profileRepository.GetByEmailAsync(email);
+        }
+
+        public async Task<bool> HandleGoogleAuthAsync(string googleId, string email, string name, string picture)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(googleId) || string.IsNullOrEmpty(email))
+                {
+                    return false;
+                }
+
+                var user = await _profileRepository.GetByGoogleIdAsync(googleId);
+
+                if (user == null)
+                {
+                    user = await _profileRepository.GetByEmailAsync(email);
+                }
+
+                if (user == null)
+                {
+                    var newProfile = new UserProfile
+                    {
+                        GoogleId = googleId,
+                        Email = email,
+                        Username = name ?? "Google User",
+                        AvatarUrl = picture,
+                    };
+
+                    var result = await _profileRepository.AddDataAsync(newProfile);
+                    return result;
+                }
+
+                if (string.IsNullOrEmpty(user.GoogleId))
+                {
+                    user.GoogleId = googleId;
+                }
+
+                user.AvatarUrl = picture;
+                user.Username = name ?? user.Username;
+
+                var updateResult = await _profileRepository.UpdateDataAsync(user);
+                return updateResult;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"HandleGoogleAuthAsync Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> CreateUserProfileAsync(UserProfile model)
+        {
+            var existingEmail = await _profileRepository.GetByEmailAsync(model.Email);
+            if (existingEmail != null)
             {
                 return false;
             }
 
-            var newProfile = new UserProfile
-            {
-                Username = model.Username,
-                Birthday = model.Birthday,
-                AvatarUrl = model.AvatarUrl,
-            };
+            return await _profileRepository.AddDataAsync(model);
+        }
 
-            var success = await _profileRepository.AddDataAsync(newProfile);
+        public async Task<UserProfile?> GetByIdAsync(int userId)
+        {
+            return await _profileRepository.GetDataAsync(userId);
+        }
 
-            if (success)
-            {
-                return true;
-            }
-
-            return false;
+        public async Task<UserProfileHeaderViewModel?> GetUserHeaderInfoAsync(int userId)
+        {
+            return await _profileRepository.GetUserHeaderInfoAsync(userId);
         }
     }
 }

@@ -94,19 +94,24 @@
 
             <div id="tab-content-trailer" class="hidden absolute inset-0 w-full h-full flex items-center justify-center z-40">
 
-                <button id="play-trailer-btn" class="shadow-glass flex-shrink-0 w-20 h-20 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto">
+                <button id="play-trailer-btn" class="shadow-glass flex-shrink-0 w-20 h-20 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center transition-transform hover:scale-110 shadow-[0_0_20px_rgba(234,199,27,0.4)] group cursor-pointer pointer-events-auto z-50">
                     <svg class="w-12 h-12 text-white fill-current -translate-x-0.25" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                     </svg>
                 </button>
 
+                <iframe id="youtube-trailer-player"
+                        class="hidden absolute inset-0 w-full h-full z-40"
+                        src=""
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
             </div>
 
         </div>
 
-        
-
-        <div class="absolute bottom-0 right-0 w-[55%] px-6 pb-2 z-30 pointer-events-none">
+        <div id="modal-tabs-container" class="absolute bottom-0 right-0 w-[55%] px-6 pb-2 z-30 pointer-events-none">
             <div class="relative w-full h-full flex justify-center items-end pointer-events-auto">
                 <div class="flex items-end gap-10 mb-1">
                     <button id="tab-btn-info" class="group flex flex-col items-center gap-2 cursor-pointer pointer-events-auto">

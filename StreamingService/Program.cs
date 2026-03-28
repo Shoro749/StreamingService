@@ -1,10 +1,13 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.DataProtection;
 using StreamingService.Data;
 using StreamingService.Data.Seeders;
+using StreamingService.DTO.ViewModels;
+using StreamingService.Models;
 using StreamingService.Repositories;
 using StreamingService.Services;
+using System.Security.Claims;
 
 namespace StreamingService
 {
@@ -18,6 +21,8 @@ namespace StreamingService
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddAppDbContext(builder.Configuration);
+            builder.Services.AddScoped<VideoRepository>();
+            builder.Services.AddScoped<VideoService>();
             builder.Services.AddScoped<MoviesRepository>();
             builder.Services.AddScoped<MoviesService>();
             builder.Services.AddScoped<FavoritesRepository>();
@@ -29,7 +34,27 @@ namespace StreamingService
             builder.Services.AddScoped<VideoStatsRepository>();
             builder.Services.AddScoped<HistoryRepository>();
             builder.Services.AddScoped<HistoryService>();
+            builder.Services.AddScoped<SubscriptionService>();
+            builder.Services.AddScoped<SubscriptionRepository>();
+            //builder.Services.AddScoped<AdminRepository>();
+            //builder.Services.AddScoped<AdminService>();
+            builder.Services.AddScoped<VideoDetailsRepository>();
+            builder.Services.AddScoped<VideoDetailsService>();
             builder.Services.AddAppRepositories();
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "keys")))
+                .SetApplicationName("StreamingService");
+
+            builder.Services.AddDistributedMemoryCache(); // Для збереження сесій у пам'яті
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Час життя сесії
+                options.Cookie.HttpOnly = true; // Захист від XSS
+                options.Cookie.IsEssential = true; // Обов'язковий cookie
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
 
             builder.Services.AddAuthentication(options =>
             {
@@ -37,12 +62,75 @@ namespace StreamingService
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Profile/Logout";
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            })
             .AddGoogle(options =>
             {
                 options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                //options.CallbackPath = "/Profile/GoogleCallback";
+                options.CallbackPath = "/signin-google";
+                options.SaveTokens = true;
+
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+                options.Events.OnCreatingTicket = async context =>
+                {
+                    try
+                    {
+                        var profileService = context.HttpContext.RequestServices.GetRequiredService<ProfileService>();
+
+                        var googleId = context.Identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        var email = context.Identity.FindFirst(ClaimTypes.Email)?.Value;
+                        var name = context.Identity.FindFirst(ClaimTypes.Name)?.Value;
+                        var picture = context.User.GetProperty("picture").GetString();
+
+                        var success = await profileService.HandleGoogleAuthAsync(googleId, email, name, picture);
+
+                        if (!success)
+                        {
+                            context.Fail("Не вдалося створити або оновити користувача");
+                            return;
+                        }
+
+                        var user = await profileService.GetByGoogleIdAsync(googleId);
+                        if (user != null)
+                        {
+                            var identity = (ClaimsIdentity)context.Principal.Identity;
+
+                            var existingClaim = identity.FindFirst(ClaimTypes.NameIdentifier);
+                            if (existingClaim != null)
+                            {
+                                identity.RemoveClaim(existingClaim);
+                            }
+
+                            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+                            identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+                            identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
+
+                            if (!string.IsNullOrEmpty(picture))
+                            {
+                                identity.AddClaim(new Claim("avatar_url", picture));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Google Auth Error: {ex.Message}");
+                        context.Fail(ex);
+                    }
+                };
             });
+
+            //builder.Services.AddEndpointsApiExplorer();
+            //builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -67,8 +155,15 @@ namespace StreamingService
 
             app.UseRouting();
 
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //if (app.Environment.IsDevelopment())
+            //{
+            //    app.UseSwagger();
+            //    app.UseSwaggerUI();
+            //}
 
             app.MapControllerRoute(
                 name: "default",

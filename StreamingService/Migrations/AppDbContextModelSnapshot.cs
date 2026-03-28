@@ -103,6 +103,9 @@ namespace StreamingService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CommentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("create_at");
@@ -130,6 +133,8 @@ namespace StreamingService.Migrations
                         .HasColumnName("video_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
 
                     b.HasIndex("ParentId");
 
@@ -277,6 +282,38 @@ namespace StreamingService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("persons");
+                });
+
+            modelBuilder.Entity("StreamingService.Models.PersonImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BlobContainer")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("blob_container");
+
+                    b.Property<string>("BlobPath")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("blob_path");
+
+                    b.Property<int?>("PersonId")
+                        .HasColumnType("int")
+                        .HasColumnName("person_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("persons_image");
                 });
 
             modelBuilder.Entity("StreamingService.Models.PersonRole", b =>
@@ -510,6 +547,22 @@ namespace StreamingService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("birthday");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("GoogleId")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("google_id");
+
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("password_hash");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -639,6 +692,9 @@ namespace StreamingService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AgeRating")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("MinAccess")
                         .HasColumnType("int");
 
@@ -647,6 +703,12 @@ namespace StreamingService.Migrations
 
                     b.Property<long>("RatingSum")
                         .HasColumnType("bigint");
+
+                    b.Property<int?>("TrailerDuration")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VideoType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -770,7 +832,7 @@ namespace StreamingService.Migrations
 
                     b.Property<int>("VideoEpisodeId")
                         .HasColumnType("int")
-                        .HasColumnName("video_episodes _id ");
+                        .HasColumnName("video_episodes_id ");
 
                     b.HasKey("Id");
 
@@ -987,6 +1049,10 @@ namespace StreamingService.Migrations
 
             modelBuilder.Entity("StreamingService.Models.Comment", b =>
                 {
+                    b.HasOne("StreamingService.Models.Comment", null)
+                        .WithMany("Children")
+                        .HasForeignKey("CommentId");
+
                     b.HasOne("StreamingService.Models.Comment", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId")
@@ -1027,6 +1093,15 @@ namespace StreamingService.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("StreamingService.Models.PersonImage", b =>
+                {
+                    b.HasOne("StreamingService.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId");
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("StreamingService.Models.PersonTranslation", b =>
                 {
                     b.HasOne("StreamingService.Models.Person", "Person")
@@ -1064,7 +1139,7 @@ namespace StreamingService.Migrations
             modelBuilder.Entity("StreamingService.Models.SubscriptionPlan", b =>
                 {
                     b.HasOne("StreamingService.Models.SubscriptionLevel", "SubscriptionLevel")
-                        .WithMany()
+                        .WithMany("SubscriptionPlans")
                         .HasForeignKey("SubscriptionLevelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1113,13 +1188,13 @@ namespace StreamingService.Migrations
             modelBuilder.Entity("StreamingService.Models.UserSubscription", b =>
                 {
                     b.HasOne("StreamingService.Models.Payment", "Payment")
-                        .WithMany()
+                        .WithMany("UserSubscriptions")
                         .HasForeignKey("PaymentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StreamingService.Models.SubscriptionPlan", "SubscriptionPlan")
-                        .WithMany()
+                        .WithMany("UserSubscriptions")
                         .HasForeignKey("SubscriptionPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1178,7 +1253,7 @@ namespace StreamingService.Migrations
             modelBuilder.Entity("StreamingService.Models.Video", b =>
                 {
                     b.HasOne("StreamingService.Models.SubscriptionLevel", "SubscriptionLevel")
-                        .WithMany()
+                        .WithMany("Videos")
                         .HasForeignKey("MinAccess")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1286,6 +1361,11 @@ namespace StreamingService.Migrations
                     b.Navigation("Video");
                 });
 
+            modelBuilder.Entity("StreamingService.Models.Comment", b =>
+                {
+                    b.Navigation("Children");
+                });
+
             modelBuilder.Entity("StreamingService.Models.Genre", b =>
                 {
                     b.Navigation("GenreTranslations");
@@ -1293,6 +1373,11 @@ namespace StreamingService.Migrations
                     b.Navigation("GenreVideos");
 
                     b.Navigation("Genres");
+                });
+
+            modelBuilder.Entity("StreamingService.Models.Payment", b =>
+                {
+                    b.Navigation("UserSubscriptions");
                 });
 
             modelBuilder.Entity("StreamingService.Models.Person", b =>
@@ -1305,6 +1390,18 @@ namespace StreamingService.Migrations
             modelBuilder.Entity("StreamingService.Models.PersonRole", b =>
                 {
                     b.Navigation("PersonsVideos");
+                });
+
+            modelBuilder.Entity("StreamingService.Models.SubscriptionLevel", b =>
+                {
+                    b.Navigation("SubscriptionPlans");
+
+                    b.Navigation("Videos");
+                });
+
+            modelBuilder.Entity("StreamingService.Models.SubscriptionPlan", b =>
+                {
+                    b.Navigation("UserSubscriptions");
                 });
 
             modelBuilder.Entity("StreamingService.Models.Video", b =>

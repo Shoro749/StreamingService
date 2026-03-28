@@ -2,7 +2,8 @@
 {
     public class AgreementViewModel
     {
-        public string SubscriptionPlan { get; set; } = "";
+        public string SubscriptionPlan { get; set; } = "PLAN";
+        public decimal SubscriptionPrice { get; set; }
         public string BackgroundText { get; set; } = "";
     }
 }

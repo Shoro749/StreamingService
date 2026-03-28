@@ -18,18 +18,15 @@ namespace StreamingService.Models
         [StringLength(2048), Column("avatar_url")]
         public string? AvatarUrl { get; set; }
 
-        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        [Required, StringLength(256), Column("email")]
+        public string Email { get; set; }
 
-        public ICollection<UserCommentLike> UserCommentLikes { get; set; } = new List<UserCommentLike>();
+        [StringLength(512), Column("password_hash")]
+        public string? PasswordHash { get; set; }
 
-        public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
+        [StringLength(128), Column("google_id")]
+        public string? GoogleId { get; set; }
 
-        public ICollection<UserVideoRating> UserVideoRatings { get; set;} = new List<UserVideoRating>();
-
-        public ICollection<UserVideoFavorite> UserVideoFavorites { get; set;} = new List<UserVideoFavorite>();
-
-        public ICollection<UserEpisodesHistory> UserEpisodesHistory { get; set;} = new List<UserEpisodesHistory>();
-
-        public ICollection<VideoEpisodeViewTimedLog> VideoEpisodeViewTimedLogs { get; set; } = new List<VideoEpisodeViewTimedLog>();
+        public virtual ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
     }
 }

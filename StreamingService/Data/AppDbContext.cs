@@ -30,6 +30,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Person> Persons { get; set; }
 
+    public virtual DbSet<PersonImage> PersonImages { get; set; }
+
     public virtual DbSet<PersonRole> PersonRoles { get; set; }
 
     public virtual DbSet<PersonTranslation> PersonsTranslations { get; set; }
@@ -249,6 +251,12 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Video>(entity =>
         {
             entity.HasKey(e => e.Id);
+
+            //entity.Property(e => e.VideoType).HasColumnName("video_type").HasMaxLength(20);
+            //entity.Property(e => e.VideoType)
+            //  .HasColumnName("video_type")
+            //  .HasMaxLength(20)
+            //  .HasConversion<string>();
         });
 
         modelBuilder.Entity<VideoEpisode>(entity =>

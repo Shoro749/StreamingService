@@ -15,15 +15,14 @@
             <h2 class="font-bold text-4xl md:text-5xl text-white">Крок 2 з 3</h2>
             <p class="font-montserrat font-normal text-lg md:text-xl leading-tight text-white">
                 Підтвердьте свою підписку <br />
-                @* !Потрібно вирішити як передавати вартість підписки!*@
-                <span>Lumeo @Model.SubscriptionPlan — _____ грн / місяць</span>
+                <span>Lumeo @Model.SubscriptionPlan — @Model.SubscriptionPrice грн / місяць</span>
             </p>
             <p class="font-montserrat font-normal text-lg text-[#D3D3D3] -mt-2">
                 Підписку можна скасувати будь-коли. Вона діє до кінця оплаченого періоду.
             </p>
         </div>
 
-        <form asp-controller="Account" asp-action="Success" method="get" class="flex flex-col gap-8">
+        <form asp-controller="Subscription" asp-action="ProcessPayment" method="post" class="flex flex-col gap-8">
 
             @* ПРИХОВАНЕ ПОЛЕ *@
             <input type="hidden" id="selectedPaymentMethod" name="PaymentMethod" value="Card" />
@@ -115,7 +114,9 @@
             </div>
 
             @* КНОПКА *@
-            <button type="submit" id="submitButton" class="w-full md:w-auto md:self-center h-14 bg-[#D0F260] text-[#22223A] font-black text-xl md:text-2xl uppercase rounded-xl shadow-[0px_2px_81px_rgba(208,242,96,0.2)] hover:bg-white hover:scale-105 transition-all duration-300 flex items-center justify-center cursor-pointer px-12">
+            <button type="submit"
+                    id="submitButton"
+                    class="w-full md:w-auto md:self-center h-14 bg-[#D0F260] text-[#22223A] font-black text-xl md:text-2xl uppercase rounded-xl shadow-[0px_2px_81px_rgba(208,242,96,0.2)] hover:bg-white hover:scale-105 transition-all duration-300 flex items-center justify-center cursor-pointer px-12">
                 Підтвердити та почати перегляд
             </button>
         </form>

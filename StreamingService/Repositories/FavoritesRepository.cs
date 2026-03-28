@@ -14,34 +14,46 @@ namespace StreamingService.Repositories
             _context = context;
         }
 
-        public async Task<List<VideoCardViewModel>> GetFavoritesByProfileIdAsync(int userProfileId, string locale = "uk")
+        public async Task<List<VideoCardViewModel>> GetFavoritesByProfileIdAsync(int userProfileId, string locale)
         {
             return await _context.UserVideoFavorites
                 .Where(f => f.UserProfileId == userProfileId)
                 .Select(f => new VideoCardViewModel
                 {
                     Id = f.Video.Id,
-
                     Title = f.Video.Translations
                         .Where(t => t.LocaleCode == locale)
                         .Select(t => t.Title)
-                        .FirstOrDefault(),
+                        .FirstOrDefault()
+                        ?? f.Video.Translations.Select(t => t.Title).FirstOrDefault()
+                        ?? "Без назви",
 
                     PosterUrl = f.Video.Images
                         .Where(i => i.Type == "poster")
-                        .Select(i => i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .FirstOrDefault()
+                        ?? "/images/placeholder-poster.jpg",
+
+                    Rating = f.Video.RatingCount == 0 ? 0 : (double)f.Video.RatingSum / f.Video.RatingCount,
+
+                    Year = f.Video.Seasons
+                        .OrderBy(s => s.NumberOfSeason)
+                        .SelectMany(s => s.Episodes)
+                        .Where(e => e.ReleaseDate != default(DateOnly))
+                        .OrderBy(e => e.ReleaseDate)
+                        .Select(e => e.ReleaseDate.Year)
                         .FirstOrDefault(),
 
-                    Rating = f.Video.RatingCount == 0
-                        ? 0
-                        : (double)f.Video.RatingSum / f.Video.RatingCount,
-
                     Genres = f.Video.GenreVideos
-                        .Select(g => g.Genre.GenreTranslations
-                            .Where(t => t.LocaleCode == locale)
-                            .Select(t => t.Name)
-                            .FirstOrDefault())
-                        .ToList()
+                        .Select(gv => gv.Genre.GenreTranslations
+                            .Where(gt => gt.LocaleCode == locale)
+                            .Select(gt => gt.Name)
+                            .FirstOrDefault()
+                            ?? gv.Genre.GenreTranslations.Select(gt => gt.Name).FirstOrDefault())
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .ToList(),
+
+                    IsFavorite = true
                 })
                 .ToListAsync();
         }
