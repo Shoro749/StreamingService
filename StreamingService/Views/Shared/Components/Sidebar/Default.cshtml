@@ -62,12 +62,13 @@
         </div>
 
         <div class="px-4 lg:pl-8 lg:pr-6">
-            <div class="relative w-full aspect-video rounded-4xl overflow-hidden group cursor-pointer">
+            <div class="js-continue-card relative w-full aspect-video rounded-4xl overflow-hidden group cursor-pointer"
+                 data-video-id="@Model.ContinueWatching.Id">
                 <img src="@Model.ContinueWatching.PosterUrl" 
-                     alt="Movie" 
-                     class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                     alt="Movie"
+                     class="js-sidebar-poster w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
 
-                <span class="absolute top-4 left-5 font-montserrat font-semibold text-lg text-white leading-none z-10">
+                <span class="js-sidebar-title absolute top-4 left-5 font-montserrat font-semibold text-lg text-white leading-none z-10">
                     @Model.ContinueWatching.Title
                 </span>
 
@@ -81,7 +82,7 @@
                     <div class="px-3 h-full rounded-full shadow-glass flex items-center shadow-[3px_0_5.5px_rgba(132,132,132,0.42)] z-10">
                         @Model.ContinueWatching.Duration
                     </div>
-                    <div class="px-3 h-full flex items-center">
+                    <div class="js-sidebar-progress-text px-3 h-full flex items-center">
                         @Model.ContinueWatching.ViewProgress
                     </div>
                 </div>

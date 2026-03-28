@@ -4,14 +4,11 @@
     var values = new RouteValueDictionary(Model);
     var btnId = values["Id"] as string;
 
-    // 1. Визначаємо напрямок стрілки
     var isLeft = values.ContainsKey("IsLeft") ? (bool)values["IsLeft"] : false;
     var rotateClass = isLeft ? "rotate-180" : "";
 
-    // 2. Отримуємо тему (за замовчуванням "glass")
     var theme = values.ContainsKey("Theme") ? values["Theme"] as string : "glass";
 
-    // 3. Логіка вибору класів
     string themeClass = "";
 
     switch (theme)
@@ -20,7 +17,7 @@
             themeClass = "nav-btn-solid";
             break;
 
-        case "modal": // Стилі для модального вікна
+        case "modal":
             themeClass = "w-8 h-8 rounded-full border border-white flex items-center justify-center text-white hover:bg-white/20 transition-colors";
             break;
 
@@ -33,11 +30,9 @@
     var extraClasses = values.ContainsKey("ExtraClasses") ? values["ExtraClasses"] as string : "";
 }
 
-@* 4. HTML розмітка кнопки *@
 <button id="@btnId" class="@themeClass @extraClasses">
     @if (theme == "modal")
     {
-        @* Дизайн для модалки *@
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="@rotateClass">
             <path d="M16 21.3333L21.3333 16L16 10.6666" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             <path d="M10.6667 16H21.3334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -45,7 +40,6 @@
     }
     else
     {
-        @* Дизайн для інших кнопок *@
         <svg class="w-6 h-6 @rotateClass" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>

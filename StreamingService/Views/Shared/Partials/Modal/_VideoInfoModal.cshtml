@@ -12,7 +12,7 @@
          id="modal-content">
 
         <div class="absolute inset-0 select-none pointer-events-none">
-            <img src="/images/placeholders/lilo-stitch-bg.jpg"
+            <img src=""
                  class="w-full h-full object-cover"
                  alt="Background"
                  id="modal-bg-image">
@@ -72,7 +72,7 @@
 						</div>
 					</div>
 
-					<div class="mt-1">
+                    <div id="modal-scenes-section" class="mt-1">
 						<h3 class="text-white font-bold text-lg uppercase tracking-wider mb-6 leading-7">Найкращі сцени</h3>
 
 						<div class="flex items-center gap-4">
@@ -139,5 +139,16 @@
             </svg>
         </button>
         
+        <button id="modal-save-later-btn"
+                class="hidden absolute right-12 bottom-5 z-50 shadow-glass flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all group/btn cursor-pointer js-save-for-later-btn"
+                title="Відкласти на потім"
+                data-video-id=""
+                data-is-saved="false"
+                data-is-favorite="false">
+
+            <div class="w-6 h-6 bg-white group-hover/btn:bg-[#DCF260] transition-colors"
+                 style="-webkit-mask-image: url('/images/ui/SavedForLater.png'); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; mask-image: url('/images/ui/SavedForLater.png'); mask-size: contain; mask-repeat: no-repeat; mask-position: center;">
+            </div>
+        </button>
     </div>
 </div>
