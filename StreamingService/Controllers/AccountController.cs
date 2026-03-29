@@ -5,9 +5,7 @@ using StreamingService.DTO.ViewModels;
 using StreamingService.Models;
 using StreamingService.Resources;
 using StreamingService.Services;
-using System.Numerics;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace StreamingService.Controllers
 {
@@ -57,23 +55,33 @@ namespace StreamingService.Controllers
 
             var plans = await _subscriptionService.GetAllPlansAsync();
 
+
             var model = new SubscriptionViewModel
             {
                 UserId = userId,
-                Plans = plans.Select(p => new SubscriptionPlanDto
+                Plans = plans.Select(p => new PricingTier
                 {
                     Id = p.Id,
-                    Name = p.SubscriptionLevel?.Code ?? "Невідомо",
-                    Price = p.Price,
-                    PeriodDays = p.PeriodDays,
-                    Description = $"Підписка на {p.PeriodDays} днів",
-                    Features = p.Features
+
+                    Title = p.SubscriptionLevel?.Code ?? "Невідомо",
+
+                    Price = p.Price.ToString(),
+
+                    ButtonText = (p.Id == 1) ? "Спробувати базовий" : (p.Id == 2) ? "Увімкнути магію кіно" : "Дивись без меж",
+
+                    Features = string.IsNullOrEmpty(p.Features)
+                        ? new List<string>()
+                        : p.Features
+                            .Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(f => f.Trim())
+                            .ToList()
                 }).ToList(),
-                BackgroundText = "LUMEO"
+                BackgroundText = AuthTexts.SubscriptionBackground
             };
 
             return View(model);
         }
+
         [HttpGet]
         public async Task<IActionResult> Agreement(int planId)
         {
@@ -92,41 +100,40 @@ namespace StreamingService.Controllers
                 return RedirectToAction("Index");
             }
 
-            HttpContext.Session.SetInt32("SelectedPlanId", planId);
-
             var model = new AgreementViewModel
             {
+                PlanId = planId,
                 SubscriptionPlan = plan.SubscriptionLevel?.Code ?? "PLAN",
-                BackgroundText = "LUMEO"
+                BackgroundText = AuthTexts.SubscriberAgreementBackground
             };
 
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> SubscriptionConfirmation()
+        public async Task<IActionResult> SubscriptionConfirmation(int planId)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var selectedPlanId = HttpContext.Session.GetInt32("SelectedPlanId");
 
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId) || !selectedPlanId.HasValue)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Login", "Home");
             }
 
-            var plan = await _subscriptionService.GetPlanByIdAsync(selectedPlanId.Value);
+            var plan = await _subscriptionService.GetPlanByIdAsync(planId);
 
             if (plan == null)
             {
                 TempData["Error"] = "План не знайдено";
-                return RedirectToAction("Index");
+                return RedirectToAction("Register", "Account");
             }
 
             var model = new AgreementViewModel
             {
+                PlanId = planId,
                 SubscriptionPlan = plan.SubscriptionLevel?.Code ?? "PLAN",
                 SubscriptionPrice = plan.Price,
-                BackgroundText = "LUMEO"
+                BackgroundText = AuthTexts.SubscriptionConfirmationBackground
             };
             return View(model);
         }

@@ -22,7 +22,7 @@
             </p>
         </div>
 
-        <form asp-controller="Subscription" asp-action="ProcessPayment" method="post" class="flex flex-col gap-8">
+        <form asp-controller="Subscription" asp-action="ProcessPayment" asp-route-planId="@Model.PlanId" asp-route-plan="@Model.SubscriptionPlan" method="post" class="flex flex-col gap-8">
 
             @* ПРИХОВАНЕ ПОЛЕ *@
             <input type="hidden" id="selectedPaymentMethod" name="PaymentMethod" value="Card" />
