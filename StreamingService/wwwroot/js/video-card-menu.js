@@ -400,17 +400,19 @@
     function closeModal() {
         modal.classList.add('opacity-0');
 
-        if (modalSaveBtn) {
+        if (modalSaveBtn) { // оновлений код для синхронізації стану кнопки "Відкласти на потім" при закритті модального вікна
             globalMenu.dataset.isSaved = modalSaveBtn.dataset.isSaved;
 
             if (modalSaveBtn.dataset.isSaved === 'false') {
                 const videoId = globalMenu.dataset.currentVideoId;
-
                 const contextBtn = document.querySelector(`.js-menu-toggle[data-video-id="${videoId}"]`);
+
                 if (contextBtn) {
                     const cardContainer = contextBtn.closest('.group');
 
-                    if (cardContainer && !cardContainer.querySelector('.js-save-for-later-btn')) {
+                    const isInSavedSection = cardContainer.closest('#saved-videos-section');
+
+                    if (cardContainer && isInSavedSection && !cardContainer.querySelector('.js-save-for-later-btn')) {
                         cardContainer.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                         cardContainer.style.opacity = '0';
                         cardContainer.style.transform = 'scale(0.9)';

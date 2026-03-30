@@ -87,17 +87,7 @@ namespace StreamingService.Controllers
             var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            if (category == null)
-            {
-                ViewData["Title"] = "Каталог";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - Каталог";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-            }
+            SetPageHeaders(category, "Каталог");
 
             if (_moviesService == null)
             {
@@ -123,17 +113,7 @@ namespace StreamingService.Controllers
             var locale = CultureInfo.CurrentCulture.Name;
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            if (category == null)
-            {
-                ViewData["Title"] = "Улюблене";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - Улюблене";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-            }
+            SetPageHeaders(category, "Улюблене");
 
             var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, locale);
 
@@ -149,17 +129,7 @@ namespace StreamingService.Controllers
         {
             var locale = CultureInfo.CurrentCulture.Name;
 
-            if (category == null)
-            {
-                ViewData["Title"] = "Незабаром";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - Незабаром";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-            }
+            SetPageHeaders(category, "Незабаром");
 
             var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale);
 
@@ -173,17 +143,7 @@ namespace StreamingService.Controllers
             var locale = CultureInfo.CurrentCulture.Name;
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            if (category == null)
-            {
-                ViewData["Title"] = "У тренді";
-                ViewData["MenuTitle"] = "Усі";
-            }
-            else
-            {
-                ViewData["Title"] = $"{category.Value.GetDisplayName()} - У тренді";
-                ViewData["MenuTitle"] = category.Value.GetShortName();
-                ViewData["Category"] = category;
-            }
+            SetPageHeaders(category, "У тренді");
 
             var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId);
 
