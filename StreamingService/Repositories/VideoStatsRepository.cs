@@ -9,6 +9,12 @@ namespace StreamingService.Repositories
         private readonly AppDbContext _context;
         public VideoStatsRepository(AppDbContext context) => _context = context;
 
+        public async Task<UserEpisodesHistory?> GetHistoryAsync(int profileId, int episodeId)
+        {
+            return await _context.UserEpisodesHistories
+                .FirstOrDefaultAsync(h => h.UserProfileId == profileId && h.VideoEpisodeId == episodeId);
+        }
+
         public async Task<int> GetEpisodeDailyViewsAsync(int episodeId, DateTime date)
         {
             return await _context.VideoEpisodeDailyStats
@@ -16,6 +22,8 @@ namespace StreamingService.Repositories
                 .Select(x => x.TotalUserViews)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
         public async Task AddViewLogAsync(VideoEpisodeViewTimedLog log)
         {

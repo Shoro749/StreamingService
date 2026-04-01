@@ -86,6 +86,11 @@
         @apply bg-[#2E2E4D] text-white shadow-lg;
         @apply hover:bg-[#3E3E61] hover:text-[#DCF260];
     }
+
+    .plyr {
+        width: 100vw;
+        height: 100vh;
+    }
 }
 
 /* 4. Спеціальний скролбар */

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StreamingService.Models;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Resources;
 using StreamingService.Services;
