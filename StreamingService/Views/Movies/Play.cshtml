@@ -1,9 +1,9 @@
 ﻿@using StreamingService.DTO.Enums;
-@model StreamingService.DTO.ViewModels.VideoCardViewModel;
+@model StreamingService.DTO.ViewModels.VideoViewModel;
 
 @{
 	Layout = null;
-    ViewData["Title"] = Model.Title + " - Грає зараз";
+    ViewData["Title"] = Model.VideoTitle + " - Грає зараз";
 }
 
 <!DOCTYPE html>
@@ -16,35 +16,61 @@
     <body class="bg-black text-white overflow-hidden relative w-screen h-screen">
         <div class="w-full h-full bg-black flex items-center justify-center">
 
-            <video id="main-player" playsinline controls>
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+            <video id="main-player" playsinline controls class="w-full h-full">
+                <source src="@Model.StreamUrl" type="video/mp4" />
             </video>
 
             <div class="absolute top-10 left-10 z-50 pointer-events-auto">
-                <a href="#" class="text-white text-2xl font-bold flex items-center gap-2 hover:text-[#DCF260] transition-colors drop-shadow-md">
-                    <span>
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                             <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                        </svg>
-                    </span>
-                    @Model.Title
-                </a>
-            </div>
+            <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.VideoId" class="text-white text-2xl font-bold flex items-center gap-2 hover:text-[#DCF260] transition-colors drop-shadow-md">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                </svg>
+                <span>
+                    @Model.VideoTitle
 
-        @if (Model.VideoType == VideoType.Series || Model.VideoType == VideoType.AnimatedSeries)
+                    @if (!Model.IsMovie)
+                    {
+                        <span class="text-lg font-normal opacity-80">
+                            • S@Model.SeasonNumber E@Model.EpisodeNumber
+                        </span>
+                    }
+                </span>
+            </a>
+        </div>
+
+        @if (!Model.IsMovie)
+        {
+            <div class="absolute top-20 left-10 z-50 text-white text-lg opacity-80">
+                @Model.EpisodeTitle
+            </div>
+        }
+
+        @if (!Model.IsMovie)
         {
             <div class="absolute bottom-24 left-10 right-10 z-50 flex justify-between pointer-events-auto">
                 <div class="flex gap-4">
                     <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
                         Пропустити заставку
                     </button>
-                    <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
-                        Попередня серія
-                    </button>
+                    @if (Model.PrevEpisodeId != null)
+                    {
+                        <a asp-action="Play"
+                           asp-route-id="@Model.VideoId"
+                           asp-route-episodeId="@Model.PrevEpisodeId"
+                           class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20">
+                            Попередня серія
+                        </a>
+                    }
                 </div>
-                <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
-                    Наступна серія
-                </button>
+                @if (Model.NextEpisodeId != null)
+                {
+                    <a asp-action="Play"
+                       asp-route-id="@Model.VideoId"
+                       asp-route-episodeId="@Model.NextEpisodeId"
+                       class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20">
+                        Наступна серія
+                    </a>
+                }
             </div>
         }
 

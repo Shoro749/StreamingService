@@ -1,203 +1,124 @@
 ﻿using StreamingService.DTO.ViewModels;
 using StreamingService.Repositories;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace StreamingService.Services
 {
+    public static class SubscriptionLevel
+    {
+        public const int Basic = 1;
+        public const int Standard = 2;
+        public const int Premium = 3;
+    }
+
     public class VideoService
     {
-        private readonly VideoRepository _videoRepository;
-        private readonly IConfiguration _configuration;
+        private readonly VideoRepository _repo;
 
-        public VideoService(VideoRepository videoRepository, IConfiguration configuration)
+        public VideoService(VideoRepository repo)
         {
-            _videoRepository = videoRepository;
-            _configuration = configuration;
+            _repo = repo;
         }
 
-        public async Task<VideoWatchViewModel?> GetVideoForWatchAsync(
-            int videoId,
-            int seasonNumber,
-            int episodeNumber,
-            int userId,
-            string locale)
+        public async Task<VideoViewModel?> GetPlaybackAsync(int userProfileId, int videoId, int? episodeId = null)
         {
-            var video = await _videoRepository.GetVideoWithDetailsAsync(videoId);
-            if (video == null) return null;
+            var subscription = await _repo.GetActiveSubscriptionWithLevelAsync(userProfileId);
 
-            var season = video.Seasons.FirstOrDefault(s => s.NumberOfSeason == seasonNumber);
-            if (season == null) return null;
+            if (subscription == null)
+                return null; // немає активної підписки — доступ заборонено
 
-            var episode = season.Episodes.FirstOrDefault(e => e.EpisodeNumber == episodeNumber);
-            if (episode == null) return null;
+            int levelId = subscription.SubscriptionPlan.SubscriptionLevel.Id;
 
-            var progress = await _videoRepository.GetWatchProgressAsync(userId, episode.Id);
+            var episode = episodeId.HasValue
+                ? await _repo.GetEpisodeByIdAsync(episodeId.Value)
+                : await _repo.GetFirstEpisodeAsync(videoId);
 
-            var watchedEpisodeIds = await _videoRepository.GetWatchedEpisodeIdsAsync(userId, videoId);
+            if (episode == null)
+                return null;
+            var file = await _repo.GetVideoFileByEpisodeIdAsync(episode.Id);
 
-            return new VideoWatchViewModel
+            var episodeTitle = episode.VideoEpisodeTranslations
+                .FirstOrDefault(t => t.LocaleCode == "uk")?.Title
+                ?? episode.VideoEpisodeTranslations.FirstOrDefault()?.Title
+                ?? $"Episode {episode.EpisodeNumber}";
+
+            if (file == null)
+            {
+                // Контент вимагає вищого рівня підписки
+                return null;
+            }
+
+            string streamUrl = BuildStreamUrl(file.BlobContainer, file.BlobPath);
+
+            var progress = await _repo.GetViewProgressAsync(userProfileId, episode.Id);
+            bool wasWatched = progress?.IsFullyWatched ?? false;
+
+            // Навігація між серіями (тільки для серіалів)
+            var video = await _repo.GetVideoByIdAsync(videoId);
+            bool isMovie = video?.VideoType?.ToLower() is "movie" or "animation";
+
+            (int? prevId, int? nextId) = isMovie ? (null, null) : await GetAdjacentEpisodesAsync(episode, videoId);
+
+            var title = video.Translations
+                .FirstOrDefault(t => t.LocaleCode == "uk")?.Title
+                ?? video.Translations.FirstOrDefault()?.Title
+                ?? "";
+
+            //string streamUrl = $"/videos/video_{videoId}_s{episode.VideoSeason.NumberOfSeason}_e{episode.EpisodeNumber}.mp4";
+
+            string qualityLabel = levelId switch
+            {
+                SubscriptionLevel.Basic => "SD",
+                SubscriptionLevel.Standard => "HD",
+                SubscriptionLevel.Premium => "4K",
+                _ => ""
+            };
+
+            return new VideoViewModel
             {
                 VideoId = videoId,
-                Title = video.Translations
-                    .Where(t => t.LocaleCode == locale)
-                    .Select(t => t.Title)
-                    .FirstOrDefault() ?? video.Translations.FirstOrDefault()?.Title ?? "Без назви",
-
-                Description = video.Translations
-                    .Where(t => t.LocaleCode == locale)
-                    .Select(t => t.Description)
-                    .FirstOrDefault() ?? "",
-
-                PosterUrl = video.Images
-                    .Where(i => i.Type == "poster")
-                    .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
-                    .FirstOrDefault() ?? "",
-
-                CurrentSeason = seasonNumber,
-                CurrentEpisode = episodeNumber,
-                CurrentEpisodeId = episode.Id,
-
-                Duration = episode.Duration,
-                PausedWatchTime = progress?.PausedWatchTime ?? 0,
-
-                Seasons = video.Seasons
-                    .OrderBy(s => s.NumberOfSeason)
-                    .Select(s => new SeasonViewModel
-                    {
-                        SeasonNumber = s.NumberOfSeason,
-                        Episodes = s.Episodes
-                            .OrderBy(e => e.EpisodeNumber)
-                            .Select(e => new EpisodeViewModel
-                            {
-                                EpisodeId = e.Id,
-                                EpisodeNumber = e.EpisodeNumber,
-                                Duration = e.Duration,
-                                Title = $"Епізод {e.EpisodeNumber}",
-                                IsWatched = watchedEpisodeIds.Contains(e.Id)
-                            })
-                            .ToList()
-                    })
-                    .ToList(),
-
-                Genres = video.GenreVideos
-                    .Select(gv => gv.Genre.GenreTranslations
-                        .Where(gt => gt.LocaleCode == locale)
-                        .Select(gt => gt.Name)
-                        .FirstOrDefault() ?? gv.Genre.Code)
-                    .ToList()
+                EpisodeId = episode.Id,
+                EpisodeTitle = episodeTitle,
+                VideoFileId = file.Id,
+                VideoTitle = title,
+                StreamUrl = streamUrl,
+                WasWatched = wasWatched,
+                IsMovie = isMovie,
+                PrevEpisodeId = prevId,
+                NextEpisodeId = nextId,
+                SeasonNumber = episode.VideoSeason?.NumberOfSeason ?? 1,
+                EpisodeNumber = episode.EpisodeNumber,
+                QualityLabel = qualityLabel
             };
         }
 
-        public async Task<bool> UpdateWatchProgressAsync(int userId, int episodeId, int currentTime, int duration)
+        public async Task SaveProgressAsync(int userProfileId, int episodeId, bool isFullyWatched)
         {
-            return await _videoRepository.SaveWatchProgressAsync(userId, episodeId, currentTime);
+            await _repo.SaveViewProgressAsync(userProfileId, episodeId, isFullyWatched);
         }
 
-        public string GenerateSecureStreamUrl(int episodeId, int userId)
+        private static string BuildStreamUrl(string? container, string? path)
         {
-            var expirationTime = DateTime.UtcNow.AddHours(1);
-            var tokenData = $"{episodeId}|{userId}|{expirationTime:O}";
+            if (string.IsNullOrEmpty(container) || string.IsNullOrEmpty(path))
+                return "";
 
-            var secretKey = _configuration["StreamingSecretKey"] ?? "your-secret-key-change-in-production";
-            var token = GenerateToken(tokenData, secretKey);
+            if (container == "external")
+                return path;
 
-            return $"/Video/Stream/{token}";
+            return $"/{container}/{path}";
         }
 
-        public StreamTokenData? ValidateStreamToken(string token)
+        // Повертає Id попереднього і наступного епізоду в межах серіалу.
+        private async Task<(int? prev, int? next)> GetAdjacentEpisodesAsync(StreamingService.Models.VideoEpisode current, int videoId)
         {
-            try
-            {
-                var secretKey = _configuration["StreamingSecretKey"] ?? "your-secret-key-change-in-production";
-                var tokenData = ValidateToken(token, secretKey);
+            var allEpisodes = await _repo.GetAllEpisodesOrderedAsync(videoId);
 
-                if (string.IsNullOrEmpty(tokenData)) return null;
+            var list = allEpisodes.ToList();
+            int idx = list.FindIndex(e => e.Id == current.Id);
 
-                var parts = tokenData.Split('|');
-                if (parts.Length != 3) return null;
+            int? prev = idx > 0 ? list[idx - 1].Id : null;
+            int? next = idx < list.Count - 1 ? list[idx + 1].Id : null;
 
-                var episodeId = int.Parse(parts[0]);
-                var userId = int.Parse(parts[1]);
-                var expirationTime = DateTime.Parse(parts[2], null, System.Globalization.DateTimeStyles.RoundtripKind);
-
-                if (DateTime.UtcNow > expirationTime) return null;
-
-                return new StreamTokenData
-                {
-                    EpisodeId = episodeId,
-                    UserId = userId,
-                    ExpirationTime = expirationTime
-                };
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public async Task<string?> GetVideoFilePathAsync(int episodeId, string type = "mp4")
-        {
-            var episode = await _videoRepository.GetEpisodeByIdAsync(episodeId);
-            if (episode == null) return null;
-
-            var basePath = _configuration["VideoStoragePath"] ?? "wwwroot/videos";
-
-            if (type == "hls")
-            {
-                return Path.Combine(
-                    basePath,
-                    $"video_{episode.VideoSeason.VideoId}_s{episode.VideoSeason.NumberOfSeason}_e{episode.EpisodeNumber}",
-                    "playlist.m3u8"
-                );
-            }
-
-            return Path.Combine(
-                basePath,
-                $"video_{episode.VideoSeason.VideoId}_s{episode.VideoSeason.NumberOfSeason}_e{episode.EpisodeNumber}.mp4"
-            );
-        }
-
-        private string GenerateToken(string data, string secretKey)
-        {
-            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey));
-            var dataBytes = Encoding.UTF8.GetBytes(data);
-            var hash = hmac.ComputeHash(dataBytes);
-            var combined = dataBytes.Concat(hash).ToArray();
-            return Convert.ToBase64String(combined).Replace("+", "-").Replace("/", "_").Replace("=", "");
-        }
-
-        private string? ValidateToken(string token, string secretKey)
-        {
-            try
-            {
-                token = token.Replace("-", "+").Replace("_", "/");
-                var padding = (4 - token.Length % 4) % 4;
-                token += new string('=', padding);
-
-                var combined = Convert.FromBase64String(token);
-                var dataLength = combined.Length - 32;
-                var dataBytes = combined.Take(dataLength).ToArray();
-                var hash = combined.Skip(dataLength).ToArray();
-
-                using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey));
-                var expectedHash = hmac.ComputeHash(dataBytes);
-
-                if (!hash.SequenceEqual(expectedHash)) return null;
-
-                return Encoding.UTF8.GetString(dataBytes);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public class StreamTokenData
-        {
-            public int EpisodeId { get; set; }
-            public int UserId { get; set; }
-            public DateTime ExpirationTime { get; set; }
+            return (prev, next);
         }
     }
 }

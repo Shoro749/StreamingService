@@ -36,7 +36,7 @@ namespace StreamingService.Controllers
                 return RedirectToAction("SubscriptionConfirmation");
             }
 
-            return RedirectToAction("Success", "Account", new { plna = plan });
+            return RedirectToAction("Success", "Account", new { plan = plan });
         }
 
         [HttpGet]

@@ -13,26 +13,20 @@ namespace StreamingService.Repositories
             _context = context;
         }
 
-        public async Task<Video?> GetVideoWithDetailsAsync(int videoId)
+        public async Task<VideoFile?> GetVideoFileByEpisodeIdAsync(int episodeId)
         {
-            return await _context.Videos
-                .Include(v => v.Translations)
-                .Include(v => v.Seasons)
-                    .ThenInclude(s => s.Episodes)
-                .Include(v => v.Images)
-                .Include(v => v.GenreVideos)
-                    .ThenInclude(gv => gv.Genre)
-                        .ThenInclude(g => g.GenreTranslations)
-                .FirstOrDefaultAsync(v => v.Id == videoId);
+            return await _context.VideoFiles
+                .Where(f => f.VideoEpisodesId == episodeId)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<VideoEpisode?> GetEpisodeAsync(int videoId, int seasonNumber, int episodeNumber)
+        public async Task<VideoEpisode?> GetFirstEpisodeAsync(int videoId)
         {
-            return await _context.VideoEpisode
-                .Include(e => e.VideoSeason)
-                .Where(e => e.VideoSeason.VideoId == videoId
-                    && e.VideoSeason.NumberOfSeason == seasonNumber
-                    && e.EpisodeNumber == episodeNumber)
+            return await _context.VideoSeasons
+                .Where(s => s.VideoId == videoId)
+                .OrderBy(s => s.NumberOfSeason)
+                .SelectMany(s => s.Episodes)
+                .OrderBy(e => e.EpisodeNumber)
                 .FirstOrDefaultAsync();
         }
 
@@ -40,62 +34,67 @@ namespace StreamingService.Repositories
         {
             return await _context.VideoEpisode
                 .Include(e => e.VideoSeason)
-                    .ThenInclude(s => s.Video)
+                .Include(e => e.VideoEpisodeTranslations)
                 .FirstOrDefaultAsync(e => e.Id == episodeId);
         }
 
-        public async Task<UserEpisodesHistory?> GetWatchProgressAsync(int userId, int episodeId)
+        public async Task<IEnumerable<VideoEpisode>> GetAllEpisodesOrderedAsync(int videoId)
         {
-            return await _context.UserEpisodesHistories
-                .FirstOrDefaultAsync(h => h.UserProfileId == userId && h.VideoEpisodeId == episodeId);
-        }
-
-        public async Task<bool> SaveWatchProgressAsync(int userId, int episodeId, int currentTime)
-        {
-            try
-            {
-                var history = await GetWatchProgressAsync(userId, episodeId);
-
-                if (history == null)
-                {
-                    history = new UserEpisodesHistory
-                    {
-                        UserProfileId = userId,
-                        VideoEpisodeId = episodeId,
-                        PausedWatchTime = currentTime,
-                        LastWatchedAt = DateTime.UtcNow
-                    };
-                    _context.UserEpisodesHistories.Add(history);
-                }
-                else
-                {
-                    history.PausedWatchTime = currentTime;
-                    history.LastWatchedAt = DateTime.UtcNow;
-                    _context.UserEpisodesHistories.Update(history);
-                }
-
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> IsEpisodeWatchedAsync(int userId, int episodeId)
-        {
-            return await _context.UserEpisodesHistories
-                .AnyAsync(h => h.UserProfileId == userId && h.VideoEpisodeId == episodeId);
-        }
-
-        public async Task<List<int>> GetWatchedEpisodeIdsAsync(int userId, int videoId)
-        {
-            return await _context.UserEpisodesHistories
-                .Where(h => h.UserProfileId == userId
-                    && h.VideoEpisode.VideoSeason.VideoId == videoId)
-                .Select(h => h.VideoEpisodeId)
+            return await _context.VideoSeasons
+                .Where(s => s.VideoId == videoId)
+                .OrderBy(s => s.NumberOfSeason)
+                .SelectMany(s => s.Episodes)
+                .OrderBy(e => e.EpisodeNumber)
                 .ToListAsync();
+        }
+
+        public async Task<UserSubscription?> GetActiveSubscriptionWithLevelAsync(int userProfileId)
+        {
+            var now = DateTime.UtcNow;
+            return await _context.UsersSubscriptions
+                .Include(s => s.SubscriptionPlan)
+                    .ThenInclude(p => p.SubscriptionLevel)
+                .Where(s => s.UserProfileId == userProfileId
+                            && s.Status == "Active"
+                            && s.SubscriptionEnd > now)
+                .OrderByDescending(s => s.SubscriptionEnd)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Video?> GetVideoByIdAsync(int videoId)
+        {
+            return await _context.Videos
+                .Include(v => v.SubscriptionLevel)
+                .Include(v => v.Translations)
+                .FirstOrDefaultAsync(v => v.Id == videoId);
+        }
+
+        public async Task SaveViewProgressAsync(int userProfileId, int episodeId, bool isFullyWatched)
+        {
+            var existing = await _context.UserEpisodesHistories
+                .FirstOrDefaultAsync(h => h.UserProfileId == userProfileId
+                                          && h.VideoEpisodeId == episodeId);
+            if (existing == null)
+            {
+                _context.UserEpisodesHistories.Add(new UserEpisodesHistory
+                {
+                    UserProfileId = userProfileId,
+                    VideoEpisodeId = episodeId,
+                    LastWatchedAt = DateTime.UtcNow,
+                    IsFullyWatched = isFullyWatched,
+                });
+            }
+            else
+            {
+                existing.LastWatchedAt = DateTime.UtcNow;
+                existing.IsFullyWatched = isFullyWatched;
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserEpisodesHistory?> GetViewProgressAsync(int userProfileId, int episodeId)
+        {
+            return await _context.UserEpisodesHistories.FirstOrDefaultAsync(h => h.UserProfileId == userProfileId && h.VideoEpisodeId == episodeId);
         }
     }
 }

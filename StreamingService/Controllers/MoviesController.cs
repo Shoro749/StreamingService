@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StreamingService.DTO.Requests;
 using StreamingService.Extensions;
 using StreamingService.Services;
 using System.Globalization;
@@ -9,12 +10,12 @@ namespace StreamingService.Controllers;
 
 public class MoviesController : Controller
 {
-    //private readonly MoviesService _service;
+    private readonly VideoService _videoService;
     private readonly VideoDetailsService _videoDetailsService;
     private readonly FavoritesService _favoritesService;
-    public MoviesController(VideoDetailsService videoDetailsService, FavoritesService favoritesService /*MoviesService service*/)
+    public MoviesController(VideoDetailsService videoDetailsService, FavoritesService favoritesService, VideoService videoService)
     {
-        //_service = service;
+        _videoService = videoService;
         _videoDetailsService = videoDetailsService;
         _favoritesService = favoritesService;
     }
@@ -60,19 +61,48 @@ public class MoviesController : Controller
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> Play(int id)
+    public async Task<IActionResult> Play(int id, int? episodeId = null)
     {
-        var locale = CultureInfo.CurrentCulture.Name;
+        int userProfileId = GetCurrentUserProfileId();
+
+        var vm = await _videoService.GetPlaybackAsync(userProfileId, id, episodeId);
+
+        //if (vm == null)
+        //    return RedirectToAction("AccessDenied", new { videoId = id });
+
+        return View(vm);
+    }
+
+    private int GetCurrentUserProfileId()
+    {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        Console.WriteLine("User id: " + userId);
+        return userId;
+    }
 
-        var video = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
 
-        if (video == null)
-        {
-            return NotFound();
-        }
+    [HttpGet]
+    public IActionResult AccessDenied(int videoId)
+    {
+        ViewBag.VideoId = videoId;
+        return View();
+    }
 
-        return View(video);
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveProgress([FromBody] SaveProgressRequest request)
+    {
+        if (request.EpisodeId <= 0)
+            return BadRequest();
+
+        int userProfileId = GetCurrentUserProfileId();
+
+        // Визначаємо чи повністю переглянуто (якщо >90% відео)
+        bool isFullyWatched = request.Duration > 0 &&
+                             (double)request.CurrentTime / request.Duration >= 0.9;
+
+        await _videoService.SaveProgressAsync(userProfileId, request.EpisodeId, isFullyWatched);
+        return Ok();
     }
 
     //public IActionResult Details(int id)
