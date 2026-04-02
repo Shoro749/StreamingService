@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
 using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
-using StreamingService.Models;
+using StreamingService.Extensions;
 using System.Globalization;
 
 namespace StreamingService.Repositories
@@ -70,9 +71,16 @@ namespace StreamingService.Repositories
                 .ToListAsync();
         }
 
-        public IQueryable<VideoCardViewModel> GetVideoProjections(string locale, int? userId = null)
+        public IQueryable<VideoCardViewModel> GetVideoProjections(string locale, VideoType? mediaType = null, int? userId = null)
         {
-            return _context.Videos
+            var baseVideos = _context.Videos.AsQueryable();
+
+            if (mediaType.HasValue)
+            {
+                baseVideos = baseVideos.ApplyMediaTypeFilter(mediaType.Value.ToString());
+            }
+
+            return baseVideos
                 .Select(v => new VideoCardViewModel
                 {
                     Id = v.Id,
@@ -193,7 +201,7 @@ namespace StreamingService.Repositories
                 });
         }
 
-        public async Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale, int? userId = null)
+        public async Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
             var culture = new CultureInfo("uk-UA");
 
@@ -209,70 +217,57 @@ namespace StreamingService.Repositories
                 })
                 .ToListAsync();
 
+            var videoIds = upcomingEpisodes
+                .Select(e => e.VideoId)
+                .Distinct()
+                .ToList();
+
+            var videosQuery = GetVideoProjections(locale, mediaType, userId).Where(v => videoIds.Contains(v.Id));
+
+            var videosWithUserData = await GetVideosWithUserDataAsync(videosQuery, userId, locale);
+
             var groupedReleases = upcomingEpisodes
                 .GroupBy(e => e.ReleaseDate)
                 .OrderBy(g => g.Key)
                 .ToDictionary(
                     g => g.Key.ToString("dd MMM, yyyy", culture).Replace(".", "").ToLower(),
-                    g => g.Select(e => new VideoCardViewModel
-                    {
-                        Id = e.VideoId,
+                    g => g
+                        .Select(e =>
+                        {
+                            var vid = videosWithUserData.FirstOrDefault(v => v.Id == e.VideoId);
+                            if (vid == null) return null;
 
-                        Title = e.Video.Translations
-                            .Where(t => t.LocaleCode == locale)
-                            .Select(t => t.Title)
-                            .FirstOrDefault()
-                            ?? e.Video.Translations.Select(t => t.Title).FirstOrDefault()
-                            ?? "Без назви",
-
-                        PosterUrl = e.Video.Images
-                            .Where(i => i.Type == "poster")
-                            .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
-                            .FirstOrDefault()
-                            ?? "/images/placeholder-poster.jpg",
-
-                        Rating = e.Video.RatingCount == 0 ? 0 : (double)e.Video.RatingSum / e.Video.RatingCount,
-
-                        Year = e.ReleaseDate.Year,
-
-                        Genres = e.Video.GenreVideos
-                            .Select(gv => gv.Genre.GenreTranslations
-                                .Where(gt => gt.LocaleCode == locale)
-                                .Select(gt => gt.Name)
-                                .FirstOrDefault()
-                                ?? gv.Genre.GenreTranslations.Select(gt => gt.Name).FirstOrDefault())
-                            .Where(name => !string.IsNullOrEmpty(name))
-                            .ToList(),
-
-                        IsSavedForLater = userId.HasValue && e.Video.Lists
-                            .Any(l => l.UserProfileId == userId.Value && l.ListType == UserVideoListType.WatchLater),
-                    })
-                    .DistinctBy(v => v.Id)
-                    .ToList()
+                            vid.Year = e.ReleaseDate.Year;
+                            return vid;
+                        })
+                        .Where(v => v != null)
+                        .DistinctBy(v => v!.Id)
+                        .Select(v => v!)
+                        .ToList()
                 );
 
             return groupedReleases;
         }
 
-        public async Task<List<VideoCardViewModel>> GetSliderVideosAsync(string locale, int? userId = null)
+        public async Task<List<VideoCardViewModel>> GetSliderVideosAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
-            var query = GetVideoProjections(locale)
+            var query = GetVideoProjections(locale, mediaType)
                 .OrderByDescending(v => v.Rating)
                 .Take(10);
 
             return await GetVideosWithUserDataAsync(query, userId, locale);
         }
 
-        public async Task<List<VideoCardViewModel>> GetPopularVideosAsync(string locale, int? userId = null)
+        public async Task<List<VideoCardViewModel>> GetPopularVideosAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
-            var query = GetVideoProjections(locale)
+            var query = GetVideoProjections(locale, mediaType)
                 .OrderByDescending(v => v.Rating)
                 .Take(20);
 
             return await GetVideosWithUserDataAsync(query, userId, locale);
         }
 
-        public async Task<List<VideoCardViewModel>> GetTrendingVideosAsync(string locale, int? userId = null)
+        public async Task<List<VideoCardViewModel>> GetTrendingVideosAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
             var sevenDaysAgo = DateTime.UtcNow.Date.AddDays(-7);
 
@@ -284,13 +279,12 @@ namespace StreamingService.Repositories
                 .Select(g => g.Key)
                 .ToListAsync();
 
-            var query = GetVideoProjections(locale)
-                .Where(v => videoIds.Contains(v.Id));
+            var query = GetVideoProjections(locale, mediaType, userId).Where(v => videoIds.Contains(v.Id));
 
             return await GetVideosWithUserDataAsync(query, userId, locale);
         }
 
-        public async Task<List<VideoCardViewModel>> GetNewReleasesVideosAsync(string locale, int? userId = null)
+        public async Task<List<VideoCardViewModel>> GetNewReleasesVideosAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
             var videoIds = await _context.VideoEpisode
                 .OrderByDescending(e => e.ReleaseDate)
@@ -300,7 +294,7 @@ namespace StreamingService.Repositories
                 .Take(20)
                 .ToListAsync();
 
-            var query = GetVideoProjections(locale)
+            var query = GetVideoProjections(locale, mediaType)
                 .Where(v => videoIds.Contains(v.Id));
 
             return await GetVideosWithUserDataAsync(query, userId, locale);
@@ -399,7 +393,7 @@ namespace StreamingService.Repositories
 
         public async Task<List<VideoCardViewModel>> GetVideosByGenresAsync(List<string> genreCodes, string locale, int? userId = null)
         {
-            var query = GetVideoProjections(locale, userId)
+            var query = GetVideoProjections(locale, null, userId)
                 .Where(v => v.Genres.Any(g => genreCodes.Contains(g)));
 
             return await query.ToListAsync();
@@ -407,7 +401,7 @@ namespace StreamingService.Repositories
 
         public async Task<SearchResultsViewModel> SearchVideosAsync(string? query, int? genreId, string? sortBy, int page, int pageSize, string locale, int? userId)
         {
-            var baseQuery = GetVideoProjections(locale, userId);
+            var baseQuery = GetVideoProjections(locale, null, userId);
 
             if (!string.IsNullOrWhiteSpace(query))
             {

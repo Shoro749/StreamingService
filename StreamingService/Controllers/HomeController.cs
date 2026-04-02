@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.Enums;
@@ -8,11 +5,9 @@ using StreamingService.DTO.ViewModels;
 using StreamingService.Extensions;
 using StreamingService.Models;
 using StreamingService.Services;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Claims;
-using System.Xml.Linq;
 
 namespace StreamingService.Controllers
 {
@@ -85,7 +80,9 @@ namespace StreamingService.Controllers
         public async Task<IActionResult> Catalog(VideoType? category)
         {
             var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var userId = User?.Identity?.IsAuthenticated ?? false
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
+                : (int?)null;
 
             if (category == null)
             {
@@ -108,9 +105,9 @@ namespace StreamingService.Controllers
             var model = new CatalogPageViewModel
             {
                 Genres = await _moviesService.GetAllGenresAsync(locale),
-                PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
-                NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId),
-                TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId)
+                PopularVideos = await _moviesService.GetPopularAsync(locale, userId, category),
+                NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId, category),
+                TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId, category)
             };
 
             return View(model);
@@ -152,7 +149,9 @@ namespace StreamingService.Controllers
         public async Task<IActionResult> Upcoming(VideoType? category)
         {
             var locale = CultureInfo.CurrentCulture.Name;
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var userId = User?.Identity?.IsAuthenticated ?? false
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
+                : (int?)null;
 
             if (category == null)
             {
@@ -166,7 +165,7 @@ namespace StreamingService.Controllers
                 ViewData["Category"] = category;
             }
 
-            var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale, userId);
+            var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale, userId, category);
 
             return View(groupedReleases);
         }
@@ -176,7 +175,9 @@ namespace StreamingService.Controllers
         public async Task<IActionResult> Trending(VideoType? category)
         {
             var locale = CultureInfo.CurrentCulture.Name;
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var userId = User?.Identity?.IsAuthenticated ?? false
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
+                : (int?)null;
 
             if (category == null)
             {
@@ -190,7 +191,7 @@ namespace StreamingService.Controllers
                 ViewData["Category"] = category;
             }
 
-            var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId);
+            var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId, category);
 
             return View(trendingVideos);
         }

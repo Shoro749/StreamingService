@@ -26,40 +26,28 @@
 
         if (response.ok) {
             const result = await response.json();
-
-            if (result.success) {
-                const allButtons = document.querySelectorAll(`.js-save-for-later-btn[data-video-id="${videoId}"]`);
-
-                allButtons.forEach((btn) => {
-                    const newSavedState = result.isAdded;
-                    btn.dataset.isSaved = newSavedState.toString();
-
-                    if (newSavedState) {
-                        btn.classList.remove('bg-white/10');
-                        btn.classList.add('bg-white/20');
-                    } else {
-                        btn.classList.remove('bg-white/20');
-                        btn.classList.add('bg-white/10');
-                    }
-
-                    const iconDiv = btn.querySelector('div[style*="mask-image"]');
-                    if (iconDiv) {
-                        if (newSavedState) {
-                            iconDiv.classList.remove('bg-white', 'group-hover:bg-[#DCF260]');
-                            iconDiv.classList.add('bg-[#DCF260]', 'group-hover:bg-white');
-                        } else {
-                            iconDiv.classList.remove('bg-[#DCF260]', 'group-hover:bg-white');
-                            iconDiv.classList.add('bg-white', 'group-hover:bg-[#DCF260]');
-                        }
-                    }
-                });
-
-                if (!result.isAdded && window.location.pathname === '/favorites') {
-                    location.reload();
-                }
-            }
         }
     } catch (error) {
-        console.error('Помилка при зміні статусу "На потім":', error);
+        console.error('Помилка при зміні статусу:', error);
     }
+
+
+    const allButtons = document.querySelectorAll(`.js-save-for-later-btn[data-video-id="${videoId}"]`);
+    allButtons.forEach((btn) => {
+        btn.dataset.isSaved = !isCurrentlySaved;
+
+        btn.classList.toggle('bg-white/10');
+        btn.classList.toggle('bg-white/20');
+
+        const iconDiv = btn.querySelector('div');
+
+        if (iconDiv) {
+            iconDiv.classList.toggle('bg-white');
+            iconDiv.classList.toggle('group-hover/btn:bg-[#DCF260]');
+
+            iconDiv.classList.toggle('bg-[#DCF260]');
+            iconDiv.classList.toggle('group-hover/btn:bg-white');
+        }
+    });
+
 });

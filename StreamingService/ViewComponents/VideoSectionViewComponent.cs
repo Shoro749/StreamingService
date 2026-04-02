@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Services;
 using System.Globalization;
@@ -29,15 +30,23 @@ public class VideoSectionViewComponent : ViewComponent
             }
         }
 
+        VideoType? mediaType = null;
+        if (ViewContext?.ViewData != null && ViewContext.ViewData.ContainsKey("Category"))
+        {
+            var cat = ViewContext.ViewData["Category"];
+            if (cat is VideoType vt) mediaType = vt;
+            else if (cat is string s && Enum.TryParse<VideoType>(s, true, out var parsed)) mediaType = parsed;
+        }
+
         List<VideoCardViewModel> videos = sectionId switch
         {
-            "featured" => await _moviesService.GetSliderAsync(locale, userId),
-            "action" => await _moviesService.GetPopularAsync(locale, userId),
-            "popular" => await _moviesService.GetPopularAsync(locale, userId),
-            "newReleases" => await _moviesService.GetNewReleasesAsync(locale, userId),
-            "trending" => await _moviesService.GetTrendingAsync(locale, userId),
+            "featured" => await _moviesService.GetSliderAsync(locale, userId, mediaType),
+            "action" => await _moviesService.GetPopularAsync(locale, userId, mediaType),
+            "popular" => await _moviesService.GetPopularAsync(locale, userId, mediaType),
+            "newReleases" => await _moviesService.GetNewReleasesAsync(locale, userId, mediaType),
+            "trending" => await _moviesService.GetTrendingAsync(locale, userId, mediaType),
             "weeklyHits" => await _moviesService.GetWeeklyHitsAsync(locale, userId),
-            _ => await _moviesService.GetPopularAsync(locale, userId)
+            _ => await _moviesService.GetPopularAsync(locale, userId, mediaType)
         };
 
         var model = new VideoSectionViewModel
@@ -50,39 +59,5 @@ public class VideoSectionViewComponent : ViewComponent
 
         return View(model);
     }
-
-    //public async Task<IViewComponentResult> InvokeAsync(string title, string sectionId, string linkUrl, string? genre = null)
-    //{
-    //    var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
-
-    //    List<VideoCardViewModel> videos;
-
-    //    if (!string.IsNullOrEmpty(genre))
-    //    {
-    //        videos = await _moviesService.GetByGenreAsync(genre, locale);
-    //    }
-    //    else
-    //    {
-    //        videos = sectionId switch
-    //        {
-    //            "featured" => await _moviesService.GetSliderAsync(locale),
-    //            "popular" => await _moviesService.GetPopularAsync(locale),
-    //            "newReleases" => await _moviesService.GetNewReleasesAsync(locale),
-    //            "trending" => await _moviesService.GetTrendingAsync(locale),
-    //            "weeklyHits" => await _moviesService.GetWeeklyHitsAsync(locale),
-    //            _ => await _moviesService.GetPopularAsync(locale)
-    //        };
-    //    }
-
-    //    var model = new VideoSectionViewModel
-    //    {
-    //        Title = title,
-    //        SectionId = sectionId,
-    //        LinkUrl = linkUrl,
-    //        Videos = videos ?? new List<VideoCardViewModel>()
-    //    };
-
-    //    return View(model);
-    //}
 }
 

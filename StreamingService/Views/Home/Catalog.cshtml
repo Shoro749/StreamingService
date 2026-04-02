@@ -1,15 +1,12 @@
 ﻿@using StreamingService.DTO.Enums
 @using StreamingService.Extensions
-@using System.Diagnostics.Metrics
-@* @model List<StreamingService.DTO.ViewModels.VideoCardViewModel> *@
+@model StreamingService.DTO.ViewModels.CatalogPageViewModel
 @{
     Layout = "~/Views/Shared/Layouts/_LayoutApp.cshtml";
 }
 
 <section class="relative w-full h-[580px] overflow-hidden mb-10">
-
     @await Component.InvokeAsync("Hero")
-
 </section>
 
 <section class="mb-12 relative group">

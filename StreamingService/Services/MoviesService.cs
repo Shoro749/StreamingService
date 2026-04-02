@@ -1,5 +1,6 @@
 ﻿using StreamingService.DTO.ViewModels;
 using StreamingService.Repositories;
+using StreamingService.DTO.Enums;
 
 namespace StreamingService.Services
 {
@@ -17,24 +18,24 @@ namespace StreamingService.Services
             return _repository.GetHeroSlidersAsync(locale, userId);
         }
 
-        public Task<List<VideoCardViewModel>> GetSliderAsync(string locale, int? userId = null)
+        public Task<List<VideoCardViewModel>> GetSliderAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
-            return _repository.GetSliderVideosAsync(locale, userId);
+            return _repository.GetSliderVideosAsync(locale, userId, mediaType);
         }
 
-        public Task<List<VideoCardViewModel>> GetPopularAsync(string locale, int? userId = null)
+        public Task<List<VideoCardViewModel>> GetPopularAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
-            return _repository.GetPopularVideosAsync(locale, userId);
+            return _repository.GetPopularVideosAsync(locale, userId, mediaType);
         }
 
-        public Task<List<VideoCardViewModel>> GetTrendingAsync(string locale, int? userId = null)
+        public Task<List<VideoCardViewModel>> GetTrendingAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
-            return _repository.GetTrendingVideosAsync(locale, userId);
+            return _repository.GetTrendingVideosAsync(locale, userId, mediaType);
         }
 
-        public Task<List<VideoCardViewModel>> GetNewReleasesAsync(string locale, int? userId = null)
+        public Task<List<VideoCardViewModel>> GetNewReleasesAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
-            return _repository.GetNewReleasesVideosAsync(locale, userId);
+            return _repository.GetNewReleasesVideosAsync(locale, userId, mediaType);
         }
 
         public Task<List<VideoCardViewModel>> GetWeeklyHitsAsync(string locale, int? userId = null)
@@ -47,9 +48,9 @@ namespace StreamingService.Services
             return _repository.GetVideosByGenreAsync(genre, locale, 20);
         }
 
-        public Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale, int? userId = null)
+        public Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale, int? userId = null, VideoType? mediaType = null)
         {
-            return _repository.GetUpcomingReleasesAsync(locale, userId);
+            return _repository.GetUpcomingReleasesAsync(locale, userId, mediaType);
         }
 
         public Task<List<GenreViewModel>> GetAllGenresAsync(string locale)

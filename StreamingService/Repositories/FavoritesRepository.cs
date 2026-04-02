@@ -54,7 +54,9 @@ namespace StreamingService.Repositories
                         .Where(name => !string.IsNullOrEmpty(name))
                         .ToList(),
 
-                    IsFavorite = true
+                    IsFavorite = f.ListType == UserVideoListType.Favorite,
+
+                    IsSavedForLater = f.ListType == UserVideoListType.WatchLater,
                 })
                 .ToListAsync();
         }
