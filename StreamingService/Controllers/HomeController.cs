@@ -19,11 +19,13 @@ namespace StreamingService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly MoviesService _moviesService;
+        //private readonly MoviesService _moviesService;
+        private readonly IMoviesService _moviesService;
         private readonly PricingService _pricingService;
-        private readonly FavoritesService _favoritesService;
+        //private readonly FavoritesService _favoritesService;
+        private readonly IFavoritesService _favoritesService;
 
-        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService, FavoritesService favoritesService)
+        public HomeController(ILogger<HomeController> logger, PricingService pricingService, IMoviesService moviesService, IFavoritesService favoritesService)
         {
             _logger = logger;
             _pricingService = pricingService;
@@ -118,7 +120,7 @@ namespace StreamingService.Controllers
             var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, locale);
 
             ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
-            ViewBag.PostponedVideos = new List<VideoCardViewModel>();
+            ViewBag.PostponedVideos = await _favoritesService.GetPostponedVideosAsync(userId, locale);
 
             return View(favoriteVideos);
         }

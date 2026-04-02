@@ -8,12 +8,20 @@ namespace StreamingService.ViewComponents;
 
 public class VideoSectionViewComponent : ViewComponent
 {
-    private readonly MoviesService _moviesService;
+    // підключення Mock-сервісу для тестування UI (робота з каталогом, улюбленым, сторінкой "Незабаром").
+    private readonly IMoviesService _moviesService;
 
-    public VideoSectionViewComponent(MoviesService moviesService)
+    public VideoSectionViewComponent(IMoviesService moviesService)
     {
         _moviesService = moviesService;
     }
+
+    //private readonly MoviesService _moviesService;
+
+    //public VideoSectionViewComponent(MoviesService moviesService)
+    //{
+    //    _moviesService = moviesService;
+    //}
 
     public async Task<IViewComponentResult> InvokeAsync(string title, string sectionId, string linkUrl, string? genre = null)
     {

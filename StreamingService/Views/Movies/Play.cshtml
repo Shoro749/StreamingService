@@ -16,12 +16,27 @@
     <body class="bg-black text-white overflow-hidden relative w-screen h-screen">
         <div class="w-full h-full bg-black flex items-center justify-center">
 
-            <video id="main-player"
-            data-title="@Model.Title"
-            data-poster="@Model.BackdropUrl"
-            playsinline controls autoplay>
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-            </video>
+            @*Змінена розумна кнопка для програвання відео*@
+
+            @if(ViewBag.IsTrailer && ViewBag.TrailerEmbedUrl != null)
+            {
+                <iframe id="main-player"
+                        src="@ViewBag.TrailerEmbedUrl"
+                        class="w-full h-full border-0 absolute inset-0"
+                        allow="autoplay; encrypted-media; fullscreen"
+                        allowfullscreen>
+                </iframe>
+            }
+            else
+            {
+                <video id="main-player"
+                       data-title="@Model.Title"
+                       data-poster="@Model.BackdropUrl"
+                       playsinline controls autoplay class="w-full h-full object-cover">
+                       <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4" />
+                </video>
+		    }
+)
 
             <div id="back-button-container"
              class="group w-auto pr-32 h-32 absolute top-0 left-0 p-10 z-50 pointer-events-auto">
