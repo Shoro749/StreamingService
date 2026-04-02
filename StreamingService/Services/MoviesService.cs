@@ -47,9 +47,9 @@ namespace StreamingService.Services
             return _repository.GetVideosByGenreAsync(genre, locale, 20);
         }
 
-        public Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale)
+        public Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale, int? userId = null)
         {
-            return _repository.GetUpcomingReleasesAsync(locale);
+            return _repository.GetUpcomingReleasesAsync(locale, userId);
         }
 
         public Task<List<GenreViewModel>> GetAllGenresAsync(string locale)

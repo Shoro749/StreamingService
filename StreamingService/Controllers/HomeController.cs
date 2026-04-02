@@ -135,10 +135,14 @@ namespace StreamingService.Controllers
                 ViewData["Category"] = category;
             }
 
-            var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, locale);
+            var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.Favorite, locale);
+            favoriteVideos = FilterByCategory(favoriteVideos, category);
+
+            var postponedVideos = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.WatchLater, locale);
+            postponedVideos = FilterByCategory(postponedVideos, category);
 
             ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
-            ViewBag.PostponedVideos = new List<VideoCardViewModel>();
+            ViewBag.PostponedVideos = postponedVideos;
 
             return View(favoriteVideos);
         }
@@ -148,6 +152,7 @@ namespace StreamingService.Controllers
         public async Task<IActionResult> Upcoming(VideoType? category)
         {
             var locale = CultureInfo.CurrentCulture.Name;
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             if (category == null)
             {
@@ -161,7 +166,7 @@ namespace StreamingService.Controllers
                 ViewData["Category"] = category;
             }
 
-            var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale);
+            var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale, userId);
 
             return View(groupedReleases);
         }
@@ -219,7 +224,7 @@ namespace StreamingService.Controllers
             var locale = CultureInfo.CurrentCulture.Name;
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            var allFavorites = await _favoritesService.GetUserFavoritesAsync(userId, locale);
+            var allFavorites = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.Favorite, locale);
 
             var filteredVideos = allFavorites
                 .Where(v => v.Genres != null && v.Genres.Any(genre =>

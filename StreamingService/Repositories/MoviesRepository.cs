@@ -2,6 +2,7 @@
 using StreamingService.Data;
 using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
+using StreamingService.Models;
 using System.Globalization;
 
 namespace StreamingService.Repositories
@@ -63,7 +64,7 @@ namespace StreamingService.Repositories
 
                     TrailerUrl = "#",
                     TrailerDuration = v.TrailerDuration.ToString(),
-                    IsFavorite = userId.HasValue && v.Favorites
+                    IsFavorite = userId.HasValue && v.Lists
                         .Any(f => f.UserProfileId == userId.Value),
                 })
                 .ToListAsync();
@@ -154,12 +155,15 @@ namespace StreamingService.Repositories
                     TrailerUrl = "#",
                     TrailerDuration = v.TrailerDuration.ToString(),
 
-                    IsFavorite = userId.HasValue && v.Favorites
-                        .Any(f => f.UserProfileId == userId.Value),
+                    IsFavorite = userId.HasValue && v.Lists
+                        .Any(l => l.UserProfileId == userId.Value && l.ListType == UserVideoListType.Favorite),
 
-                    IsSavedForLater = false, // TODO
+                    IsSavedForLater = userId.HasValue && v.Lists
+                        .Any(l => l.UserProfileId == userId.Value && l.ListType == UserVideoListType.WatchLater),
 
-                    VideoType = VideoType.Movie, // TODO
+                    VideoType = !string.IsNullOrEmpty(v.VideoType)
+                        ? Enum.Parse<VideoType>(v.VideoType)
+                        : VideoType.Movie,
 
                     Actors = v.PersonVideos
                         .Where(pv => pv.PersonRole.Code == "actor")
@@ -189,7 +193,7 @@ namespace StreamingService.Repositories
                 });
         }
 
-        public async Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale)
+        public async Task<Dictionary<string, List<VideoCardViewModel>>> GetUpcomingReleasesAsync(string locale, int? userId = null)
         {
             var culture = new CultureInfo("uk-UA");
 
@@ -238,7 +242,10 @@ namespace StreamingService.Repositories
                                 .FirstOrDefault()
                                 ?? gv.Genre.GenreTranslations.Select(gt => gt.Name).FirstOrDefault())
                             .Where(name => !string.IsNullOrEmpty(name))
-                            .ToList()
+                            .ToList(),
+
+                        IsSavedForLater = userId.HasValue && e.Video.Lists
+                            .Any(l => l.UserProfileId == userId.Value && l.ListType == UserVideoListType.WatchLater),
                     })
                     .DistinctBy(v => v.Id)
                     .ToList()
@@ -357,14 +364,15 @@ namespace StreamingService.Repositories
 
             if (userId.HasValue)
             {
-                var favoriteVideoIds = await _context.UserVideoFavorites
+                var userLists = await _context.UserVideoLists
                     .Where(f => f.UserProfileId == userId.Value)
-                    .Select(f => f.VideoId)
+                    .Select(f => new { f.VideoId, f.ListType })
                     .ToListAsync();
 
                 foreach (var video in videos)
                 {
-                    video.IsFavorite = favoriteVideoIds.Contains(video.Id);
+                    video.IsFavorite = userLists.Any(l => l.VideoId == video.Id && l.ListType == UserVideoListType.Favorite);
+                    video.IsSavedForLater = userLists.Any(l => l.VideoId == video.Id && l.ListType == UserVideoListType.WatchLater);
                 }
             }
 

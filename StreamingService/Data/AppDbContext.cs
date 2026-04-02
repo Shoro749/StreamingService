@@ -48,7 +48,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
-    public virtual DbSet<UserVideoFavorite> UserVideoFavorites { get; set; }
+    public virtual DbSet<UserVideoList> UserVideoLists { get; set; }
 
     public virtual DbSet<UserVideoRating> UserVideoRatings { get; set; }
 
@@ -226,11 +226,11 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
         });
 
-        modelBuilder.Entity<UserVideoFavorite>(entity =>
+        modelBuilder.Entity<UserVideoList>(entity =>
         {
             entity.HasKey(e => e.Id);
 
-            entity.HasIndex(u => new { u.UserProfileId, u.VideoId }).IsUnique();
+            entity.HasIndex(e => new { e.UserProfileId, e.VideoId, e.ListType }).IsUnique();
         });
 
         modelBuilder.Entity<UserVideoRating>(entity =>

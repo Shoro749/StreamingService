@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
+using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Models;
 
@@ -14,10 +15,10 @@ namespace StreamingService.Repositories
             _context = context;
         }
 
-        public async Task<List<VideoCardViewModel>> GetFavoritesByProfileIdAsync(int userProfileId, string locale)
+        public async Task<List<VideoCardViewModel>> GetFavoritesByProfileIdAsync(int userProfileId, string locale, UserVideoListType listType)
         {
-            return await _context.UserVideoFavorites
-                .Where(f => f.UserProfileId == userProfileId)
+            return await _context.UserVideoLists
+                .Where(f => f.UserProfileId == userProfileId && f.ListType == listType)
                 .Select(f => new VideoCardViewModel
                 {
                     Id = f.Video.Id,
@@ -58,22 +59,23 @@ namespace StreamingService.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> AddToFavoritesAsync(int userProfileId, int videoId)
+        public async Task<bool> AddToFavoritesAsync(int userProfileId, int videoId, UserVideoListType listType)
         {
             try
             {
-                var exists = await _context.UserVideoFavorites
+                var exists = await _context.UserVideoLists
                 .AnyAsync(f => f.UserProfileId == userProfileId && f.VideoId == videoId);
 
                 if (!exists)
                 {
-                    var favorite = new UserVideoFavorite
+                    var favorite = new UserVideoList
                     {
                         UserProfileId = userProfileId,
-                        VideoId = videoId
+                        VideoId = videoId,
+                        ListType = listType
                     };
 
-                    await _context.UserVideoFavorites.AddAsync(favorite);
+                    await _context.UserVideoLists.AddAsync(favorite);
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -82,22 +84,30 @@ namespace StreamingService.Repositories
             catch { return false; }
         }
 
-        public async Task<bool> RemoveFromFavoritesAsync(int userProfileId, int videoId)
+        public async Task<bool> RemoveFromFavoritesAsync(int userProfileId, int videoId, UserVideoListType listType)
         {
             try
             {
-                var favorite = await _context.UserVideoFavorites
-                .FirstOrDefaultAsync(f => f.UserProfileId == userProfileId && f.VideoId == videoId);
+                var favorite = await _context.UserVideoLists
+                .FirstOrDefaultAsync(f => f.UserProfileId == userProfileId && f.VideoId == videoId && f.ListType == listType);
 
                 if (favorite != null)
                 {
-                    _context.UserVideoFavorites.Remove(favorite);
+                    _context.UserVideoLists.Remove(favorite);
                     await _context.SaveChangesAsync();
                     return true;
                 }
                 return false;
             }
             catch { return false; }
+        }
+
+        public async Task<bool> ExistsAsync(int userId, int videoId, UserVideoListType type)
+        {
+            return await _context.UserVideoLists.AnyAsync(x =>
+                x.UserProfileId == userId &&
+                x.VideoId == videoId &&
+                x.ListType == type);
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using StreamingService.DTO.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamingService.Models
 {
-    [Table("user_video_favorite")]
-    public class UserVideoFavorite
+    [Table("user_video_lists")]
+    public class UserVideoList
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id")]
         public int Id { get; set; }
@@ -16,5 +17,8 @@ namespace StreamingService.Models
         [Required, Column("user_profile_id")]
         public int UserProfileId { get; set; }
         public UserProfile UserProfile { get; set; }
+
+        [Column("list_type")]
+        public UserVideoListType ListType { get; set; }
     }
 }

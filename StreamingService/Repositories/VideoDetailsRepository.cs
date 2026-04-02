@@ -32,7 +32,7 @@ namespace StreamingService.Repositories
                         .ThenInclude(p => p.Images)
                 .Include(v => v.PersonVideos)
                     .ThenInclude(pv => pv.PersonRole)
-                .Include(v => v.Favorites)
+                .Include(v => v.Lists)
                 .FirstOrDefaultAsync(v => v.Id == videoId);
 
             if (video == null) return null;
@@ -130,7 +130,7 @@ namespace StreamingService.Repositories
                     .Where(name => !string.IsNullOrEmpty(name))
                     .ToList(),
 
-                IsFavorite = userId.HasValue && video.Favorites
+                IsFavorite = userId.HasValue && video.Lists
                     .Any(f => f.UserProfileId == userId.Value),
 
                 IsSavedForLater = false, // TODO
