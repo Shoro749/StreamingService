@@ -13,7 +13,7 @@
 
         <div class="flex-1 flex flex-col min-w-0 relative">
 
-            <header class="flex-shrink-0 z-40 px-6 md:px-12 pt-10 pb-4">
+            <header class="flex-shrink-0 z-40 px-6 relative z-[60] md:px-12 pt-10 pb-4">
                 <partial name="~/Views/Shared/Partials/Navigation/_HeaderApp.cshtml" />
             </header>
 
@@ -36,6 +36,7 @@
     <script src="~/js/carousel-modal.js" asp-append-version="true"></script>
     <script src="~/js/favorites.js" asp-append-version="true"></script>
     <script src="~/js/dropdown-menu.js"></script>
+    <script src="~/js/user-profile-menu.js" asp-append-version="true"></script>
     <script src="~/js/video-card-menu.js" asp-append-version="true"></script>
     <script src="~/js/sidebar.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
