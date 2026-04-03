@@ -399,9 +399,9 @@ namespace StreamingService.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<SearchResultsViewModel> SearchVideosAsync(string? query, int? genreId, string? sortBy, int page, int pageSize, string locale, int? userId)
+        public async Task<SearchResultsViewModel> SearchVideosAsync(string? query, int? genreId, string? sortBy, int page, int pageSize, string locale, int? userId, VideoType? mediaType = null)
         {
-            var baseQuery = GetVideoProjections(locale, null, userId);
+            var baseQuery = GetVideoProjections(locale, mediaType, userId);
 
             if (!string.IsNullOrWhiteSpace(query))
             {

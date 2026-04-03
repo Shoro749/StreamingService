@@ -23,8 +23,7 @@ namespace StreamingService.Services
         {
             var subscription = await _repo.GetActiveSubscriptionWithLevelAsync(userProfileId);
 
-            if (subscription == null)
-                return null; // немає активної підписки — доступ заборонено
+            if (subscription == null) return null;
 
             int levelId = subscription.SubscriptionPlan.SubscriptionLevel.Id;
 
@@ -54,7 +53,8 @@ namespace StreamingService.Services
 
             // Навігація між серіями (тільки для серіалів)
             var video = await _repo.GetVideoByIdAsync(videoId);
-            bool isMovie = video?.VideoType?.ToLower() is "movie" or "animation";
+
+            bool isMovie = !(video?.VideoType?.IndexOf("series", StringComparison.OrdinalIgnoreCase) >= 0);
 
             (int? prevId, int? nextId) = isMovie ? (null, null) : await GetAdjacentEpisodesAsync(episode, videoId);
 

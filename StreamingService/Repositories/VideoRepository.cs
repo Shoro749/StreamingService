@@ -22,11 +22,11 @@ namespace StreamingService.Repositories
 
         public async Task<VideoEpisode?> GetFirstEpisodeAsync(int videoId)
         {
-            return await _context.VideoSeasons
-                .Where(s => s.VideoId == videoId)
-                .OrderBy(s => s.NumberOfSeason)
-                .SelectMany(s => s.Episodes)
-                .OrderBy(e => e.EpisodeNumber)
+            return await _context.VideoEpisode
+                .Include(e => e.VideoSeason)
+                .Where(e => e.VideoSeason.VideoId == videoId)
+                .OrderBy(e => e.VideoSeason.NumberOfSeason)
+                .ThenBy(e => e.EpisodeNumber)
                 .FirstOrDefaultAsync();
         }
 
@@ -40,11 +40,11 @@ namespace StreamingService.Repositories
 
         public async Task<IEnumerable<VideoEpisode>> GetAllEpisodesOrderedAsync(int videoId)
         {
-            return await _context.VideoSeasons
-                .Where(s => s.VideoId == videoId)
-                .OrderBy(s => s.NumberOfSeason)
-                .SelectMany(s => s.Episodes)
-                .OrderBy(e => e.EpisodeNumber)
+            return await _context.VideoEpisode
+                .Include(e => e.VideoSeason)
+                .Where(e => e.VideoSeason.VideoId == videoId)
+                .OrderBy(e => e.VideoSeason.NumberOfSeason)
+                .ThenBy(e => e.EpisodeNumber)
                 .ToListAsync();
         }
 

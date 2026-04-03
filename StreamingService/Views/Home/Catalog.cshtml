@@ -3,11 +3,16 @@
 @model StreamingService.DTO.ViewModels.CatalogPageViewModel
 @{
     Layout = "~/Views/Shared/Layouts/_LayoutApp.cshtml";
+    var isSearch = (ViewData["IsSearch"] as bool?) ?? false;
+    var searchQuery = ViewData["SearchQuery"] as string ?? "";
 }
 
-<section class="relative w-full h-[580px] overflow-hidden mb-10">
-    @await Component.InvokeAsync("Hero")
-</section>
+@if (!isSearch)
+{
+    <section class="relative w-full h-[580px] overflow-hidden mb-10">
+        @await Component.InvokeAsync("Hero")
+    </section>
+}
 
 <section class="mb-12 relative group">
     <div id="genresList" class="fade-mask-right flex items-center gap-5 overflow-x-auto custom-scrollbar-hide pr-56 snap-x scroll-smooth">
@@ -27,31 +32,57 @@
 
 <div id="video-collections">
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "", // вибір редакції
-        SectionId = "featured",
-        LinkUrl = "/featured",
-    })
+    @if (isSearch)
+    {
+        <div class="mt-8 mb-6 flex items-center gap-6">
+            <h2 class="text-3xl font-bold text-white font-montserrat tracking-wide">Результати пошуку для "@searchQuery"</h2>
+        </div>
 
-    @await Component.InvokeAsync("VideoSection", new {
-        Title = "Вибух емоцій у кожному кадрі",
-        SectionId = "action",
-        LinkUrl = "/action",
-        Genre = "екшн"
-    })
+        <section class="mb-16">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 [&>div]:!w-full [&>div]:!max-w-none [&>div]:!min-w-0">
+                @if (Model.PopularVideos != null && Model.PopularVideos.Any())
+                {
+                    foreach (var video in Model.PopularVideos)
+                    {
+                        @await Component.InvokeAsync("VideoCard", video)
+                    }
+                }
+                else
+                {
+                    <div class="col-span-full flex justify-center items-center py-20">
+                        <p class="text-white/50 text-xl font-montserrat">Нічого не знайдено за запитом.</p>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+    else
+    {
+        @await Component.InvokeAsync("VideoSection", new { 
+            Title = "", // вибір редакції
+            SectionId = "featured",
+            LinkUrl = "/featured",
+        })
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "Те, що всі обговорюють", 
-        SectionId = "popular", 
-        LinkUrl = "/popular" 
-    })
+        @await Component.InvokeAsync("VideoSection", new {
+            Title = "Вибух емоцій у кожному кадрі",
+            SectionId = "action",
+            LinkUrl = "/action",
+            Genre = "екшн"
+        })
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "Не пропусти цього тижня!", 
-        SectionId = "newReleases", 
-        LinkUrl = "/new-releases" 
-    })
+        @await Component.InvokeAsync("VideoSection", new { 
+            Title = "Те, що всі обговорюють", 
+            SectionId = "popular", 
+            LinkUrl = "/popular" 
+        })
 
+        @await Component.InvokeAsync("VideoSection", new { 
+            Title = "Не пропусти цього тижня!", 
+            SectionId = "newReleases", 
+            LinkUrl = "/new-releases" 
+        })
+    }
 </div>
 
 @section Scripts {

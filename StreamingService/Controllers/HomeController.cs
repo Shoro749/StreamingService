@@ -240,16 +240,21 @@ namespace StreamingService.Controllers
 
         [HttpGet]
         [Route("search")]
-        public async Task<IActionResult> Search(string? query, int? genreId, string? sortBy, int page = 1)
+        public async Task<IActionResult> Search(string? query, int? genreId, string? sortBy, VideoType? type = null, int page = 1)
         {
-            if (string.IsNullOrWhiteSpace(query) && !genreId.HasValue)
+            if (string.IsNullOrWhiteSpace(query) && !genreId.HasValue && !type.HasValue)
             {
-                return View(new SearchResultsViewModel
+                var emptyModel = new CatalogPageViewModel
                 {
-                    Query = query,
-                    Videos = new List<VideoCardViewModel>(),
-                    TotalResults = 0
-                });
+                    Genres = await _moviesService.GetAllGenresAsync(CultureInfo.CurrentCulture.Name)
+                };
+
+                ViewData["IsSearch"] = true;
+                ViewData["SearchQuery"] = query ?? "";
+                ViewData["Title"] = "Пошук";
+                ViewData["MenuTitle"] = "Результати";
+
+                return View("Catalog", emptyModel);
             }
 
             var locale = CultureInfo.CurrentCulture.Name;
@@ -257,11 +262,26 @@ namespace StreamingService.Controllers
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
 
-            var results = await _moviesService.SearchVideosAsync(query, genreId, sortBy, page, 20, locale, userId);
+            var results = await _moviesService.SearchVideosAsync(query, genreId, sortBy, page, 20, locale, userId, type);
 
             ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
 
-            return View(results);
+            var catalogModel = new CatalogPageViewModel
+            {
+                Genres = await _moviesService.GetAllGenresAsync(locale),
+                PopularVideos = results.Videos ?? new List<VideoCardViewModel>(),
+                NewReleases = new List<VideoCardViewModel>(),
+                TrendingVideos = new List<VideoCardViewModel>()
+            };
+
+            ViewData["IsSearch"] = true;
+            ViewData["SearchQuery"] = query ?? "";
+            ViewData["SelectedGenreId"] = genreId;
+            ViewData["SortBy"] = sortBy;
+            ViewData["Title"] = "Результати пошуку";
+            ViewData["MenuTitle"] = "Усі";
+
+            return View("Catalog", catalogModel);
         }
 
         [HttpGet]
