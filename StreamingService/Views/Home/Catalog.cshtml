@@ -34,25 +34,29 @@
         Title = "", // вибір редакції
         SectionId = "featured",
         LinkUrl = "/featured",
+        category = ViewBag.CurrentCategory
     })
 
     @await Component.InvokeAsync("VideoSection", new {
         Title = "Вибух емоцій у кожному кадрі",
         SectionId = "action",
         LinkUrl = "/action",
-        Genre = "екшн"
+        //Genre = "екшн",
+        category = ViewBag.CurrentCategory
     })
 
-    @await Component.InvokeAsync("VideoSection", new { 
-        Title = "Те, що всі обговорюють", 
-        SectionId = "popular", 
-        LinkUrl = "/popular" 
+    @await Component.InvokeAsync("VideoSection", new {
+        Title = "Те, що всі обговорюють",
+        SectionId = "popular",
+        LinkUrl = "/popular",
+        category = ViewBag.CurrentCategory
     })
 
     @await Component.InvokeAsync("VideoSection", new { 
         Title = "Не пропусти цього тижня!", 
         SectionId = "newReleases", 
-        LinkUrl = "/new-releases" 
+        LinkUrl = "/new-releases",
+        category = ViewBag.CurrentCategory
     })
 
 </div>
