@@ -73,6 +73,23 @@ public class MoviesController : Controller
         return View(vm);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Info(int id)
+    {
+        var locale = CultureInfo.CurrentCulture.Name;
+        int userId = 0;
+        if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0", out userId);
+        }
+
+        var model = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
+        if (model == null)
+            return NotFound();
+
+        return Json(model);
+    }
+
     private int GetCurrentUserProfileId()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");

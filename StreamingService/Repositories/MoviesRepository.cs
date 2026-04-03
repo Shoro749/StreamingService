@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StreamingService.Data;
 using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
@@ -42,7 +41,7 @@ namespace StreamingService.Repositories
                         .OrderBy(s => s.NumberOfSeason)
                         .SelectMany(s => s.Episodes)
                         .OrderBy(e => e.EpisodeNumber)
-                        .Select(e => e.Duration > 0 ? $"{e.Duration} хвилин" : "")
+                        .Select(e => e.Duration > 0 ? $"{e.Duration / 60} хв" : "")
                         .FirstOrDefault() ?? "",
 
                     Year = v.Seasons
@@ -63,8 +62,10 @@ namespace StreamingService.Repositories
                         .Where(name => !string.IsNullOrEmpty(name))
                         .ToList(),
 
-                    TrailerUrl = "#",
-                    TrailerDuration = v.TrailerDuration.ToString(),
+                    TrailerUrl = v.Trailerurl ?? "#",
+                    TrailerDuration = v.TrailerDuration.HasValue
+                        ? $"{v.TrailerDuration.Value / 60:D2}:{v.TrailerDuration.Value % 60:D2}"
+                        : "00:00",
                     IsFavorite = userId.HasValue && v.Lists
                         .Any(f => f.UserProfileId == userId.Value),
                 })
@@ -145,7 +146,7 @@ namespace StreamingService.Repositories
                         .OrderBy(s => s.NumberOfSeason)
                         .SelectMany(s => s.Episodes)
                         .OrderBy(e => e.EpisodeNumber)
-                        .Select(e => e.Duration > 0 ? $"{e.Duration} хв" : "")
+                        .Select(e => e.Duration > 0 ? $"{e.Duration / 60} хв" : "")
                         .FirstOrDefault()
                         ?? "",
 
@@ -160,8 +161,10 @@ namespace StreamingService.Repositories
                         .Where(name => !string.IsNullOrEmpty(name))
                         .ToList(),
 
-                    TrailerUrl = "#",
-                    TrailerDuration = v.TrailerDuration.ToString(),
+                    TrailerUrl = v.Trailerurl ?? "#",
+                    TrailerDuration = v.TrailerDuration.HasValue
+                        ? $"{v.TrailerDuration.Value / 60:D2}:{v.TrailerDuration.Value % 60:D2}"
+                        : "00:00",
 
                     IsFavorite = userId.HasValue && v.Lists
                         .Any(l => l.UserProfileId == userId.Value && l.ListType == UserVideoListType.Favorite),
