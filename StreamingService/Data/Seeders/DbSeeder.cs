@@ -38,6 +38,7 @@ namespace StreamingService.Data.Seeders
             var persons = await PersonSeeder.SeedAsync(context);
             var personTranslations = await PersonTranslationSeeder.SeedAsync(context, persons);
             await PersonVideoSeeder.SeedAsync(context, videos, persons, personRoles);
+            await PersonImageSeeder.SeedAsync(context, persons);
 
             var users = await UserProfileSeeder.SeedAsync(context); //(userManager, roleManager);
             var payments = await PaymentSeeder.SeedAsync(context);
@@ -50,8 +51,8 @@ namespace StreamingService.Data.Seeders
             var comments = await CommentSeeder.SeedAsync(context, videos, users);
             await UserCommentLikeSeeder.SeedAsync(context, users, comments);
 
-            //await VideoEpisodeDailyStatsSeeder.SeedAsync(context, videoEpisodes);
-            //await VideoEpisodeViewTimedLogSeeder.SeedAsync(context, users, videoEpisodes);
+            await VideoEpisodeDailyStatsSeeder.SeedAsync(context, videoEpisodes);
+            await VideoEpisodeViewTimedLogSeeder.SeedAsync(context, users, videoEpisodes);
 
             if (videos == null || ratings == null)
                 return;

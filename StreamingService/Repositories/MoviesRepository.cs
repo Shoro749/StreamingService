@@ -34,7 +34,7 @@ namespace StreamingService.Repositories
 
                     ImageUrl = v.Images
                         .Where(i => i.Type == "banner" || i.Type == "backdrop")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault() ?? "/images/placeholder-banner.jpg",
 
                     Duration = v.Seasons
@@ -102,23 +102,23 @@ namespace StreamingService.Repositories
 
                     PosterUrl = v.Images
                         .Where(i => i.Type == "poster")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault()
                         ?? "/images/placeholder-poster.jpg",
 
                     BackdropUrl = v.Images
                         .Where(i => i.Type == "backdrop" || i.Type == "banner")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault()
                         ?? "/images/placeholder-backdrop.jpg",
 
                     ThumbnailUrl = v.Images
                         .Where(i => i.Type == "thumbnail")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault()
                         ?? v.Images
                             .Where(i => i.Type == "poster")
-                            .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                            .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                             .FirstOrDefault()
                         ?? "/images/placeholder-thumbnail.jpg",
 
@@ -187,11 +187,10 @@ namespace StreamingService.Repositories
                                 .FirstOrDefault()
                                 ?? pv.Person.PersonTranslations.Select(pt => pt.Name).FirstOrDefault()
                                 ?? "",
-                            //ImageUrl = pv.Person.Images
-                            //    .Where(i => i.Type == "profile")
-                            //    .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
-                            //    .FirstOrDefault()
-                            //    ?? "/images/placeholder-actor.jpg",
+                            ImageUrl = pv.Person.Images
+                                .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
+                                .FirstOrDefault()
+                                ?? "/images/placeholder-actor.jpg",
                             Character = pv.Person.PersonTranslations
                                 .Where(pt => pt.LocaleCode == locale)
                                 .Select(pt => pt.Name)
@@ -339,7 +338,7 @@ namespace StreamingService.Repositories
                         ?? "Без назви",
                     PosterUrl = v.Images
                         .Where(i => i.Type == "poster")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault()
                         ?? "/images/placeholder-poster.jpg",
                     Rating = v.RatingCount == 0 ? 0 : (double)v.RatingSum / v.RatingCount,

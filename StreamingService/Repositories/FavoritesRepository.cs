@@ -31,7 +31,7 @@ namespace StreamingService.Repositories
 
                     PosterUrl = f.Video.Images
                         .Where(i => i.Type == "poster")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault()
                         ?? "/images/placeholder-poster.jpg",
 
@@ -57,6 +57,29 @@ namespace StreamingService.Repositories
                     IsFavorite = f.ListType == UserVideoListType.Favorite,
 
                     IsSavedForLater = f.ListType == UserVideoListType.WatchLater,
+
+                    Actors = f.Video.PersonVideos
+                        .Where(pv => pv.PersonRole.Code == "actor")
+                        .Select(pv => new ActorViewModel
+                        {
+                            //Id = pv.Person.Id,
+                            Name = pv.Person.PersonTranslations
+                                .Where(pt => pt.LocaleCode == locale)
+                                .Select(pt => pt.Name)
+                                .FirstOrDefault()
+                                ?? pv.Person.PersonTranslations.Select(pt => pt.Name).FirstOrDefault()
+                                ?? "",
+                            ImageUrl = pv.Person.Images
+                                .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
+                                .FirstOrDefault()
+                                ?? "/images/placeholder-actor.jpg",
+                            Character = pv.Person.PersonTranslations
+                                .Where(pt => pt.LocaleCode == locale)
+                                .Select(pt => pt.Name)
+                                .FirstOrDefault()
+                                ?? ""
+                        })
+                        .ToList(),
                 })
                 .ToListAsync();
         }

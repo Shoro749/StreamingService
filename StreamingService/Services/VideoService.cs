@@ -46,7 +46,8 @@ namespace StreamingService.Services
                 return null;
             }
 
-            string streamUrl = BuildStreamUrl(file.BlobContainer, file.BlobPath);
+            //string streamUrl = BuildStreamUrl(file.BlobContainer, file.BlobPath);
+            string streamUrl = file.BlobPath;
 
             var progress = await _repo.GetViewProgressAsync(userProfileId, episode.Id);
             bool wasWatched = progress?.IsFullyWatched ?? false;
