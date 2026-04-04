@@ -28,7 +28,7 @@ namespace StreamingService.Data.Seeders
             var videoSeasons = await VideoSeasonSeeder.SeedAsync(context, videos);
             var videoEpisodes = await VideoEpisodeSeeder.SeedAsync(context, videoSeasons);
             //var videoEpisodeTranslations = await VideoEpisodeTranslationSeeder.SeedAsync(context, videoEpisodes);
-            //var videoImages = await VideoImageSeeder.SeedAsync(context, videos);
+            var videoImages = await VideoImageSeeder.SeedAsync(context, videos);
 
             var videoFiles = await VideoFileSeeder.SeedAsync(context, videoEpisodes);
             var audiotracks = await AudiotrackSeeder.SeedAsync(context, videoEpisodes);
@@ -43,7 +43,7 @@ namespace StreamingService.Data.Seeders
             var payments = await PaymentSeeder.SeedAsync(context);
             await UserSubscriptionSeeder.SeedAsync(context, users, payments, subscriptionPlans);
 
-            await UserVideoFavoriteSeeder.SeedAsync(context, users, videos);
+            //await UserVideoFavoriteSeeder.SeedAsync(context, users, videos);
             var ratings = await UserVideoRatingSeeder.SeedAsync(context, users, videos);
             await UserEpisodesHistorySeeder.SeedAsync(context, users, videoEpisodes);
 

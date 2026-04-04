@@ -69,6 +69,30 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                     EpisodeNumber = 2,
                     EpisodeType = "Series",
                     VideoSeason = videoSeasons[4]
+                },
+                new VideoEpisode
+                {
+                    Duration = 48 * 60,
+                    ReleaseDate = new DateOnly(2014, 11, 6),
+                    EpisodeNumber = null,
+                    EpisodeType = "Movie",
+                    VideoSeason = videoSeasons[5]
+                },
+                new VideoEpisode
+                {
+                    Duration = 48 * 60,
+                    ReleaseDate = new DateOnly(2026, 4, 29),
+                    EpisodeNumber = null,
+                    EpisodeType = "Movie",
+                    VideoSeason = videoSeasons[6]
+                },
+                new VideoEpisode
+                {
+                    Duration = 48 * 60,
+                    ReleaseDate = new DateOnly(2026, 5, 4),
+                    EpisodeNumber = null,
+                    EpisodeType = "Movie",
+                    VideoSeason = videoSeasons[7]
                 }
             };
 
