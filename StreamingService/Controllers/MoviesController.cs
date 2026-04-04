@@ -20,21 +20,6 @@ public class MoviesController : Controller
         _favoritesService = favoritesService;
     }
 
-    //[HttpGet("home")]
-    //public async Task<IActionResult> Index([FromQuery] string locale = "uk")
-    //{
-    //    var model = new HomePageViewModel
-    //    {
-    //        Slider = await _service.GetSliderAsync(locale),
-    //        Popular = await _service.GetPopularAsync(locale),
-    //        Trending = await _service.GetTrendingAsync(locale),
-    //        NewReleases = await _service.GetNewReleasesAsync(locale),
-    //        WeeklyHits = await _service.GetWeeklyHitsAsync(locale)
-    //    };
-
-    //    return View(model);
-    //}
-
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> Details(int id)
@@ -90,13 +75,29 @@ public class MoviesController : Controller
         return Json(model);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> InfoPartial(int id)
+    {
+        var locale = CultureInfo.CurrentCulture.Name;
+        int userId = 0;
+        if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0", out userId);
+        }
+
+        var model = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
+        if (model == null)
+            return NotFound();
+
+        return PartialView("~/Views/Shared/Partials/Modal/_VideoInfoModal.cshtml", model);
+    }
+
     private int GetCurrentUserProfileId()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         Console.WriteLine("User id: " + userId);
         return userId;
     }
-
 
     [HttpGet]
     public IActionResult AccessDenied(int videoId)
@@ -114,48 +115,10 @@ public class MoviesController : Controller
 
         int userProfileId = GetCurrentUserProfileId();
 
-        // Визначаємо чи повністю переглянуто (якщо >90% відео)
         bool isFullyWatched = request.Duration > 0 &&
                              (double)request.CurrentTime / request.Duration >= 0.9;
 
         await _videoService.SaveProgressAsync(userProfileId, request.EpisodeId, isFullyWatched);
         return Ok();
     }
-
-    //public IActionResult Details(int id)
-    //{
-    //    var movie = MockVideoService.GetAllVideos()
-    //        .Concat(MockUpcomingService.GetUpcomingReleases())
-    //        .FirstOrDefault(v => v.Id == id);
-
-    //    if (movie == null)
-    //    {
-    //        return NotFound();
-    //    }
-
-    //    ViewData["MenuTitle"] = movie.VideoType.GetShortName();
-    //    ViewData["Category"] = movie.VideoType;
-
-    //    var recommendedVideos = MockVideoService.GetAllVideos()
-    //        .Where(video => video.Id != id)
-    //        .Take(10)
-    //        .ToList();
-
-    //    ViewBag.RecommendedVideos = recommendedVideos;
-
-    //    return View(movie);
-    //}
-
-    //public IActionResult Play(int id)
-    //{
-    //    var video = MockVideoService.GetAllVideos()
-    //        .FirstOrDefault(v => v.Id == id);
-
-    //    if (video == null)
-    //    {
-    //        return NotFound();
-    //    }
-
-    //    return View(video);
-    //}
 }

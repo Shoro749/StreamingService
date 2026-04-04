@@ -33,8 +33,31 @@
                         }
                     });
 
-                    if (!result.isAdded && window.location.pathname === '/favorites') {
-                        location.reload();
+                    const currentPath = window.location.pathname.replace(/\/$/, '');
+                    if (!result.isAdded && currentPath === '/favorites') {
+                        let cardContainer = favoriteBtn.closest('.group');
+
+                        if (!cardContainer) {
+                            const contextBtn = document.querySelector(`.js-menu-toggle[data-video-id="${videoId}"]`);
+                            if (contextBtn) cardContainer = contextBtn.closest('.group');
+                        }
+
+                        if (!cardContainer) {
+                            cardContainer = document.querySelector(`[data-video-id="${videoId}"]`);
+                        }
+
+                        if (cardContainer) {
+                            cardContainer.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            cardContainer.style.opacity = '0';
+                            cardContainer.style.transform = 'scale(0.9)';
+                            setTimeout(() => {
+                                if (cardContainer.parentNode) {
+                                    cardContainer.parentNode.removeChild(cardContainer);
+                                }
+                            }, 300);
+                        } else {
+                            // location.reload();
+                        }
                     }
                 }
             }
