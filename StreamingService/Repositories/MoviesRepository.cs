@@ -449,10 +449,28 @@ namespace StreamingService.Repositories
 
             if (genreId.HasValue)
             {
-                baseQuery = _context.Videos
-                    .Where(v => v.GenreVideos.Any(gv => gv.GenreId == genreId.Value))
-                    .Select(v => baseQuery.FirstOrDefault(bq => bq.Id == v.Id))
-                    .Where(v => v != null);
+                var videoIds = await _context.GenresVideos
+                    .Where(gv => gv.GenreId == genreId.Value)
+                    .Select(gv => gv.VideoId)
+                    .Distinct()
+                    .ToListAsync();
+
+                if (!videoIds.Any())
+                {
+                    return new SearchResultsViewModel
+                    {
+                        Query = query,
+                        SelectedGenreId = genreId,
+                        SortBy = sortBy,
+                        Videos = new List<VideoCardViewModel>(),
+                        TotalResults = 0,
+                        CurrentPage = page,
+                        TotalPages = 0,
+                        PageSize = pageSize
+                    };
+                }
+
+                baseQuery = baseQuery.Where(v => videoIds.Contains(v.Id));
             }
 
             baseQuery = sortBy switch
