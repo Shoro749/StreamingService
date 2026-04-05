@@ -6,10 +6,10 @@
     e.preventDefault();
     e.stopPropagation()
 
-    //if (saveForLaterBtn.dataset.isFavorite === 'true') {
-    //    alert('Не можна любити в два рази сильніше!');
-    //    return;
-    //}
+    if (saveForLaterBtn.dataset.isFavorite === 'true') {
+        alert('Не можна любити в два рази сильніше!');
+        return;
+    }
     
     const videoId = saveForLaterBtn.dataset.videoId;
     const isCurrentlySaved = saveForLaterBtn.dataset.isSaved === 'true' || false;

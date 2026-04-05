@@ -4,6 +4,7 @@ using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Extensions;
 using StreamingService.Models;
+using StreamingService.Resources;
 using StreamingService.Services;
 using System.Diagnostics;
 using System.Globalization;
@@ -17,19 +18,22 @@ namespace StreamingService.Controllers
         private readonly MoviesService _moviesService;
         private readonly PricingService _pricingService;
         private readonly FavoritesService _favoritesService;
+        SubscriptionService _subscriptionService;
 
-        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService, FavoritesService favoritesService)
+        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService, FavoritesService favoritesService, SubscriptionService subscriptionService)
         {
             _logger = logger;
             _pricingService = pricingService;
             _moviesService = moviesService;
             _favoritesService = favoritesService;
+            _subscriptionService = subscriptionService;
         }
 
         [Authorize]
         public async Task<IActionResult> Movies()
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             var model = new MoviesPageViewModel
@@ -47,7 +51,7 @@ namespace StreamingService.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var plans = _pricingService.GetPricingPlans();
+            var plans = await _subscriptionService.GetAllPlansAsync();
             var studios = StudioItem.GetStudios();
             var features = FeatureItem.GetFeatures();
             var questions = FaqItem.GetQuestions();
@@ -55,7 +59,23 @@ namespace StreamingService.Controllers
 
             var model = new LandingPageViewModel
             {
-                PricingTiers = plans,
+                PricingTiers = plans.Select(p => new PricingTier
+                {
+                    Id = p.Id,
+
+                    Title = p.SubscriptionLevel?.Code ?? "Невідомо",
+
+                    Price = p.Price.ToString(),
+
+                    ButtonText = (p.Id == 1) ? "Спробувати базовий" : (p.Id == 2) ? "Увімкнути магію кіно" : "Дивись без меж",
+
+                    Features = string.IsNullOrEmpty(p.Features)
+                        ? new List<string>()
+                        : p.Features
+                            .Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(f => f.Trim())
+                            .ToList()
+                }).ToList(),
                 Studios = studios,
                 Features = features,
                 Questions = questions,
@@ -79,7 +99,8 @@ namespace StreamingService.Controllers
         //[RequireActiveSubscription]
         public async Task<IActionResult> Catalog(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+            //var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+            var locale = "uk";
             var userId = User?.Identity?.IsAuthenticated ?? false
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
@@ -117,7 +138,8 @@ namespace StreamingService.Controllers
         [Route("/favorites")]
         public async Task<IActionResult> Favorites(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             if (category == null)
@@ -148,7 +170,8 @@ namespace StreamingService.Controllers
         [Route("/upcoming")]
         public async Task<IActionResult> Upcoming(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = User?.Identity?.IsAuthenticated ?? false
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
@@ -174,7 +197,8 @@ namespace StreamingService.Controllers
         [Route("/trending")]
         public async Task<IActionResult> Trending(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = User?.Identity?.IsAuthenticated ?? false
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
@@ -199,7 +223,8 @@ namespace StreamingService.Controllers
         [HttpPost]
         public async Task<IActionResult> FilterByGenres([FromBody] FilterByGenresRequest request)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             var videos = await _moviesService.GetVideosByGenresAsync(request.GenreCodes, locale, userId);
@@ -222,17 +247,22 @@ namespace StreamingService.Controllers
         [Authorize]
         public async Task<IActionResult> FilterFavoritesByGenres([FromBody] FilterByGenresRequest request)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             var allFavorites = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.Favorite, locale);
 
-            var filteredVideos = allFavorites
-                .Where(v => v.Genres != null && v.Genres.Any(genre =>
-                    request.GenreCodes.Any(code =>
-                        genre.ToLower().Contains(code.ToLower())
-                    )
-                ))
+            if (request.GenreCodes == null || !request.GenreCodes.Any())
+            {
+                return Json(new { success = true, videos = allFavorites });
+            }
+
+            var videosByGenres = await _moviesService.GetVideosByGenresAsync(request.GenreCodes, locale, userId);
+
+            var favoriteIds = allFavorites.Select(v => v.Id).ToHashSet();
+            var filteredVideos = videosByGenres
+                .Where(v => favoriteIds.Contains(v.Id))
                 .ToList();
 
             return Json(new { success = true, videos = filteredVideos });
@@ -257,7 +287,8 @@ namespace StreamingService.Controllers
                 return View("Catalog", emptyModel);
             }
 
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = User?.Identity?.IsAuthenticated ?? false
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;

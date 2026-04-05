@@ -20,7 +20,8 @@ public class VideosController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(int id)
     {
-        var locale = CultureInfo.CurrentCulture.Name;
+        //var locale = CultureInfo.CurrentCulture.Name;
+        var locale = "uk";
         int userId = 0;
         if (User?.Identity?.IsAuthenticated ?? false)
         {

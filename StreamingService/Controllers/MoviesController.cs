@@ -24,7 +24,8 @@ public class MoviesController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var locale = CultureInfo.CurrentCulture.Name;
+        //var locale = CultureInfo.CurrentCulture.Name;
+        var locale = "uk";
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
         var movie = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
@@ -61,7 +62,8 @@ public class MoviesController : Controller
     [HttpGet]
     public async Task<IActionResult> Info(int id)
     {
-        var locale = CultureInfo.CurrentCulture.Name;
+        //var locale = CultureInfo.CurrentCulture.Name;
+        var locale = "uk";
         int userId = 0;
         if (User?.Identity?.IsAuthenticated ?? false)
         {
@@ -78,7 +80,8 @@ public class MoviesController : Controller
     [HttpGet]
     public async Task<IActionResult> InfoPartial(int id)
     {
-        var locale = CultureInfo.CurrentCulture.Name;
+        //var locale = CultureInfo.CurrentCulture.Name;
+        var locale = "uk";
         int userId = 0;
         if (User?.Identity?.IsAuthenticated ?? false)
         {

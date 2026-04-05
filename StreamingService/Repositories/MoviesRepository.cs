@@ -395,10 +395,43 @@ namespace StreamingService.Repositories
 
         public async Task<List<VideoCardViewModel>> GetVideosByGenresAsync(List<string> genreCodes, string locale, int? userId = null)
         {
-            var query = GetVideoProjections(locale, null, userId)
-                .Where(v => v.Genres.Any(g => genreCodes.Contains(g)));
+            if (genreCodes == null || !genreCodes.Any())
+                return new List<VideoCardViewModel>();
 
-            return await query.ToListAsync();
+            var normalized = genreCodes
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => s.Trim().ToLowerInvariant())
+                .ToList();
+
+            if (!normalized.Any())
+                return new List<VideoCardViewModel>();
+
+            var matchingGenreIds = await _context.Genres
+                .Where(g =>
+                    normalized.Contains(g.Code.ToLower()) ||
+                    g.GenreTranslations.Any(gt =>
+                        gt.LocaleCode == locale && normalized.Contains(gt.Name.ToLower())))
+                .Select(g => g.Id)
+                .ToListAsync();
+
+            if (!matchingGenreIds.Any())
+                return new List<VideoCardViewModel>();
+
+            var videoIds = await _context.GenresVideos
+                .Where(gv => matchingGenreIds.Contains(gv.GenreId))
+                .Select(gv => gv.VideoId)
+                .Distinct()
+                .ToListAsync();
+
+            if (!videoIds.Any())
+                return new List<VideoCardViewModel>();
+
+            var query = GetVideoProjections(locale, null, userId)
+                .Where(v => videoIds.Contains(v.Id))
+                .OrderByDescending(v => v.Rating)
+                .Take(20);
+
+            return await GetVideosWithUserDataAsync(query, userId, locale);
         }
 
         public async Task<SearchResultsViewModel> SearchVideosAsync(string? query, int? genreId, string? sortBy, int page, int pageSize, string locale, int? userId, VideoType? mediaType = null)

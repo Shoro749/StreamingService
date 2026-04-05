@@ -18,7 +18,8 @@ public class VideoSectionViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync(string title, string sectionId, string linkUrl, string? genre = null)
     {
-        var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+        //var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+        var locale = "uk";
 
         int? userId = null;
         if (UserClaimsPrincipal?.Identity?.IsAuthenticated ?? false)
