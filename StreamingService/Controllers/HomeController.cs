@@ -19,11 +19,13 @@ namespace StreamingService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly MoviesService _moviesService;
+        //private readonly MoviesService _moviesService;
+        private readonly IMoviesService _moviesService;
         private readonly PricingService _pricingService;
-        private readonly FavoritesService _favoritesService;
+        //private readonly FavoritesService _favoritesService;
+        private readonly IFavoritesService _favoritesService;
 
-        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService, FavoritesService favoritesService)
+        public HomeController(ILogger<HomeController> logger, PricingService pricingService, IMoviesService moviesService, IFavoritesService favoritesService)
         {
             _logger = logger;
             _pricingService = pricingService;
@@ -94,15 +96,25 @@ namespace StreamingService.Controllers
                 _logger.LogError("MoviesService is null!");
                 return View(new CatalogPageViewModel());
             }
+            //для тестування фільтрації по категорії
+            var popular = await _moviesService.GetPopularAsync(locale, userId);
+            var newReleases = await _moviesService.GetNewReleasesAsync(locale, userId);
+            var trending = await _moviesService.GetTrendingAsync(locale, userId);
 
             var model = new CatalogPageViewModel
             {
                 Genres = await _moviesService.GetAllGenresAsync(locale),
-                PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
-                NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId),
-                TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId)
-            };
+                //закоментовано для тестування фільтрації по категорії
+                //PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
+                //NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId),
+                //TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId)
 
+                //додано для тестування фільтрації по категорії
+                PopularVideos = FilterByCategory(popular, category),
+                NewReleases = FilterByCategory(newReleases, category),
+                TrendingVideos = FilterByCategory(trending, category)
+            };
+            ViewBag.CurrentCategory = category;
             return View(model);
         }
 
@@ -116,9 +128,17 @@ namespace StreamingService.Controllers
             SetPageHeaders(category, "Улюблене");
 
             var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, locale);
+            //додано для тестування фільтрації по категорії
+            var postponedVideos = await _favoritesService.GetPostponedVideosAsync(userId, locale);
+            favoriteVideos = FilterByCategory(favoriteVideos, category);
+            postponedVideos = FilterByCategory(postponedVideos, category);
 
             ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
-            ViewBag.PostponedVideos = new List<VideoCardViewModel>();
+            //ViewBag.PostponedVideos = await _favoritesService.GetPostponedVideosAsync(userId, locale); //закоментовано для тестування фільтрації по категорії
+            
+            //додано для тестування фільтрації по категорії
+            ViewBag.PostponedVideos = postponedVideos;
+            ViewBag.CurrentCategory = category;
 
             return View(favoriteVideos);
         }
@@ -132,7 +152,23 @@ namespace StreamingService.Controllers
             SetPageHeaders(category, "Незабаром");
 
             var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale);
-
+            //для фільтрації по категорії
+            // --- початок ----
+            if (category != null && groupedReleases != null)
+            {
+                var filteredGroupedReleases = new Dictionary<string, List<VideoCardViewModel>>();
+                foreach (var group in groupedReleases)
+                {
+                    var filteredVideos = FilterByCategory(group.Value, category);
+                    if (filteredVideos.Any())
+                    {
+                        filteredGroupedReleases.Add(group.Key, filteredVideos);
+                    }
+                }
+                groupedReleases = filteredGroupedReleases;
+            }
+            ViewBag.CurrentCategory = category;
+            // --- кінець ----
             return View(groupedReleases);
         }
 
@@ -146,7 +182,10 @@ namespace StreamingService.Controllers
             SetPageHeaders(category, "У тренді");
 
             var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId);
-
+            //для фільтрації по категорії
+            trendingVideos = FilterByCategory(trendingVideos, category);
+            ViewBag.CurrentCategory = category;
+            //-----
             return View(trendingVideos);
         }
 

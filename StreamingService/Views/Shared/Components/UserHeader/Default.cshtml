@@ -27,7 +27,7 @@
             @* <span class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full"></span> *@
         </button>
 
-        <div class="shadow-glass flex items-center gap-6 px-5 w-auto md:max-w-56 h-16 bg-white/10 rounded-xl backdrop-blur-sm cursor-pointer hover:bg-white/20 transition-all group">
+        @* <div class="shadow-glass flex items-center gap-6 px-5 w-auto md:max-w-56 h-16 bg-white/10 rounded-xl backdrop-blur-sm cursor-pointer hover:bg-white/20 transition-all group">
 
             <img src="@Model.AvatarUrl"
                  class="w-9 h-9 rounded-xl object-cover flex-shrink-0"
@@ -52,6 +52,70 @@
                       stroke-linecap="round"
                       stroke-linejoin="round" />
             </svg>
+         </div>*@
+
+        <div class="relative" id="user-profile-menu">
+
+            <button type="button"
+                    id="user-profile-btn"
+                    class="shadow-glass flex items-center gap-6 px-5 w-auto md:max-w-56 h-16 bg-white/10 rounded-xl backdrop-blur-xl cursor-pointer hover:bg-white/20 transition-all focus:outline-none border-none pointer-events-auto">
+
+                <img src="@Model.AvatarUrl"
+                     class="w-9 h-9 rounded-xl object-cover flex-shrink-0"
+                     alt="@Model.DisplayName"
+                     onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(Model.DisplayName)&background=random&color=fff&size=128'">
+
+                <div class="hidden md:flex flex-col overflow-hidden text-left">
+                    <span class="font-medium text-lg leading-tight text-white truncate" title="@Model.DisplayName">
+                        @Model.DisplayName
+                    </span>
+                    <span class="font-semibold text-base leading-tight @subscriptionColorClass">
+                        @subscriptionText
+                    </span>
+                </div>
+
+                <svg id="user-profile-arrow"
+                     class="hidden md:block w-3 h-2 text-white ml-auto transition-transform duration-300 flex-shrink-0"
+                     viewBox="0 0 13 7" fill="none">
+                    <path d="M1 1L6.5 6L12 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <div id="user-dropdown-content"
+                 class="hidden absolute top-full right-0 mt-2 w-64 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl shadow-glass opacity-0 invisible transition-all duration-300 z-[999] overflow-hidden transform origin-top-right scale-95 pointer-events-auto">
+
+                <div class="py-2 flex flex-col">
+
+                    <a href="/Account/Subscriptions" class="flex items-center gap-3 px-6 py-3 text-white hover:bg-white/20 transition-colors">
+                        <span class="font-medium text-lg">Плани та підписки</span>
+                    </a>
+
+                    <a href="/Account/Settings" class="flex items-center gap-3 px-6 py-3 text-white hover:bg-white/20 transition-colors">
+                        <span class="font-medium text-lg">Налаштування</span>
+                    </a>
+
+                    <a href="/Account/Messages" class="flex items-center justify-between px-6 py-3 text-white hover:bg-white/20 transition-colors">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-lg">Повідомлення</span>
+                        </div>
+                        @if (Model.UnreadMessagesCount > 0)
+                        {
+                            <span class="bg-[#FF0000] text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+                                @Model.UnreadMessagesCount
+                            </span>
+                        }
+                    </a>
+
+                    <div class="h-px bg-white/10 my-2 mx-2"></div>
+
+                    <form asp-controller="Profile" asp-action="Logout" method="post" class="m-0">
+                        <button type="submit" class="w-full flex items-center gap-3 px-6 py-6 text-white hover:bg-white/20 transition-colors text-left border-none focus:outline-none cursor-pointer">
+                            <span class="font-medium text-lg">Вийти з акаунту</span>
+                        </button>
+                    </form>
+
+                </div>
+            </div>
         </div>
     }
     else
@@ -62,3 +126,4 @@
         </a>
     }
 </div>
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Services;
 using System.Globalization;
@@ -8,14 +9,44 @@ namespace StreamingService.ViewComponents;
 
 public class VideoSectionViewComponent : ViewComponent
 {
-    private readonly MoviesService _moviesService;
+    // підключення Mock-сервісу для тестування UI (робота з каталогом, улюбленым, сторінкой "Незабаром").
+    private readonly IMoviesService _moviesService;
 
-    public VideoSectionViewComponent(MoviesService moviesService)
+    // підключення заголовків для різних сторінок, в залежності від типу відео (фільми, серіали, мультфільми).
+    private static readonly Dictionary<(string, VideoType?), string> SectionTitles = new()
+    {
+        { ("action", VideoType.AnimatedSeries), "Герої поруч із тобою."},
+        { ("action", VideoType.AnimatedMovie), "Фантазія на повну."},
+        { ("action", VideoType.Series), "Один епізод — і ти в історії."},
+        { ("action", VideoType.Movie), "Вибух емоцій у кожному кадрі"},
+        { ("action", null), "Вибух емоцій у кожному кадрі"},
+
+        { ("popular", VideoType.AnimatedSeries), "Лови пригоди!" },
+        { ("popular", VideoType.AnimatedMovie), "Миттєво в казці." },
+        { ("popular", VideoType.Series), "Залежність на всю ніч." },
+        { ("popular", VideoType.Movie), "Те, що всі обговорюють" },
+        { ("popular", null), "Те, що всі обговорюють" },
+
+        { ("newReleases", VideoType.AnimatedSeries), "Барви твоєї уяви." },
+        { ("newReleases", VideoType.AnimatedMovie), "Маленькі пригоди — велике задоволення." },
+        { ("newReleases", VideoType.Series), "Драма, шок, емоції." },
+        { ("newReleases", VideoType.Movie), "Не пропусти цього тижня!" },
+        { ("newReleases", null), "Не пропусти цього тижня!" }
+    };
+    public VideoSectionViewComponent(IMoviesService moviesService)
     {
         _moviesService = moviesService;
     }
+    // TODO для бекенду: Цей конструктор поки закоментований поки відсутні дані бази.
+    //private readonly MoviesService _moviesService;
 
-    public async Task<IViewComponentResult> InvokeAsync(string title, string sectionId, string linkUrl, string? genre = null)
+    //public VideoSectionViewComponent(MoviesService moviesService)
+    //{
+    //    _moviesService = moviesService;
+    //}
+
+    // Тут Додано VideoType? category = null у параметри для фільтрації за типом відео
+    public async Task<IViewComponentResult> InvokeAsync(string title, string sectionId, string linkUrl, string? genre = null, VideoType? category = null)
     {
         var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
 
@@ -39,10 +70,26 @@ public class VideoSectionViewComponent : ViewComponent
             "weeklyHits" => await _moviesService.GetWeeklyHitsAsync(locale, userId),
             _ => await _moviesService.GetPopularAsync(locale, userId)
         };
+        // ФІЛЬТРУЄМО СПИСОК (залишаємо тільки потрібну категорію)       
+        if (category != null && videos != null)
+        {
+            videos = videos.Where(v => v.VideoType == category).ToList();
+        }
+        //ПРИБИРАЄМО ПУСТІ СЕКЦІЇ
+        if (videos == null || !videos.Any())
+        {
+            return Content(string.Empty);
+        }
+        // ВИЗНАЧАЄМО ЗАГОЛОВОК СЕКЦІЇ ВІДПОВІДНО ДО ТИПУ ВІДЕО
+        string currentTitle = title;
+        if (SectionTitles.TryGetValue((sectionId, category), out var foundTitle))
+        {
+            currentTitle = foundTitle;
+        }
 
         var model = new VideoSectionViewModel
         {
-            Title = title,
+            Title = currentTitle,
             SectionId = sectionId,
             LinkUrl = linkUrl,
             Videos = videos ?? new List<VideoCardViewModel>()
@@ -84,5 +131,7 @@ public class VideoSectionViewComponent : ViewComponent
 
     //    return View(model);
     //}
+    
+
 }
 

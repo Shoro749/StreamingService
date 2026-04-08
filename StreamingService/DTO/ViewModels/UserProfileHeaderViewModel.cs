@@ -7,6 +7,7 @@
         public string AvatarUrl { get; set; } = "";
         public string SubscriptionLevel { get; set; } = "Free";
         public bool HasActiveSubscription { get; set; }
+        public int UnreadMessagesCount { get; set; }
 
         public string DisplayName => !string.IsNullOrEmpty(Username) ? Username : Email.Split('@')[0];
 

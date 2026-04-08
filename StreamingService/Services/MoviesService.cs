@@ -3,7 +3,7 @@ using StreamingService.Repositories;
 
 namespace StreamingService.Services
 {
-    public class MoviesService
+    public class MoviesService : IMoviesService
     {
         private readonly MoviesRepository _repository;
 

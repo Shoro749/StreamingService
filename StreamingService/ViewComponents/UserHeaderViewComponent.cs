@@ -29,6 +29,12 @@ namespace StreamingService.ViewComponents
 
             var userInfo = await _profileService.GetUserHeaderInfoAsync(userId);
 
+            // 2. ДОДАЄМО ТЕСТОВЕ ЗНАЧЕННЯ КІЛЬКОСТІ ПОВІДОМЛЕНЬ:
+            if (userInfo != null)
+            {
+                userInfo.UnreadMessagesCount = 2;
+            }
+
             return View("Default", userInfo);
         }
     }

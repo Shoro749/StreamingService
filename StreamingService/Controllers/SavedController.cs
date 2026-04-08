@@ -7,6 +7,13 @@ namespace StreamingService.Controllers;
 [Route("api/saved")]
 public class SavedController : ControllerBase
 {
+    private readonly MockVideoService _mockService;
+
+    public SavedController(MockVideoService mockService)
+    {
+        _mockService = mockService;
+    }
+
     public class ToggleRequest
     {
         public int VideoId { get; set; }
@@ -15,11 +22,7 @@ public class SavedController : ControllerBase
     [HttpPost("toggle")]
     public IActionResult Toggle([FromBody] ToggleRequest request)
     {
-        bool isFoundInUpcoming = MockUpcomingService.ToggleSavedStatus(request.VideoId);
-        if (!isFoundInUpcoming)
-        {
-            MockVideoService.ToggleSavedStatus(request.VideoId);
-        }
+        _mockService.ToggleSavedStatus(request.VideoId);
         return Ok();
     }
    
