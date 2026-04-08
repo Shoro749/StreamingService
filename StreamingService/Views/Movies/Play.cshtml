@@ -1,9 +1,9 @@
 ﻿@using StreamingService.DTO.Enums;
-@model StreamingService.DTO.ViewModels.VideoCardViewModel;
+@model StreamingService.DTO.ViewModels.VideoViewModel;
 
 @{
 	Layout = null;
-    ViewData["Title"] = Model.Title + " - Грає зараз";
+    ViewData["Title"] = Model.VideoTitle + " - Грає зараз";
 }
 
 <!DOCTYPE html>
@@ -38,36 +38,59 @@
 		    }
 )
 
-            <div id="back-button-container"
-             class="group w-auto pr-32 h-32 absolute top-0 left-0 p-10 z-50 pointer-events-auto">
-            <a id="back-link" 
-               href="/Movies/Details/@Model.Id"
-               class="text-white text-2xl font-bold flex items-center gap-2 hover:text-[#DCF260] drop-shadow-md opacity-0 whitespace-nowrap group-hover:opacity-100 transition-all duration-300">
-                    <span>
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                             <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                        </svg>
-                    </span>
-                    @Model.Title
-                </a>
-            </div>
+            <div class="absolute top-10 left-10 z-50 pointer-events-auto">
+            <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.VideoId" class="text-white text-2xl font-bold flex items-center gap-2 hover:text-[#DCF260] transition-colors drop-shadow-md">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                </svg>
+                <span>
+                    @Model.VideoTitle
 
-            @if (Model.VideoType == VideoType.Series || Model.VideoType == VideoType.AnimatedSeries)
-            {
-                <div class="absolute bottom-24 left-10 right-10 z-50 flex justify-between pointer-events-auto">
-                    <div class="flex gap-4">
-                        <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
-                            Пропустити заставку
-                        </button>
-                        <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
-                            Попередня серія
-                        </button>
-                    </div>
+                    @if (!Model.IsMovie)
+                    {
+                        <span class="text-lg font-normal opacity-80">
+                            Сезон @Model.SeasonNumber Серія @Model.EpisodeNumber
+                        </span>
+                    }
+                </span>
+            </a>
+        </div>
+
+        @if (!Model.IsMovie)
+        {
+            <div class="absolute top-20 left-10 z-50 text-white text-lg opacity-80">
+                @Model.EpisodeTitle
+            </div>
+        }
+
+        @if (!Model.IsMovie)
+        {
+            <div class="absolute bottom-24 left-10 right-10 z-50 flex justify-between pointer-events-auto">
+                <div class="flex gap-4">
                     <button class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20 text-white transition-all">
-                        Наступна серія
+                        Пропустити заставку
                     </button>
+                    @if (Model.PrevEpisodeId != null)
+                    {
+                        <a asp-action="Play"
+                           asp-route-id="@Model.VideoId"
+                           asp-route-episodeId="@Model.PrevEpisodeId"
+                           class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20">
+                            Попередня серія
+                        </a>
+                    }
                 </div>
-            }
+                @if (Model.NextEpisodeId != null)
+                {
+                    <a asp-action="Play"
+                       asp-route-id="@Model.VideoId"
+                       asp-route-episodeId="@Model.NextEpisodeId"
+                       class="px-6 py-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md border border-white/20">
+                        Наступна серія
+                    </a>
+                }
+            </div>
+        }
 
         </div>
     

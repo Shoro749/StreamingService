@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StreamingService.DTO.Requests;
 using StreamingService.Extensions;
 using StreamingService.Services;
 using System.Globalization;
@@ -9,87 +10,27 @@ namespace StreamingService.Controllers;
 
 public class MoviesController : Controller
 {
-    //private readonly MoviesService _moviesService;
-   // private readonly FavoritesService _favoritesService;
+    private readonly VideoService _videoService;
     private readonly VideoDetailsService _videoDetailsService;
-    private readonly IMoviesService _moviesService; // для тестування UI.
-    private readonly IFavoritesService _favoritesService; // для тестування UI.
-    private readonly MockVideoService _mockServise; // Mock-сервіс для тестування UI.
-
-
-    // TODO для бекенду: Перевів контролер на інтерфейси (IMoviesService, IFavoritesService), 
-    // щоб підключити MockVideoService для тестування верстки. 
-    // Коли база буде готова, просто перемкніть реалізацію в Program.cs.
-    public MoviesController(VideoDetailsService videoDetailsService, IFavoritesService favoritesService, IMoviesService moviesService, MockVideoService mockService)
+    private readonly FavoritesService _favoritesService;
+    public MoviesController(VideoDetailsService videoDetailsService, FavoritesService favoritesService, VideoService videoService)
     {
+        _videoService = videoService;
         _videoDetailsService = videoDetailsService;
         _favoritesService = favoritesService;
         _moviesService = moviesService;
         _mockServise = mockService;
     }
 
-    //[HttpGet("home")]
-    //public async Task<IActionResult> Index([FromQuery] string locale = "uk")
-    //{
-    //    var model = new HomePageViewModel
-    //    {
-    //        Slider = await _service.GetSliderAsync(locale),
-    //        Popular = await _service.GetPopularAsync(locale),
-    //        Trending = await _service.GetTrendingAsync(locale),
-    //        NewReleases = await _service.GetNewReleasesAsync(locale),
-    //        WeeklyHits = await _service.GetWeeklyHitsAsync(locale)
-    //    };
-
-    //    return View(model);
-    //}
-
-    // TODO для бекенду: Ці методи поки закоментовані поки відсутні дані бази, але вони потрібні для тестування UI.
-    //[Authorize]
-    //[HttpGet]
-    //public async Task<IActionResult> Details(int id)
-    //{
-    //    var locale = CultureInfo.CurrentCulture.Name;
-    //    var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
-    //    var movie = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
-
-    //    if (movie == null)
-    //    {
-    //        return NotFound();
-    //    }
-
-    //    ViewData["MenuTitle"] = movie.VideoType.GetShortName();
-    //    ViewData["Category"] = movie.VideoType;
-
-    //    // Рекомендовані відео
-    //    var recommendedVideos = await _videoDetailsService.GetRecommendedVideosAsync(id, locale, 10);
-    //    ViewBag.RecommendedVideos = recommendedVideos;
-
-    //    return View(movie);
-    //}
-
-    //[Authorize]
-    //[HttpGet]
-    //public async Task<IActionResult> Play(int id)
-    //{
-    //    var locale = CultureInfo.CurrentCulture.Name;
-    //    var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
-    //    var video = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
-
-    //    if (video == null)
-    //    {
-    //        return NotFound();
-    //    }
-
-    //    return View(video);
-    //}
-
-    // Методи Details та Play для тестування UI з Mock-сервісом.
-    public IActionResult Details(int id)
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
     {
-        var movie = _mockServise.GetAllVideos()
-            .FirstOrDefault(v => v.Id == id);
+        //var locale = CultureInfo.CurrentCulture.Name;
+        var locale = "uk";
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+        var movie = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
 
         if (movie == null)
         {
@@ -99,40 +40,90 @@ public class MoviesController : Controller
         ViewData["MenuTitle"] = movie.VideoType.GetShortName();
         ViewData["Category"] = movie.VideoType;
 
-        var recommendedVideos = _mockServise.GetAllVideos()
-            .Where(video => video.Id != id)
-            .Take(10)
-            .ToList();
-
+        // Рекомендовані відео
+        var recommendedVideos = await _videoDetailsService.GetRecommendedVideosAsync(id, locale, 10);
         ViewBag.RecommendedVideos = recommendedVideos;
 
         return View(movie);
     }
 
-    public IActionResult Play(int id, bool isTrailer = false)
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Play(int id, int? episodeId = null)
     {
-        var video = _mockServise.GetAllVideos()
-            .FirstOrDefault(v => v.Id == id);
+        int userProfileId = GetCurrentUserProfileId();
 
-        if (video == null)
+        var vm = await _videoService.GetPlaybackAsync(userProfileId, id, episodeId);
+
+        //if (vm == null)
+        //    return RedirectToAction("AccessDenied", new { videoId = id });
+
+        return View(vm);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Info(int id)
+    {
+        //var locale = CultureInfo.CurrentCulture.Name;
+        var locale = "uk";
+        int userId = 0;
+        if (User?.Identity?.IsAuthenticated ?? false)
         {
+            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0", out userId);
+        }
+
+        var model = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
+        if (model == null)
             return NotFound();
+
+        return Json(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> InfoPartial(int id)
+    {
+        //var locale = CultureInfo.CurrentCulture.Name;
+        var locale = "uk";
+        int userId = 0;
+        if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0", out userId);
         }
 
-        ViewBag.isTrailer = isTrailer;
-        if (isTrailer && !string.IsNullOrEmpty(video.TrailerUrl)) 
-        {
-            var embedUrl = video.TrailerUrl;
-            if (embedUrl.Contains("watch?v="))
-            {
-                embedUrl = embedUrl.Replace("watch?v=", "embed/").Split('&')[0];
-            }
-            else if (embedUrl.Contains("youtu.be/"))
-            {
-                embedUrl = embedUrl.Replace("youtu.be/", "youtube.com/embed/").Split('?')[0];
-            }
-            ViewBag.TrailerEmbedUrl = $"{embedUrl}?autoplay=1&rel=0&modestbranding=1";
-        }
-        return View(video);
+        var model = await _videoDetailsService.GetVideoDetailsAsync(id, locale, userId);
+        if (model == null)
+            return NotFound();
+
+        return PartialView("~/Views/Shared/Partials/Modal/_VideoInfoModal.cshtml", model);
+    }
+
+    private int GetCurrentUserProfileId()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        Console.WriteLine("User id: " + userId);
+        return userId;
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied(int videoId)
+    {
+        ViewBag.VideoId = videoId;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveProgress([FromBody] SaveProgressRequest request)
+    {
+        if (request.EpisodeId <= 0)
+            return BadRequest();
+
+        int userProfileId = GetCurrentUserProfileId();
+
+        bool isFullyWatched = request.Duration > 0 &&
+                             (double)request.CurrentTime / request.Duration >= 0.9;
+
+        await _videoService.SaveProgressAsync(userProfileId, request.EpisodeId, isFullyWatched);
+        return Ok();
     }
 }

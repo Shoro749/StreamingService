@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StreamingService.Data;
 
@@ -11,9 +12,11 @@ using StreamingService.Data;
 namespace StreamingService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260401185015_MergeFavoritesToUserLists")]
+    partial class MergeFavoritesToUserLists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -651,7 +654,7 @@ namespace StreamingService.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.HasIndex("UserProfileId", "VideoId", "ListType")
+                    b.HasIndex("UserProfileId", "VideoId")
                         .IsUnique();
 
                     b.ToTable("user_video_lists");
@@ -710,9 +713,6 @@ namespace StreamingService.Migrations
 
                     b.Property<int?>("TrailerDuration")
                         .HasColumnType("int");
-
-                    b.Property<string>("Trailerurl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoType")
                         .HasColumnType("nvarchar(max)");
@@ -1228,7 +1228,7 @@ namespace StreamingService.Migrations
                         .IsRequired();
 
                     b.HasOne("StreamingService.Models.Video", "Video")
-                        .WithMany("Lists")
+                        .WithMany("Favorites")
                         .HasForeignKey("VideoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1422,11 +1422,11 @@ namespace StreamingService.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Favorites");
+
                     b.Navigation("GenreVideos");
 
                     b.Navigation("Images");
-
-                    b.Navigation("Lists");
 
                     b.Navigation("PersonVideos");
 

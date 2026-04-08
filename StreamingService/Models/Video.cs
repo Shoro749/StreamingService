@@ -15,6 +15,7 @@ public partial class Video
     public long RatingSum { get; set; }
     public string? AgeRating { get; set; }
     public int? TrailerDuration { get; set; }
+    public string? Trailerurl { get; set; }
 
     [ForeignKey(nameof(SubscriptionLevel))]
     public int MinAccess { get; set; }
@@ -27,7 +28,7 @@ public partial class Video
     public List<VideoImage> Images { get; set; } = new();
     public List<VideoTranslation> Translations { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();
-    public List<UserVideoFavorite> Favorites { get; set; } = new();
+    public List<UserVideoList> Lists { get; set; } = new();
     public List<UserVideoRating> Ratings { get; set; } = new();
     public List<GenreVideo> GenreVideos { get; set; } = new();
     public List<PersonVideo> PersonVideos { get; set; } = new();

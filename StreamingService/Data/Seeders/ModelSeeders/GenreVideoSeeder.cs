@@ -24,7 +24,16 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 new GenreVideo { Video = videos[2], Genre = genres[0] },
 
                 new GenreVideo { Video = videos[3], Genre = genres[3] },
-                new GenreVideo { Video = videos[3], Genre = genres[0] }
+                new GenreVideo { Video = videos[3], Genre = genres[0] },
+
+                new GenreVideo { Video = videos[4], Genre = genres[1] },
+                new GenreVideo { Video = videos[4], Genre = genres[2] },
+
+                new GenreVideo { Video = videos[5], Genre = genres[0] },
+                new GenreVideo { Video = videos[5], Genre = genres[2] },
+
+                new GenreVideo { Video = videos[6], Genre = genres[0] },
+                new GenreVideo { Video = videos[6], Genre = genres[3] }
             };
 
 

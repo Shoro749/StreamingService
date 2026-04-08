@@ -25,7 +25,7 @@
 
     <a asp-controller="Account"
        asp-action="@targetAction"
-        asp-route-plan="@Model.Title"
+       asp-route-planId="@Model.Id"
         class="mt-auto w-full h-14 bg-[#D0F260] rounded-xl self-center text-[#22223A] text-xl font-black uppercase shadow-[0px_2px_81px_rgba(208,242,96,0.2)] hover:bg-white hover:scale-105 transition-all duration-300 flex items-center justify-center cursor-pointer decoration-0">
             @Model.ButtonText
     </a>

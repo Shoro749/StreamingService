@@ -32,7 +32,7 @@ namespace StreamingService.Repositories
                         .ThenInclude(p => p.Images)
                 .Include(v => v.PersonVideos)
                     .ThenInclude(pv => pv.PersonRole)
-                .Include(v => v.Favorites)
+                .Include(v => v.Lists)
                 .FirstOrDefaultAsync(v => v.Id == videoId);
 
             if (video == null) return null;
@@ -63,25 +63,25 @@ namespace StreamingService.Repositories
 
                 PosterUrl = video.Images
                     .Where(i => i.Type == "poster")
-                    .Select(i => i.BlobContainer == "external"
+                    .Select(i => i.BlobContainer == "images"
                         ? i.BlobPath
-                        : "/" + i.BlobContainer + "/" + i.BlobPath)
+                        : /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                     .FirstOrDefault()
                     ?? "/images/placeholder-poster.jpg",
 
                 BackdropUrl = video.Images
                     .Where(i => i.Type == "backdrop" || i.Type == "banner")
-                    .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                    .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                     .FirstOrDefault()
                     ?? "/images/placeholder-backdrop.jpg",
 
                 ThumbnailUrl = video.Images
                     .Where(i => i.Type == "thumbnail")
-                    .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                    .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                     .FirstOrDefault()
                     ?? video.Images
                         .Where(i => i.Type == "poster")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault()
                     ?? "/images/placeholder-thumbnail.jpg",
 
@@ -130,7 +130,7 @@ namespace StreamingService.Repositories
                     .Where(name => !string.IsNullOrEmpty(name))
                     .ToList(),
 
-                IsFavorite = userId.HasValue && video.Favorites
+                IsFavorite = userId.HasValue && video.Lists
                     .Any(f => f.UserProfileId == userId.Value),
 
                 IsSavedForLater = false, // TODO
@@ -138,29 +138,33 @@ namespace StreamingService.Repositories
                 VideoType = videoType,
 
                 Actors = video.PersonVideos
-                    .Where(pv => pv.PersonRole.Code == "actor")
-                    .Select(pv => new ActorViewModel
-                    {
-                        Id = pv.Person.Id,
-                        Name = pv.Person.PersonTranslations
-                            .Where(pt => pt.LocaleCode == locale)
-                            .Select(pt => pt.Name)
-                            .FirstOrDefault()
-                            ?? pv.Person.PersonTranslations.Select(pt => pt.Name).FirstOrDefault()
-                            ?? "",
-                        PhotoUrl = pv.Person.Images
-                            .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
-                            .FirstOrDefault()
-                            ?? "/images/placeholder-actor.jpg",
-                        Character = "" // TODO: можна додати поле character у persons_videos
-                    })
-                    .ToList(),
+                        .Where(pv => pv.PersonRole.Code == "actor")
+                        .Select(pv => new ActorViewModel
+                        {
+                            //Id = pv.Person.Id,
+                            Name = pv.Person.PersonTranslations
+                                .Where(pt => pt.LocaleCode == locale)
+                                .Select(pt => pt.Name)
+                                .FirstOrDefault()
+                                ?? pv.Person.PersonTranslations.Select(pt => pt.Name).FirstOrDefault()
+                                ?? "",
+                            ImageUrl = pv.Person.Images
+                                .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
+                                .FirstOrDefault()
+                                ?? "/images/placeholder-actor.jpg",
+                            Character = pv.Person.PersonTranslations
+                                .Where(pt => pt.LocaleCode == locale)
+                                .Select(pt => pt.Name)
+                                .FirstOrDefault()
+                                ?? ""
+                        })
+                        .ToList(),
 
                 Scenes = video.Images
                     .Where(i => i.Type == "scene")
                     .Select(i => new SceneViewModel
                     {
-                        SceneImageUrl = "/" + i.BlobContainer + "/" + i.BlobPath,
+                        SceneImageUrl = /*"/" + i.BlobContainer + "/" +*/ i.BlobPath,
                         Timestamp = "0:00"
                     })
                     .ToList()
@@ -189,7 +193,7 @@ namespace StreamingService.Repositories
                             .FirstOrDefault() ?? "Без назви",
                         PosterUrl = v.Images
                             .Where(i => i.Type == "poster")
-                            .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                            .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                             .FirstOrDefault() ?? "/images/placeholder-poster.jpg",
                         Rating = v.RatingCount == 0 ? 0 : (double)v.RatingSum / v.RatingCount,
                         Year = v.Seasons
@@ -217,7 +221,7 @@ namespace StreamingService.Repositories
                         .FirstOrDefault() ?? "Без назви",
                     PosterUrl = v.Images
                         .Where(i => i.Type == "poster")
-                        .Select(i => "/" + i.BlobContainer + "/" + i.BlobPath)
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault() ?? "/images/placeholder-poster.jpg",
                     Rating = v.RatingCount == 0 ? 0 : (double)v.RatingSum / v.RatingCount,
                     Year = v.Seasons

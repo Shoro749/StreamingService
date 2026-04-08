@@ -1,42 +1,39 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
 using StreamingService.Extensions;
 using StreamingService.Models;
+using StreamingService.Resources;
 using StreamingService.Services;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Claims;
-using System.Xml.Linq;
 
 namespace StreamingService.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        //private readonly MoviesService _moviesService;
-        private readonly IMoviesService _moviesService;
+        private readonly MoviesService _moviesService;
         private readonly PricingService _pricingService;
-        //private readonly FavoritesService _favoritesService;
-        private readonly IFavoritesService _favoritesService;
+        private readonly FavoritesService _favoritesService;
+        SubscriptionService _subscriptionService;
 
-        public HomeController(ILogger<HomeController> logger, PricingService pricingService, IMoviesService moviesService, IFavoritesService favoritesService)
+        public HomeController(ILogger<HomeController> logger, PricingService pricingService, MoviesService moviesService, FavoritesService favoritesService, SubscriptionService subscriptionService)
         {
             _logger = logger;
             _pricingService = pricingService;
             _moviesService = moviesService;
             _favoritesService = favoritesService;
+            _subscriptionService = subscriptionService;
         }
 
         [Authorize]
         public async Task<IActionResult> Movies()
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             var model = new MoviesPageViewModel
@@ -54,7 +51,7 @@ namespace StreamingService.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var plans = _pricingService.GetPricingPlans();
+            var plans = await _subscriptionService.GetAllPlansAsync();
             var studios = StudioItem.GetStudios();
             var features = FeatureItem.GetFeatures();
             var questions = FaqItem.GetQuestions();
@@ -62,7 +59,23 @@ namespace StreamingService.Controllers
 
             var model = new LandingPageViewModel
             {
-                PricingTiers = plans,
+                PricingTiers = plans.Select(p => new PricingTier
+                {
+                    Id = p.Id,
+
+                    Title = p.SubscriptionLevel?.Code ?? "Невідомо",
+
+                    Price = p.Price.ToString(),
+
+                    ButtonText = (p.Id == 1) ? "Спробувати базовий" : (p.Id == 2) ? "Увімкнути магію кіно" : "Дивись без меж",
+
+                    Features = string.IsNullOrEmpty(p.Features)
+                        ? new List<string>()
+                        : p.Features
+                            .Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(f => f.Trim())
+                            .ToList()
+                }).ToList(),
                 Studios = studios,
                 Features = features,
                 Questions = questions,
@@ -86,8 +99,11 @@ namespace StreamingService.Controllers
         //[RequireActiveSubscription]
         public async Task<IActionResult> Catalog(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            //var locale = CultureInfo.CurrentCulture.Name.Split('-')[0];
+            var locale = "uk";
+            var userId = User?.Identity?.IsAuthenticated ?? false
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
+                : (int?)null;
 
             SetPageHeaders(category, "Каталог");
 
@@ -96,25 +112,15 @@ namespace StreamingService.Controllers
                 _logger.LogError("MoviesService is null!");
                 return View(new CatalogPageViewModel());
             }
-            //для тестування фільтрації по категорії
-            var popular = await _moviesService.GetPopularAsync(locale, userId);
-            var newReleases = await _moviesService.GetNewReleasesAsync(locale, userId);
-            var trending = await _moviesService.GetTrendingAsync(locale, userId);
 
             var model = new CatalogPageViewModel
             {
                 Genres = await _moviesService.GetAllGenresAsync(locale),
-                //закоментовано для тестування фільтрації по категорії
-                //PopularVideos = await _moviesService.GetPopularAsync(locale, userId),
-                //NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId),
-                //TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId)
-
-                //додано для тестування фільтрації по категорії
-                PopularVideos = FilterByCategory(popular, category),
-                NewReleases = FilterByCategory(newReleases, category),
-                TrendingVideos = FilterByCategory(trending, category)
+                PopularVideos = await _moviesService.GetPopularAsync(locale, userId, category),
+                NewReleases = await _moviesService.GetNewReleasesAsync(locale, userId, category),
+                TrendingVideos = await _moviesService.GetTrendingAsync(locale, userId, category)
             };
-            ViewBag.CurrentCategory = category;
+
             return View(model);
         }
 
@@ -122,23 +128,20 @@ namespace StreamingService.Controllers
         [Route("/favorites")]
         public async Task<IActionResult> Favorites(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             SetPageHeaders(category, "Улюблене");
 
-            var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, locale);
-            //додано для тестування фільтрації по категорії
-            var postponedVideos = await _favoritesService.GetPostponedVideosAsync(userId, locale);
+            var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.Favorite, locale);
             favoriteVideos = FilterByCategory(favoriteVideos, category);
+
+            var postponedVideos = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.WatchLater, locale);
             postponedVideos = FilterByCategory(postponedVideos, category);
 
             ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
-            //ViewBag.PostponedVideos = await _favoritesService.GetPostponedVideosAsync(userId, locale); //закоментовано для тестування фільтрації по категорії
-            
-            //додано для тестування фільтрації по категорії
             ViewBag.PostponedVideos = postponedVideos;
-            ViewBag.CurrentCategory = category;
 
             return View(favoriteVideos);
         }
@@ -147,7 +150,11 @@ namespace StreamingService.Controllers
         [Route("/upcoming")]
         public async Task<IActionResult> Upcoming(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
+            var userId = User?.Identity?.IsAuthenticated ?? false
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
+                : (int?)null;
 
             SetPageHeaders(category, "Незабаром");
 
@@ -167,8 +174,9 @@ namespace StreamingService.Controllers
                 }
                 groupedReleases = filteredGroupedReleases;
             }
-            ViewBag.CurrentCategory = category;
-            // --- кінець ----
+
+            var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale, userId, category);
+
             return View(groupedReleases);
         }
 
@@ -176,23 +184,24 @@ namespace StreamingService.Controllers
         [Route("/trending")]
         public async Task<IActionResult> Trending(VideoType? category)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
+            var userId = User?.Identity?.IsAuthenticated ?? false
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
+                : (int?)null;
 
             SetPageHeaders(category, "У тренді");
 
-            var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId);
-            //для фільтрації по категорії
-            trendingVideos = FilterByCategory(trendingVideos, category);
-            ViewBag.CurrentCategory = category;
-            //-----
+            var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId, category);
+
             return View(trendingVideos);
         }
 
         [HttpPost]
         public async Task<IActionResult> FilterByGenres([FromBody] FilterByGenresRequest request)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
             var videos = await _moviesService.GetVideosByGenresAsync(request.GenreCodes, locale, userId);
@@ -215,17 +224,22 @@ namespace StreamingService.Controllers
         [Authorize]
         public async Task<IActionResult> FilterFavoritesByGenres([FromBody] FilterByGenresRequest request)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            var allFavorites = await _favoritesService.GetUserFavoritesAsync(userId, locale);
+            var allFavorites = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.Favorite, locale);
 
-            var filteredVideos = allFavorites
-                .Where(v => v.Genres != null && v.Genres.Any(genre =>
-                    request.GenreCodes.Any(code =>
-                        genre.ToLower().Contains(code.ToLower())
-                    )
-                ))
+            if (request.GenreCodes == null || !request.GenreCodes.Any())
+            {
+                return Json(new { success = true, videos = allFavorites });
+            }
+
+            var videosByGenres = await _moviesService.GetVideosByGenresAsync(request.GenreCodes, locale, userId);
+
+            var favoriteIds = allFavorites.Select(v => v.Id).ToHashSet();
+            var filteredVideos = videosByGenres
+                .Where(v => favoriteIds.Contains(v.Id))
                 .ToList();
 
             return Json(new { success = true, videos = filteredVideos });
@@ -233,28 +247,49 @@ namespace StreamingService.Controllers
 
         [HttpGet]
         [Route("search")]
-        public async Task<IActionResult> Search(string? query, int? genreId, string? sortBy, int page = 1)
+        public async Task<IActionResult> Search(string? query, int? genreId, string? sortBy, VideoType? type = null, int page = 1)
         {
-            if (string.IsNullOrWhiteSpace(query) && !genreId.HasValue)
+            if (string.IsNullOrWhiteSpace(query) && !genreId.HasValue && !type.HasValue)
             {
-                return View(new SearchResultsViewModel
+                var emptyModel = new CatalogPageViewModel
                 {
-                    Query = query,
-                    Videos = new List<VideoCardViewModel>(),
-                    TotalResults = 0
-                });
+                    Genres = await _moviesService.GetAllGenresAsync(CultureInfo.CurrentCulture.Name)
+                };
+
+                ViewData["IsSearch"] = true;
+                ViewData["SearchQuery"] = query ?? "";
+                ViewData["Title"] = "Пошук";
+                ViewData["MenuTitle"] = "Результати";
+
+                return View("Catalog", emptyModel);
             }
 
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
             var userId = User?.Identity?.IsAuthenticated ?? false
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
 
-            var results = await _moviesService.SearchVideosAsync(query, genreId, sortBy, page, 20, locale, userId);
+            var results = await _moviesService.SearchVideosAsync(query, genreId, sortBy, page, 20, locale, userId, type);
 
             ViewBag.Genres = await _moviesService.GetAllGenresAsync(locale);
 
-            return View(results);
+            var catalogModel = new CatalogPageViewModel
+            {
+                Genres = await _moviesService.GetAllGenresAsync(locale),
+                PopularVideos = results.Videos ?? new List<VideoCardViewModel>(),
+                NewReleases = new List<VideoCardViewModel>(),
+                TrendingVideos = new List<VideoCardViewModel>()
+            };
+
+            ViewData["IsSearch"] = true;
+            ViewData["SearchQuery"] = query ?? "";
+            ViewData["SelectedGenreId"] = genreId;
+            ViewData["SortBy"] = sortBy;
+            ViewData["Title"] = "Результати пошуку";
+            ViewData["MenuTitle"] = "Усі";
+
+            return View("Catalog", catalogModel);
         }
 
         [HttpGet]

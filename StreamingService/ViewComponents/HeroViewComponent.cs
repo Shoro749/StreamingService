@@ -25,7 +25,8 @@ namespace StreamingService.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var locale = CultureInfo.CurrentCulture.Name;
+            //var locale = CultureInfo.CurrentCulture.Name;
+            var locale = "uk";
 
             if (locale.Contains("-"))
             {

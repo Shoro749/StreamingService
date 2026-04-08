@@ -17,7 +17,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 new SubscriptionPlan
                 {
 
-                    Price = 9.99m,
+                    Price = 149,
                     PeriodDays = 30,
                     TrialDays = 7,
                     Features = "Access to basic content",
@@ -27,20 +27,20 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 new SubscriptionPlan
                 {
 
-                    Price = 19.99m,
+                    Price = 249,
                     PeriodDays = 30,
                     TrialDays = 7,
-                    Features = "Access to premium content",
+                    Features = "Access to standard content",
                     IsEnabled = true,
                     SubscriptionLevel = subscriptionLevels[1]
                 },
                 new SubscriptionPlan
                 {
 
-                    Price = 29.99m,
+                    Price = 449,
                     PeriodDays = 30,
                     TrialDays = 0,
-                    Features = "All content + VIP perks",
+                    Features = "All content + premium perks",
                     IsEnabled = true,
                     SubscriptionLevel = subscriptionLevels[2]
                 }

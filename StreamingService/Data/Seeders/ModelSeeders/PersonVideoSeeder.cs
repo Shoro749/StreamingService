@@ -32,7 +32,22 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 new PersonVideo { Video = videos[3], Person = persons[6], PersonRole = personRoles[1] },
                 new PersonVideo { Video = videos[3], Person = persons[7], PersonRole = personRoles[2] },
                 new PersonVideo { Video = videos[3], Person = persons[8], PersonRole = personRoles[0] },
-                new PersonVideo { Video = videos[3], Person = persons[9], PersonRole = personRoles[0] }
+                new PersonVideo { Video = videos[3], Person = persons[9], PersonRole = personRoles[0] },
+
+                new PersonVideo { Video = videos[4], Person = persons[2], PersonRole = personRoles[1] },
+                new PersonVideo { Video = videos[4], Person = persons[7], PersonRole = personRoles[2] },
+                new PersonVideo { Video = videos[4], Person = persons[1], PersonRole = personRoles[0] },
+                new PersonVideo { Video = videos[4], Person = persons[0], PersonRole = personRoles[0] },
+
+                new PersonVideo { Video = videos[5], Person = persons[6], PersonRole = personRoles[1] },
+                new PersonVideo { Video = videos[5], Person = persons[3], PersonRole = personRoles[2] },
+                new PersonVideo { Video = videos[5], Person = persons[4], PersonRole = personRoles[0] },
+                new PersonVideo { Video = videos[5], Person = persons[5], PersonRole = personRoles[0] },
+
+                new PersonVideo { Video = videos[6], Person = persons[6], PersonRole = personRoles[1] },
+                new PersonVideo { Video = videos[6], Person = persons[7], PersonRole = personRoles[2] },
+                new PersonVideo { Video = videos[6], Person = persons[8], PersonRole = personRoles[0] },
+                new PersonVideo { Video = videos[6], Person = persons[9], PersonRole = personRoles[0] }
             };
 
 

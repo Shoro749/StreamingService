@@ -197,6 +197,7 @@ public static class MockUpcomingService
         },
         new VideoCardViewModel
         {
+            //
             Id = 212, Title = "Гострі картузи: Безсмертний",
             ThumbnailUrl = "https://www.themoviedb.org/t/p/w1280/94orFPM5kKmMkFKJabMC7mK2Ev3.jpg",
             PosterUrl = "https://www.themoviedb.org/t/p/w1280/94orFPM5kKmMkFKJabMC7mK2Ev3.jpg",

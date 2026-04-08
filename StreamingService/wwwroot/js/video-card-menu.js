@@ -19,7 +19,7 @@
     const playTrailerBtn = document.getElementById('play-trailer-btn');
     const youtubeTrailerPlayer = document.getElementById('youtube-trailer-player');
     const modalTabsContainer = document.getElementById('modal-tabs-container');
-    const modalFavBtn = modal.querySelector('.js-favorite-btn');
+    const modalFavBtn = modal ? modal.querySelector('.js-favorite-btn') : null;
     const modalSaveBtn = document.getElementById('modal-save-later-btn');
 
     let currentVideoId = null;
@@ -104,6 +104,9 @@
         globalMenu.dataset.rating = data.rating || '';
         globalMenu.dataset.trailerDuration = data.trailerDuration || '';
 
+        // IMPORTANT: set isSaved flag so modal logic knows origin state
+        const isSaved = (data.isSavedForLater !== undefined) ? String(data.isSavedForLater) : (data.isSaved || 'false');
+        globalMenu.dataset.isSaved = (isSaved === 'true') ? 'true' : 'false';
     }
 
     function renderActors(actors) {
@@ -334,6 +337,8 @@
                     iconDiv.classList.remove('bg-[#DCF260]', 'group-hover/btn:bg-white');
                 }
             }
+
+            globalMenu.dataset.originIsSaved = (isSaved === 'true') ? 'true' : 'false';
         }
 
         switchModalTab(targetTab);
@@ -385,7 +390,7 @@
             if (videoId) {
                 playTrailerBtn.classList.add('hidden');
                 modalTabsContainer.classList.add('hidden');
-                modalFavBtn.classList.add('hidden');
+                if (modalFavBtn) modalFavBtn.classList.add('hidden');
                 const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
 
                 youtubeTrailerPlayer.src = embedUrl;
@@ -403,7 +408,7 @@
         if (modalSaveBtn) { // оновлений код для синхронізації стану кнопки "Відкласти на потім" при закритті модального вікна
             globalMenu.dataset.isSaved = modalSaveBtn.dataset.isSaved;
 
-            if (modalSaveBtn.dataset.isSaved === 'false') {
+            if (modalSaveBtn.dataset.isSaved === 'false' && globalMenu.dataset.originIsSaved === 'true') {
                 const videoId = globalMenu.dataset.currentVideoId;
                 const contextBtn = document.querySelector(`.js-menu-toggle[data-video-id="${videoId}"]`);
 
@@ -434,7 +439,7 @@
             if (playTrailerBtn) {
                 playTrailerBtn.classList.remove('hidden');
                 modalTabsContainer.classList.remove('hidden');
-                modalFavBtn.classList.remove('hidden');
+                if (modalFavBtn) modalFavBtn.classList.remove('hidden');
             }
         }, 300);
     }

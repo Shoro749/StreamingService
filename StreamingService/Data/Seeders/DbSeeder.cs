@@ -28,7 +28,7 @@ namespace StreamingService.Data.Seeders
             var videoSeasons = await VideoSeasonSeeder.SeedAsync(context, videos);
             var videoEpisodes = await VideoEpisodeSeeder.SeedAsync(context, videoSeasons);
             //var videoEpisodeTranslations = await VideoEpisodeTranslationSeeder.SeedAsync(context, videoEpisodes);
-            //var videoImages = await VideoImageSeeder.SeedAsync(context, videos);
+            var videoImages = await VideoImageSeeder.SeedAsync(context, videos);
 
             var videoFiles = await VideoFileSeeder.SeedAsync(context, videoEpisodes);
             var audiotracks = await AudiotrackSeeder.SeedAsync(context, videoEpisodes);
@@ -38,20 +38,21 @@ namespace StreamingService.Data.Seeders
             var persons = await PersonSeeder.SeedAsync(context);
             var personTranslations = await PersonTranslationSeeder.SeedAsync(context, persons);
             await PersonVideoSeeder.SeedAsync(context, videos, persons, personRoles);
+            await PersonImageSeeder.SeedAsync(context, persons);
 
             var users = await UserProfileSeeder.SeedAsync(context); //(userManager, roleManager);
             var payments = await PaymentSeeder.SeedAsync(context);
             await UserSubscriptionSeeder.SeedAsync(context, users, payments, subscriptionPlans);
 
-            await UserVideoFavoriteSeeder.SeedAsync(context, users, videos);
+            //await UserVideoFavoriteSeeder.SeedAsync(context, users, videos);
             var ratings = await UserVideoRatingSeeder.SeedAsync(context, users, videos);
             await UserEpisodesHistorySeeder.SeedAsync(context, users, videoEpisodes);
 
             var comments = await CommentSeeder.SeedAsync(context, videos, users);
             await UserCommentLikeSeeder.SeedAsync(context, users, comments);
 
-            //await VideoEpisodeDailyStatsSeeder.SeedAsync(context, videoEpisodes);
-            //await VideoEpisodeViewTimedLogSeeder.SeedAsync(context, users, videoEpisodes);
+            await VideoEpisodeDailyStatsSeeder.SeedAsync(context, videoEpisodes);
+            await VideoEpisodeViewTimedLogSeeder.SeedAsync(context, users, videoEpisodes);
 
             if (videos == null || ratings == null)
                 return;

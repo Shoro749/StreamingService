@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StreamingService.Models;
+using StreamingService.DTO.ViewModels;
+using StreamingService.Resources;
 using StreamingService.Services;
+using System.Numerics;
 using System.Security.Claims;
 
 namespace StreamingService.Controllers
@@ -17,20 +20,16 @@ namespace StreamingService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPayment(string paymentMethod)
+        public async Task<IActionResult> ProcessPayment(string paymentMethod, int planId, string plan)
         {
-            var pendingUserId = HttpContext.Session.GetInt32("PendingUserId");
-            var selectedPlanId = HttpContext.Session.GetInt32("SelectedPlanId");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (!pendingUserId.HasValue || !selectedPlanId.HasValue)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Register", "Account");
             }
 
-            var result = await _subscriptionService.ProcessSubscriptionAsync(
-                pendingUserId.Value,
-                selectedPlanId.Value,
-                paymentMethod ?? "Card");
+            var result = await _subscriptionService.ProcessSubscriptionAsync(userId, planId, paymentMethod ?? "Card");
 
             if (!result)
             {
@@ -38,7 +37,7 @@ namespace StreamingService.Controllers
                 return RedirectToAction("SubscriptionConfirmation");
             }
 
-            return RedirectToAction("Success", "Account");
+            return RedirectToAction("Success", "Account", new { plan = plan });
         }
 
         [HttpGet]

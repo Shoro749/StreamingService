@@ -146,8 +146,20 @@ namespace StreamingService
             {
                 //var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserProfile>>();
                 //var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                await DbSeeder.SeedAllAsync(context);//, userManager, roleManager);
+                try
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    await DbSeeder.SeedAllAsync(context);//, userManager, roleManager);
+                }
+                catch (Exception ex)
+                {
+                    var logger = scope.ServiceProvider.GetService<ILogger<Program>>();
+                    logger?.LogError(ex, "Database seeding failed");
+
+                    Console.WriteLine("Database seeding failed:");
+                    Console.WriteLine(ex.ToString());
+                    throw;
+                }
             }
 
             // Configure the HTTP request pipeline.

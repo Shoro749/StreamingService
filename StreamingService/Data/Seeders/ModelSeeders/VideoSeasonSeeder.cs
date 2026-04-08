@@ -38,7 +38,22 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 {
                     NumberOfSeason = 2,
                     Video = videos[3]
-                }
+                },
+                new VideoSeason
+                {
+                    NumberOfSeason = null,
+                    Video = videos[4]
+                },
+                new VideoSeason
+                {
+                    NumberOfSeason = null,
+                    Video = videos[5]
+                },
+                new VideoSeason
+                {
+                    NumberOfSeason = null,
+                    Video = videos[6]
+                },
             };
 
 
