@@ -9,19 +9,19 @@ namespace StreamingService.ViewComponents
     public class HeroViewComponent : ViewComponent
     {
         // підключення Mock-сервісу для тестування UI (робота з каталогом, улюбленим, сторінкою "Незабаром").
-        private readonly IMoviesService _moviesService;
+        //private readonly IMoviesService _moviesService;
 
-        public HeroViewComponent(IMoviesService moviesService)
-        {
-            _moviesService = moviesService;
-        }
-
-        //private readonly MoviesService _moviesService;
-
-        //public HeroViewComponent(MoviesService moviesService)
+        //public HeroViewComponent(IMoviesService moviesService)
         //{
         //    _moviesService = moviesService;
         //}
+
+        private readonly MoviesService _moviesService;
+
+        public HeroViewComponent(MoviesService moviesService)
+        {
+            _moviesService = moviesService;
+        }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {

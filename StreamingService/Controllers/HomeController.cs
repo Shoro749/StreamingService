@@ -158,22 +158,22 @@ namespace StreamingService.Controllers
 
             SetPageHeaders(category, "Незабаром");
 
-            var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale);
-            //для фільтрації по категорії
-            // --- початок ----
-            if (category != null && groupedReleases != null)
-            {
-                var filteredGroupedReleases = new Dictionary<string, List<VideoCardViewModel>>();
-                foreach (var group in groupedReleases)
-                {
-                    var filteredVideos = FilterByCategory(group.Value, category);
-                    if (filteredVideos.Any())
-                    {
-                        filteredGroupedReleases.Add(group.Key, filteredVideos);
-                    }
-                }
-                groupedReleases = filteredGroupedReleases;
-            }
+            //var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale);
+            ////для фільтрації по категорії
+            //// --- початок ----
+            //if (category != null && groupedReleases != null)
+            //{
+            //    var filteredGroupedReleases = new Dictionary<string, List<VideoCardViewModel>>();
+            //    foreach (var group in groupedReleases)
+            //    {
+            //        var filteredVideos = FilterByCategory(group.Value, category);
+            //        if (filteredVideos.Any())
+            //        {
+            //            filteredGroupedReleases.Add(group.Key, filteredVideos);
+            //        }
+            //    }
+            //    groupedReleases = filteredGroupedReleases;
+            //}
 
             var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale, userId, category);
 

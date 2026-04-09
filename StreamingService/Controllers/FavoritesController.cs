@@ -12,9 +12,9 @@ namespace StreamingService.Controllers
     [Authorize]
     public class FavoritesController : Controller
     {
-        private readonly IFavoritesService _service;
+        private readonly FavoritesService _service;
 
-        public FavoritesController(IFavoritesService service)
+        public FavoritesController(FavoritesService service)
         {
             _service = service;
         }

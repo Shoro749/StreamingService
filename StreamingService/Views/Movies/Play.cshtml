@@ -18,7 +18,7 @@
 
             @*Змінена розумна кнопка для програвання відео*@
 
-            @if(ViewBag.IsTrailer && ViewBag.TrailerEmbedUrl != null)
+            @* @if(ViewBag.IsTrailer && ViewBag.TrailerEmbedUrl != null)
             {
                 <iframe id="main-player"
                         src="@ViewBag.TrailerEmbedUrl"
@@ -29,13 +29,17 @@
             }
             else
             {
-                <video id="main-player"
-                       data-title="@Model.Title"
-                       data-poster="@Model.BackdropUrl"
-                       playsinline controls autoplay class="w-full h-full object-cover">
-                       <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4" />
-                </video>
-		    }
+                <video> повернути сюди
+		    } *@
+
+
+            <video id="main-player"
+                   data-title="@Model.VideoTitle"
+                   @* data-poster="@Model.BackdropUrl" *@
+                   data-stream-url="@Model.StreamUrl"
+                   playsinline controls autoplay class="w-full h-full object-cover">
+                <source src="@Model.StreamUrl" type="video/mp4" />
+            </video>
 )
 
             <div class="absolute top-10 left-10 z-50 pointer-events-auto">

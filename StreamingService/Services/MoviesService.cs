@@ -4,7 +4,7 @@ using StreamingService.DTO.Enums;
 
 namespace StreamingService.Services
 {
-    public class MoviesService : IMoviesService
+    public class MoviesService
     {
         private readonly MoviesRepository _repository;
 

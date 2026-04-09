@@ -18,8 +18,8 @@ public class MoviesController : Controller
         _videoService = videoService;
         _videoDetailsService = videoDetailsService;
         _favoritesService = favoritesService;
-        _moviesService = moviesService;
-        _mockServise = mockService;
+        //_moviesService = moviesService;
+        //_mockServise = mockService;
     }
 
     [Authorize]

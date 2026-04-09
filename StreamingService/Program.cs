@@ -24,16 +24,16 @@ namespace StreamingService
             builder.Services.AddScoped<VideoRepository>();
             builder.Services.AddScoped<VideoService>();
             builder.Services.AddScoped<MoviesRepository>();
-            //builder.Services.AddScoped<MoviesService>();
+            builder.Services.AddScoped<MoviesService>();
             builder.Services.AddScoped<FavoritesRepository>();
-            //builder.Services.AddScoped<FavoritesService>();
+            builder.Services.AddScoped<FavoritesService>();
 
             // TODO для бекенду: Тимчасово закоментував старі сервіси бази даних і підключив Mock-сервіс 
             // через інтерфейси для тестування UI (робота з каталогом, улюбленим, сторінкою "Незабаром").
             // Коли база буде готова, просто розкоментуйте свої сервіси та прив'яжіть їх до інтерфейсів.
-            builder.Services.AddSingleton<MockVideoService>();
-            builder.Services.AddSingleton<IMoviesService>(provider => provider.GetRequiredService<MockVideoService>());
-            builder.Services.AddSingleton<IFavoritesService>(provider => provider.GetRequiredService<MockVideoService>());
+            //builder.Services.AddSingleton<MockVideoService>();
+            //builder.Services.AddSingleton<IMoviesService>(provider => provider.GetRequiredService<MockVideoService>());
+            //builder.Services.AddSingleton<IFavoritesService>(provider => provider.GetRequiredService<MockVideoService>());
 
             builder.Services.AddScoped<ProfileRepository>();
             builder.Services.AddScoped<ProfileService>();
@@ -44,8 +44,6 @@ namespace StreamingService
             builder.Services.AddScoped<HistoryService>();
             builder.Services.AddScoped<SubscriptionService>();
             builder.Services.AddScoped<SubscriptionRepository>();
-            //builder.Services.AddScoped<AdminRepository>();
-            //builder.Services.AddScoped<AdminService>();
             builder.Services.AddScoped<VideoDetailsRepository>();
             builder.Services.AddScoped<VideoDetailsService>();
             builder.Services.AddAppRepositories();

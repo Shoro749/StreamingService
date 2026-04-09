@@ -11,6 +11,11 @@ public class VideoSectionViewComponent : ViewComponent
 {
     private readonly MoviesService _moviesService;
 
+    public VideoSectionViewComponent(MoviesService moviesService)
+    {
+        _moviesService = moviesService;
+    }
+
     // підключення заголовків для різних сторінок, в залежності від типу відео (фільми, серіали, мультфільми).
     private static readonly Dictionary<(string, VideoType?), string> SectionTitles = new()
     {
@@ -32,17 +37,6 @@ public class VideoSectionViewComponent : ViewComponent
         { ("newReleases", VideoType.Movie), "Не пропусти цього тижня!" },
         { ("newReleases", null), "Не пропусти цього тижня!" }
     };
-    public VideoSectionViewComponent(IMoviesService moviesService)
-    {
-        _moviesService = moviesService;
-    }
-    // TODO для бекенду: Цей конструктор поки закоментований поки відсутні дані бази.
-    //private readonly MoviesService _moviesService;
-
-    //public VideoSectionViewComponent(MoviesService moviesService)
-    //{
-    //    _moviesService = moviesService;
-    //}
 
     // Тут Додано VideoType? category = null у параметри для фільтрації за типом відео
     public async Task<IViewComponentResult> InvokeAsync(string title, string sectionId, string linkUrl, string? genre = null, VideoType? category = null)
