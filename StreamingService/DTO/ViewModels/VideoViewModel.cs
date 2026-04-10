@@ -19,5 +19,8 @@
         public int? EpisodeNumber { get; set; }
 
         public string QualityLabel { get; set; } = "";
+
+        public bool IsTrailer { get; set; }
+        public string? TrailerUrl { get; set; }
     }
 }

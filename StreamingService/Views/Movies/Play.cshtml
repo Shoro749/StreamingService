@@ -18,10 +18,10 @@
 
             @*Змінена розумна кнопка для програвання відео*@
 
-            @* @if(ViewBag.IsTrailer && ViewBag.TrailerEmbedUrl != null)
+            @if(Model.IsTrailer && !string.IsNullOrEmpty(Model.TrailerUrl))
             {
                 <iframe id="main-player"
-                        src="@ViewBag.TrailerEmbedUrl"
+                        src="@Model.TrailerUrl"
                         class="w-full h-full border-0 absolute inset-0"
                         allow="autoplay; encrypted-media; fullscreen"
                         allowfullscreen>
@@ -29,18 +29,14 @@
             }
             else
             {
-                <video> повернути сюди
-		    } *@
-
-
-            <video id="main-player"
-                   data-title="@Model.VideoTitle"
-                   @* data-poster="@Model.BackdropUrl" *@
-                   data-stream-url="@Model.StreamUrl"
-                   playsinline controls autoplay class="w-full h-full object-cover">
-                <source src="@Model.StreamUrl" type="video/mp4" />
-            </video>
-)
+                <video id="main-player"
+                       data-title="@Model.VideoTitle"
+                       @* data-poster="@Model.BackdropUrl" *@
+                       data-stream-url="@Model.StreamUrl"
+                       playsinline controls autoplay class="w-full h-full object-cover">
+                    <source src="@Model.StreamUrl" type="video/mp4" />
+                </video>
+		    }
 
             <div class="absolute top-10 left-10 z-50 pointer-events-auto">
             <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.VideoId" class="text-white text-2xl font-bold flex items-center gap-2 hover:text-[#DCF260] transition-colors drop-shadow-md">
@@ -50,24 +46,30 @@
                 <span>
                     @Model.VideoTitle
 
-                    @if (!Model.IsMovie)
+                    @if (!Model.IsMovie && !Model.IsTrailer)
                     {
                         <span class="text-lg font-normal opacity-80">
                             Сезон @Model.SeasonNumber Серія @Model.EpisodeNumber
+                        </span>
+                    }
+                    else if (Model.IsTrailer)
+                    {
+                        <span class="text-lg font-normal opacity-80 text-[#DCF260] ml-2">
+                            (Трейлер)
                         </span>
                     }
                 </span>
             </a>
         </div>
 
-        @if (!Model.IsMovie)
+        @if (!Model.IsMovie && !Model.IsTrailer)
         {
             <div class="absolute top-20 left-10 z-50 text-white text-lg opacity-80">
                 @Model.EpisodeTitle
             </div>
         }
 
-        @if (!Model.IsMovie)
+        @if (!Model.IsMovie && !Model.IsTrailer)
         {
             <div class="absolute bottom-24 left-10 right-10 z-50 flex justify-between pointer-events-auto">
                 <div class="flex gap-4">

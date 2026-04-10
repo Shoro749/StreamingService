@@ -49,14 +49,14 @@ public class MoviesController : Controller
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> Play(int id, int? episodeId = null)
+    public async Task<IActionResult> Play(int id, int? episodeId = null, bool isTrailer = false)
     {
         int userProfileId = GetCurrentUserProfileId();
 
-        var vm = await _videoService.GetPlaybackAsync(userProfileId, id, episodeId);
+        var vm = await _videoService.GetPlaybackAsync(userProfileId, id, episodeId, isTrailer);
 
-        //if (vm == null)
-        //    return RedirectToAction("AccessDenied", new { videoId = id });
+        if (vm == null)
+            return RedirectToAction("AccessDenied", new { videoId = id });
 
         return View(vm);
     }

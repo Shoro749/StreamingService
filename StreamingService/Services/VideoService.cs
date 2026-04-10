@@ -19,11 +19,32 @@ namespace StreamingService.Services
             _repo = repo;
         }
 
-        public async Task<VideoViewModel?> GetPlaybackAsync(int userProfileId, int videoId, int? episodeId = null)
+        public async Task<VideoViewModel?> GetPlaybackAsync(int userProfileId, int videoId, int? episodeId = null, bool isTrailer = false)
         {
             var subscription = await _repo.GetActiveSubscriptionWithLevelAsync(userProfileId);
-
             if (subscription == null) return null;
+
+            var video = await _repo.GetVideoByIdAsync(videoId);
+            if (video == null) return null;
+
+            bool isMovie = !(video.VideoType?.IndexOf("series", StringComparison.OrdinalIgnoreCase) >= 0);
+            
+            var title = video.Translations
+                .FirstOrDefault(t => t.LocaleCode == "uk")?.Title
+                ?? video.Translations.FirstOrDefault()?.Title
+                ?? "";
+
+            if (isTrailer)
+            {
+                return new VideoViewModel
+                {
+                    VideoId = videoId,
+                    VideoTitle = title,
+                    IsMovie = isMovie,
+                    IsTrailer = true,
+                    TrailerUrl = ConvertToEmbedUrl(video.Trailerurl)
+                };
+            }
 
             int levelId = subscription.SubscriptionPlan.SubscriptionLevel.Id;
 
@@ -33,6 +54,7 @@ namespace StreamingService.Services
 
             if (episode == null)
                 return null;
+                
             var file = await _repo.GetVideoFileByEpisodeIdAsync(episode.Id);
 
             var episodeTitle = episode.VideoEpisodeTranslations
@@ -52,19 +74,7 @@ namespace StreamingService.Services
             var progress = await _repo.GetViewProgressAsync(userProfileId, episode.Id);
             bool wasWatched = progress?.IsFullyWatched ?? false;
 
-            // Навігація між серіями (тільки для серіалів)
-            var video = await _repo.GetVideoByIdAsync(videoId);
-
-            bool isMovie = !(video?.VideoType?.IndexOf("series", StringComparison.OrdinalIgnoreCase) >= 0);
-
             (int? prevId, int? nextId) = isMovie ? (null, null) : await GetAdjacentEpisodesAsync(episode, videoId);
-
-            var title = video.Translations
-                .FirstOrDefault(t => t.LocaleCode == "uk")?.Title
-                ?? video.Translations.FirstOrDefault()?.Title
-                ?? "";
-
-            //string streamUrl = $"/videos/video_{videoId}_s{episode.VideoSeason.NumberOfSeason}_e{episode.EpisodeNumber}.mp4";
 
             string qualityLabel = levelId switch
             {
@@ -88,7 +98,8 @@ namespace StreamingService.Services
                 NextEpisodeId = nextId,
                 SeasonNumber = episode.VideoSeason?.NumberOfSeason ?? 1,
                 EpisodeNumber = episode.EpisodeNumber,
-                QualityLabel = qualityLabel
+                QualityLabel = qualityLabel,
+                IsTrailer = false
             };
         }
 
@@ -106,6 +117,25 @@ namespace StreamingService.Services
                 return path;
 
             return $"/{container}/{path}";
+        }
+
+        // Допоміжний метод для YouTube посилань
+        private static string? ConvertToEmbedUrl(string? url)
+        {
+            if (string.IsNullOrEmpty(url)) return null;
+
+            if (url.Contains("youtube.com/watch?v="))
+            {
+                var videoId = url.Split("v=")[1].Split('&')[0];
+                return $"https://www.youtube.com/embed/{videoId}?autoplay=1";
+            }
+            if (url.Contains("youtu.be/"))
+            {
+                var videoId = url.Split("youtu.be/")[1].Split('?')[0];
+                return $"https://www.youtube.com/embed/{videoId}?autoplay=1";
+            }
+            
+            return url;
         }
 
         // Повертає Id попереднього і наступного епізоду в межах серіалу.
