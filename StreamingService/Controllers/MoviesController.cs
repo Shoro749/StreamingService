@@ -112,7 +112,7 @@ public class MoviesController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+    [Route("api/history/save")]
     public async Task<IActionResult> SaveProgress([FromBody] SaveProgressRequest request)
     {
         if (request.EpisodeId <= 0)
@@ -123,7 +123,17 @@ public class MoviesController : Controller
         bool isFullyWatched = request.Duration > 0 &&
                              (double)request.CurrentTime / request.Duration >= 0.9;
 
-        await _videoService.SaveProgressAsync(userProfileId, request.EpisodeId, isFullyWatched);
+        await _videoService.SaveProgressAsync(userProfileId, request.EpisodeId, isFullyWatched, request.CurrentTime);
         return Ok();
+    }
+    
+    [HttpGet]
+    [Route("api/history/{episodeId}")]
+    public async Task<IActionResult> GetProgress(int episodeId)
+    {
+        int userProfileId = GetCurrentUserProfileId();
+        var progress = await _videoService.GetProgressAsync(userProfileId, episodeId);
+        
+        return Json(new { time = progress?.PausedWatchTime ?? 0 });
     }
 }

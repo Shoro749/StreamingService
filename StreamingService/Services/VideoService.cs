@@ -73,7 +73,9 @@ namespace StreamingService.Services
 
             var progress = await _repo.GetViewProgressAsync(userProfileId, episode.Id);
             bool wasWatched = progress?.IsFullyWatched ?? false;
-
+            // Додаємо зчитування стартового часу (якщо не був повністю додивлений)
+            double startFrom = (!wasWatched && progress != null) ? progress.PausedWatchTime : 0;
+            
             (int? prevId, int? nextId) = isMovie ? (null, null) : await GetAdjacentEpisodesAsync(episode, videoId);
 
             string qualityLabel = levelId switch
@@ -93,6 +95,7 @@ namespace StreamingService.Services
                 VideoTitle = title,
                 StreamUrl = streamUrl,
                 WasWatched = wasWatched,
+                StartFrom = startFrom,
                 IsMovie = isMovie,
                 PrevEpisodeId = prevId,
                 NextEpisodeId = nextId,
@@ -103,9 +106,14 @@ namespace StreamingService.Services
             };
         }
 
-        public async Task SaveProgressAsync(int userProfileId, int episodeId, bool isFullyWatched)
+        public async Task SaveProgressAsync(int userProfileId, int episodeId, bool isFullyWatched, int currentTime)
         {
-            await _repo.SaveViewProgressAsync(userProfileId, episodeId, isFullyWatched);
+            await _repo.SaveViewProgressAsync(userProfileId, episodeId, isFullyWatched, currentTime);
+        }
+
+        public async Task<Models.UserEpisodesHistory?> GetProgressAsync(int userProfileId, int episodeId)
+        {
+            return await _repo.GetViewProgressAsync(userProfileId, episodeId);
         }
 
         private static string BuildStreamUrl(string? container, string? path)

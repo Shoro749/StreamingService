@@ -33,21 +33,6 @@ namespace StreamingService.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveProgress([FromBody] SaveProgressRequest request)
-        {
-            if (request.EpisodeId <= 0)
-                return BadRequest();
-
-            int userProfileId = GetCurrentUserProfileId();
-
-            bool isFullyWatched = request.Duration > 0 && (double)request.CurrentTime / request.Duration >= 0.9;
-
-            await _videoService.SaveProgressAsync(userProfileId, request.EpisodeId, isFullyWatched);
-            return Ok();
-        }
-
         private int GetCurrentUserProfileId()
         {
             var claim = User.FindFirst("profile_id")?.Value;

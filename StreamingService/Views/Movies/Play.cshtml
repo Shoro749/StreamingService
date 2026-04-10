@@ -32,6 +32,8 @@
                 <video id="main-player"
                        data-title="@Model.VideoTitle"
                        @* data-poster="@Model.BackdropUrl" *@
+                       data-episode-id="@Model.EpisodeId"
+                       data-start-time="@Model.StartFrom"
                        data-stream-url="@Model.StreamUrl"
                        playsinline controls autoplay class="w-full h-full object-cover">
                     <source src="@Model.StreamUrl" type="video/mp4" />

@@ -69,7 +69,7 @@ namespace StreamingService.Repositories
                 .FirstOrDefaultAsync(v => v.Id == videoId);
         }
 
-        public async Task SaveViewProgressAsync(int userProfileId, int episodeId, bool isFullyWatched)
+        public async Task SaveViewProgressAsync(int userProfileId, int episodeId, bool isFullyWatched, int currentTime)
         {
             var existing = await _context.UserEpisodesHistories
                 .FirstOrDefaultAsync(h => h.UserProfileId == userProfileId
@@ -82,12 +82,14 @@ namespace StreamingService.Repositories
                     VideoEpisodeId = episodeId,
                     LastWatchedAt = DateTime.UtcNow,
                     IsFullyWatched = isFullyWatched,
+                    PausedWatchTime = currentTime
                 });
             }
             else
             {
                 existing.LastWatchedAt = DateTime.UtcNow;
                 existing.IsFullyWatched = isFullyWatched;
+                existing.PausedWatchTime = currentTime;
             }
             await _context.SaveChangesAsync();
         }
