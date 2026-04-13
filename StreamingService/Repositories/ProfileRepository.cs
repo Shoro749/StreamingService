@@ -58,5 +58,24 @@ namespace StreamingService.Repositories
             var name = string.IsNullOrEmpty(username) ? email : username;
             return $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(name)}&background=random&color=fff&size=128";
         }
+
+        public async Task<UserProfileSettingsViewModel?> GetUserSettingsInfoAsync(int userId)
+        {
+            return await _context.UserProfiles
+                .Where(u => u.Id == userId)
+                .Select(u => new UserProfileSettingsViewModel
+                {
+                    Username = u.Username,
+                    Email = u.Email,
+                    AvatarUrl = u.AvatarUrl ?? GenerateDefaultAvatar(u.Username, u.Email),
+
+                    SubscriptionLevel = u.UserSubscriptions
+                        .Where(s => s.Status == "Active" && s.SubscriptionEnd > DateTime.UtcNow)
+                        .OrderByDescending(s => s.SubscriptionEnd)
+                        .Select(s => s.SubscriptionPlan.SubscriptionLevel.Code)
+                        .FirstOrDefault() ?? "Free"
+                })
+                .FirstOrDefaultAsync();
+        }
     }
 }
