@@ -1,0 +1,107 @@
+﻿@using StreamingService.Helpers
+@model StreamingService.DTO.ViewModels.UserProfileSettingsViewModel
+
+@{
+    Layout = "~/Views/Shared/Layouts/_SettingsLayout.cshtml";
+    ViewData["Title"] = "Мій обліковий запис";
+}
+
+<div class="flex flex-col gap-10 max-w-3xl">
+
+    <div class="flex items-center gap-6">
+        <img src="@(Model?.AvatarUrl ?? "/images/default-avatar.png")"
+             alt="Avatar"
+             class="w-24 h-24 rounded-full object-cover border border-white/10 shadow-lg">
+
+        <div class="flex flex-col gap-1">
+            <h2 class="text-base font-bold text-white font-montserrat">@(Model?.Username ?? "Користувач")</h2>
+            <div>
+                <span class="@SubscriptionHelper.GetColorClass(Model?.SubscriptionLevel) font-semibold text-base">
+                    @SubscriptionHelper.GetDisplayName(Model?.SubscriptionLevel)
+                </span>
+            </div>
+        </div>
+
+        <button class="shadow-glass ml-auto px-6 py-3 bg-white/5 hover:bg-white/10 rounded-md text-white transition-colors text-sm font-semibold">
+            Редагувати профіль Користувача
+        </button>
+    </div>
+
+    <div class="shadow-glass bg-white/5 rounded-md p-6 flex flex-col gap-6">
+
+        <div class="flex items-center justify-between pb-4">
+            <div class="flex flex-col gap-1">
+                <p class="text-white/50 text-sm font-montserrat font-semibold">Відображуване ім'я:</p>
+                <p class="text-white text-sm font-montserrat font-semibold">@(Model?.Username ?? "Не вказано")</p>
+            </div>
+            <button class="shadow-glass px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-sm text-white/90 text-sm transition-colors">
+                Змінити
+            </button>
+        </div>
+
+        <div class="flex items-center justify-between pb-4">
+            <div class="flex flex-col gap-1">
+                <p class="text-white/50 text-sm font-montserrat font-semibold">Електронна пошта:</p>
+                <p class="text-white text-sm font-montserrat font-semibold">@(Model?.Email ?? "Не вказано")</p>
+            </div>
+
+            <button class="shadow-glass px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-sm text-white/90 text-sm transition-colors">
+                Змінити
+            </button>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-1">
+                <p class="text-white/50 text-sm font-montserrat font-semibold">Номер телефону:</p>
+                <p class="text-white text-sm font-montserrat font-semibold">******4169</p>
+            </div>
+            <button class="shadow-glass px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-sm text-white/90 text-sm transition-colors">
+                Змінити
+            </button>
+        </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+        <h2 class="text-xl font-semibold text-white">Безпека входу</h2>
+
+        <div class="shadow-glass bg-[#223A26]/80 border border-[#3B712E] rounded-sm p-4 mb-2 flex items-center gap-3 shadow-inner">
+            <div class="w-5 h-5 bg-[#3B712E]"
+                 style="-webkit-mask-image: url('/images/ui/symbols/lock.png'); mask-image: url('/images/ui/symbols/lock.png'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;">
+            </div>
+            <span class="text-white font-semibold text-sm">Двофакторна автентифікація: увімкнена</span>
+        </div>
+
+        <button class="self-start shadow-glass px-6 py-2.5 bg-white/5 hover:bg-white/10 rounded-sm text-white transition-colors text-sm font-semibold">
+            Змінити пароль
+        </button>
+    </div>
+
+    <div class="flex flex-col gap-4 mb-3">
+        <h2 class="text-xl font-semibold text-white">Керувати автентифікацією</h2>
+        <p class="text-[#D3D3D3] text-sm leading-relaxed mb-2">
+            Керування автентифікацією в Lumeo дозволяє захистити свій обліковий запис від несанкціонованого доступу. Увімкни двофакторну автентифікацію, щоб підтверджувати вхід не лише паролем, а й додатковим кодом із телефона або застосунку. Це підвищує рівень безпеки та допомагає зберегти твої дані й підписку в Lumeo у безпеці.
+        </p>
+        <div class="flex flex-wrap gap-4">
+            <button class="shadow-glass px-6 py-2.5 bg-white/5 hover:bg-white/10 rounded-sm text-white transition-colors text-sm font-semibold">
+                Переглянути коди
+            </button>
+            <button class="shadow-glass px-6 py-2.5 bg-[#FF0000]/10 hover:bg-[#FF0000]/20 rounded-sm text-[#FF0000] transition-colors text-sm font-semibold">
+                Вимкнути застосунок
+            </button>
+        </div>
+
+    </div>
+
+    <div class="flex flex-col gap-4">
+        <h2 class="text-xl font-semibold text-white">Додаткова автентифікація через SMS</h2>
+        <p class="text-[#D3D3D3] text-sm leading-relaxed mb-2">
+            Додайте свій номер телефону як резервний спосіб входу, якщо втратите доступ до застосунку чи кодів безпеки.
+            Ваш поточний номер: **********4169 Показати
+        </p>
+        <button class="self-start shadow-glass px-6 py-2.5 bg-white/5 hover:bg-white/10 rounded-sm text-white transition-colors text-sm font-semibold">
+            Змінити
+        </button>
+
+    </div>
+
+</div>

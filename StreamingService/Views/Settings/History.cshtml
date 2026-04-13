@@ -1,0 +1,157 @@
+﻿@using StreamingService.Extensions
+@model IEnumerable<StreamingService.DTO.ViewModels.HistoryItemViewModel>
+
+@{
+    Layout = "~/Views/Shared/Layouts/_SettingsLayout.cshtml";
+    ViewData["Title"] = "Історія переглядів";
+}
+
+<div class="flex flex-col gap-3 max-w-3xl">
+
+    <div class="flex flex-col gap-4 text-white/60 text-sm leading-relaxed">
+        <p class="text-[#D3D3D3] text-xs font-montserrat">
+            Тут зберігаються всі фільми, серіали та шоу, які ви переглядали на Lumeo.
+            Ви можете повернутися до перегляду, видалити окремі позиції або очистити історію повністю.
+        </p>
+    </div>
+
+    <div class="border-t border-[#D3D3D3] w-full mb-2"></div>
+
+    <div class="flex flex-col gap-5">
+
+        <div id="js-history-container"></div>
+
+        <template id="history-item-template">
+            <div class="flex flex-col gap-4 js-history-item relative mt-2">
+
+                <div class="bg-white/5 shadow-glass rounded-2xl p-4 flex gap-5 relative overflow-hidden transition-colors hover:bg-white/10">
+                    <div class="w-24 h-36 flex-shrink-0 rounded-xl overflow-hidden bg-[#2C2C4C] relative flex items-center justify-center">
+                        <img class="js-history-poster absolute inset-0 w-full h-full object-cover z-10" src="" alt="">
+                    </div>
+
+                    <div class="flex flex-col justify-between py-1 flex-1">
+                        <div>
+                            <h3 class="js-history-title text-lg font-bold text-white font-montserrat mb-2"></h3>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                @*стратичні дані (катекорія, жанри, актори) для демонстрації картки*@
+                                <span class="px-3 py-1 shadow-glass rounded-full text-white/70 text-xs font-medium">
+                                    Серіал
+                                </span>
+                                <span class="px-3 py-1 shadow-glass rounded-full text-white/70 text-xs font-medium">
+                                    Кримінал
+                                </span>
+                                <span class="px-3 py-1 shadow-glass rounded-full text-white/70 text-xs font-medium">
+                                    Драма
+                                </span>
+                                <span class="px-3 py-1 shadow-glass rounded-full text-white/70 text-xs font-medium">
+                                    Триллер
+                                </span>
+                            </div>
+
+                            <p class="text-white/50 text-xs line-clamp-1 mb-2">
+                                Браян Кренстон - Аарон Пол - Анна Ґанн - Дін Норріс - Бетсі Брандт - Боб Оденкерк
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col text-white/50 text-xs gap-1">
+                            <span>Переглянуто: щойно</span>
+                            <span>Пристрій: поточний пристрій</span>
+                        </div>
+
+                        <div class="absolute right-3 bottom-3 shadow-glass flex items-center h-7 w-36 bg-[#9A9A9A]/18 rounded-full backdrop-blur-md font-light text-sm text-white overflow-hidden z-10">
+                            <div class="js-history-duration px-3 h-full rounded-full shadow-glass flex items-center shadow-[3px_0_5.5px_rgba(132,132,132,0.42)] z-10 flex-1 justify-center truncate">
+                            </div>
+                            <div class="js-history-progress px-3 h-full flex items-center justify-center flex-1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 px-1">
+                    <button class="js-watch-btn shadow-glass px-5 py-2 bg-white/10 hover:bg-white/20 rounded-sm text-white transition-all text-sm font-bold">
+                        Продовжити перегляд
+                    </button>
+                    <button class="js-remove-history-btn px-5 py-2 bg-[#FF0000]/20 border border-[#FF0000]/40 hover:bg-[#FF0000]/30 rounded-sm text-[#E57373] transition-colors text-sm font-medium shadow-glass">
+                        Видалити з історії
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="flex flex-col gap-4 js-history-item" data-video-id="@item.Video.Id">
+                    <div class="bg-white/5 shadow-glass rounded-2xl p-4 flex gap-5 relative overflow-hidden transition-colors hover:bg-white/10">
+
+                        <div class="w-24 h-36 flex-shrink-0 rounded-xl overflow-hidden bg-[#2C2C4C] relative flex items-center justify-center">
+                            <span class="text-white/50 text-xs font-montserrat font-semibold z-0">Постер</span>
+                            <img src="@item.Video.ThumbnailUrl" alt="@item.Video.Title" class="absolute inset-0 w-full h-full object-cover z-10 text-transparent">
+                        </div>
+
+                        <div class="flex flex-col justify-between py-1 flex-1">
+                            <div>
+                                <h3 class="text-lg font-bold text-white font-montserrat mb-2">@item.Video.Title</h3>
+
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="px-3 py-1 shadow-glass rounded-full text-white/70 text-xs font-medium">
+                                        @item.Video.VideoType.GetSingularName()
+                                    </span>
+
+                                    @foreach (var genre in item.Video.Genres)
+                                    {
+                                        <span class="px-3 py-1 shadow-glass rounded-full text-white/70 text-xs font-medium">
+                                            @genre
+                                        </span>
+                                    }
+                                </div>
+
+                                <p class="text-white/50 text-xs line-clamp-1 mb-2">
+                                    @(string.Join(" • ", item.Video.Actors.Select(a => a.Name)))
+                                </p>
+                            </div>
+
+                            <div class="flex flex-col text-white/50 text-xs gap-1">
+                                <span>Переглянуто: @item.ViewedDate</span>
+                                <span>Пристрій: @item.DeviceName</span>
+                            </div>
+
+                            <div class="absolute right-3 bottom-3 shadow-glass flex items-center h-7 w-36 bg-white/10 rounded-full backdrop-blur-md font-light text-sm text-white overflow-hidden z-10">
+                                @if (item.IsCompleted)
+                                {
+                                    <div class="w-full h-full rounded-full flex items-center justify-center shadow-[3px_0_5.5px_rgba(132,132,132,0.42)] z-10">
+                                        100%
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="px-3 h-full rounded-full shadow-glass flex items-center justify-center shadow-[3px_0_5.5px_rgba(132,132,132,0.42)] z-10 flex-1 truncate">
+                                        @item.Video.Duration
+                                    </div>
+                                    <div class="px-3 h-full flex items-center justify-center flex-1">
+                                        @item.ViewProgress
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 px-1">
+                        <button class="js-watch-btn shadow-glass px-5 py-2 bg-white/10 hover:bg-white/20 rounded-sm text-white transition-all text-sm font-medium"
+                                data-video-id="@item.Video.Id">
+                            @(item.IsCompleted ? "Дивитись знову" : "Продовжити перегляд")
+                        </button>
+
+                        <button class="js-remove-history-btn px-5 py-2 bg-[#FF0000]/20 border border-[#FF0000]/40 hover:bg-[#FF0000]/30 rounded-sm text-[#E57373] transition-colors text-sm font-medium shadow-glass"
+                                data-video-id="@item.Video.Id">
+                            Видалити з історії
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script src="~/js/settings-history.js" asp-append-version="true"></script>

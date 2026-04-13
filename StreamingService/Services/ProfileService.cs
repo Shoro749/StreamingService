@@ -91,5 +91,11 @@ namespace StreamingService.Services
         {
             return await _profileRepository.GetUserHeaderInfoAsync(userId);
         }
+        
+        //метод для отримання даних профілю та інформації про підписку для сторінки налаштувань профілю
+        public async Task<UserProfileSettingsViewModel?> GetProfileSettingsAsync(int userId)
+        {
+            return await _profileRepository.GetUserSettingsInfoAsync(userId);
+        }
     }
 }
