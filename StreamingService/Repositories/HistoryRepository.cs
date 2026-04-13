@@ -16,6 +16,14 @@ namespace StreamingService.Repositories
         public async Task<UserEpisodesHistory?> GetLatestAsync(int userId)
         {
             return await _context.UserEpisodesHistories
+                .Include(x => x.VideoEpisode)
+                    .ThenInclude(e => e.VideoSeason)
+                        .ThenInclude(s => s.Video)
+                            .ThenInclude(v => v.Translations)
+                .Include(x => x.VideoEpisode)
+                    .ThenInclude(e => e.VideoSeason)
+                        .ThenInclude(s => s.Video)
+                            .ThenInclude(v => v.Images)
                 .Where(x => x.UserProfileId == userId)
                 .OrderByDescending(x => x.LastWatchedAt)
                 .FirstOrDefaultAsync();
@@ -48,5 +56,4 @@ namespace StreamingService.Repositories
             await _context.SaveChangesAsync();
         }
     }
-
 }

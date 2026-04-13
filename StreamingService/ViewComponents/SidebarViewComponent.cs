@@ -1,13 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.ViewModels;
+using StreamingService.Services;
 
 namespace StreamingService.ViewComponents
 {
     public class SidebarViewComponent : ViewComponent
     {
-        public IViewComponentResult Invoke()
-        {
+        private readonly HistoryService _historyService;
 
+        public SidebarViewComponent(HistoryService historyService)
+        {
+            _historyService = historyService;
+        }
+
+        public async Task<IViewComponentResult> InvokeAsync()
+        {
             var currentPath = HttpContext.Request.Path.ToString().ToLower();
 
             var items = new List<SidebarItemViewModel>
@@ -20,7 +28,6 @@ namespace StreamingService.ViewComponents
                     ActiveIcon = "/images/ui/sidebar/home.png",
                     IsActive = currentPath == "/" || currentPath.StartsWith("/home")
                 },
-
                 new SidebarItemViewModel
                 {
                     PageName = "Улюблене",
@@ -29,7 +36,6 @@ namespace StreamingService.ViewComponents
                     ActiveIcon = "/images/ui/sidebar/favorites.png",
                     IsActive = currentPath.StartsWith("/favorites")
                 },
-
                 new SidebarItemViewModel
                 {
                     PageName = "Незабаром",
@@ -38,7 +44,6 @@ namespace StreamingService.ViewComponents
                     ActiveIcon = "/images/ui/sidebar/upcoming_releases.png",
                     IsActive = currentPath.StartsWith("/upcoming")
                 },
-
                 new SidebarItemViewModel
                 {
                     PageName = "У тренді",
@@ -48,7 +53,6 @@ namespace StreamingService.ViewComponents
                     IsActive = currentPath.StartsWith("/trending"),
                     HasSeparator = true
                 },
-
                 new SidebarItemViewModel
                 {
                     PageName = "Налаштування",
@@ -57,7 +61,6 @@ namespace StreamingService.ViewComponents
                     ActiveIcon = "/images/ui/sidebar/settings.png",
                     IsActive = currentPath.StartsWith("/settings")
                 },
-
                 new SidebarItemViewModel
                 {
                     PageName = "Підтримка",
@@ -67,18 +70,51 @@ namespace StreamingService.ViewComponents
                     IsActive = currentPath.StartsWith("/support"),
                     HasSeparator = true
                 }
+            };
 
-            };
-            // Дані для "продовжити перегляд"
-            var videoData = new ContinueWatchingViewModel
+            // Дані для "продовжити перегляд" з Бази Даних
+            ContinueWatchingViewModel? videoData = null;
+
+            if (int.TryParse(UserClaimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
             {
-                Id = "1",
-                Title = "Легенда Г'ю Гласса",
-                Duration = "1г 24хв",
-                ViewProgress = "55%",
-                PosterUrl = "/images/landing/Landing_revenant.png"
-            };
-            // Збирання даних в модель
+                var latestHistory = await _historyService.GetContinueWatchingAsync(userId);
+                
+                if (latestHistory != null && latestHistory.VideoEpisode?.VideoSeason?.Video != null)
+                {
+                    var ev = latestHistory.VideoEpisode;
+                    var video = ev.VideoSeason.Video;
+                    
+                    var title = video.Translations.FirstOrDefault(t => t.LocaleCode == "uk")?.Title 
+                                ?? video.Translations.FirstOrDefault()?.Title ?? "Без назви";
+
+                    // Шукаємо постер чи бекдроп
+                    var backdrop = video.Images.Where(i => i.Type == "backdrop")
+                        .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
+                        .FirstOrDefault() ?? "/images/placeholder-banner.jpg";
+
+                    // Розраховуємо % прогресу
+                    int progressPercent = ev.Duration > 0 
+                        ? (int)Math.Round((double)latestHistory.PausedWatchTime / ev.Duration * 100) 
+                        : 0;
+
+                    // Форматуємо тривалість
+                    var timeSpan = TimeSpan.FromSeconds(ev.Duration);
+                    string durationStr = timeSpan.Hours > 0 
+                        ? $"{timeSpan.Hours}г {timeSpan.Minutes}хв" 
+                        : $"{timeSpan.Minutes}хв";
+
+                    videoData = new ContinueWatchingViewModel
+                    {
+                        Id = video.Id.ToString(),
+                        EpisodeId = ev.Id.ToString(),
+                        Title = title,
+                        Duration = durationStr,
+                        ViewProgress = progressPercent + "%",
+                        PosterUrl = backdrop
+                    };
+                }
+            }
+
             var viewModel = new SidebarViewModel
             {
                 MenuItems = items,
@@ -87,6 +123,5 @@ namespace StreamingService.ViewComponents
             
             return View(viewModel);
         }
-
     }
 }
