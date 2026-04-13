@@ -1,0 +1,77 @@
+﻿@{
+    Layout = "~/Views/Shared/Layouts/_SettingsLayout.cshtml";
+    ViewData["Title"] = "Конфіденційність і дані";
+}
+
+<div class="flex flex-col gap-8 max-w-3xl">
+
+    <div class="flex gap-6 justify-between items-start">
+        <div class="flex flex-col gap-2 max-w-xl">
+            <h3 class="text-xl font-semibold text-white">Збирати дані про перегляди</h3>
+            <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed">
+                Коли ця функція увімкнена, платформа аналізує, які фільми, серіали чи шоу ви дивитеся, щоб краще розуміти ваші вподобання та пропонувати більш точні рекомендації.
+            </p>
+        </div>
+        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+    </div>
+
+    <div class="flex gap-6 justify-between items-start">
+        <div class="flex flex-col gap-2 max-w-xl">
+            <h3 class="text-xl font-semibold text-white">Зберігати історію пошуку</h3>
+            <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed">
+                Зберігає останні введені вами запити у полі пошуку. Це допомагає швидше знаходити контент, який ви вже шукали раніше. Якщо вимкнути, усі попередні запити буде видалено.
+            </p>
+        </div>
+        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="false" />
+    </div>
+
+    <div class="flex gap-6 justify-between items-start">
+        <div class="flex flex-col gap-2 max-w-xl">
+            <h3 class="text-xl font-semibold text-white">Персоналізовані рекомендації</h3>
+            <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed">
+                Використовує ваші перегляди, оцінки та вподобані фільми, щоб створювати індивідуальні добірки та списки пропозицій.
+            </p>
+        </div>
+        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+    </div>
+
+    <div class="flex gap-6 justify-between items-start">
+        <div class="flex flex-col gap-2 max-w-xl">
+            <h3 class="text-xl font-semibold text-white">Використання файлів cookie</h3>
+            <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed">
+                Cookie допомагають зберігати ваші налаштування, мовні параметри, вхід у систему та забезпечують стабільну роботу сайту. Деякі cookie є обов'язковими для функціонування платформи.
+            </p>
+        </div>
+        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+    </div>
+
+    <div class="flex gap-6 justify-between items-start">
+        <div class="flex flex-col gap-2 max-w-xl">
+            <h3 class="text-xl font-semibold text-white">Аналітика користування платформою</h3>
+            <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed">
+                Дозволяє збирати узагальнені дані про взаємодію з сайтом (наприклад, час перегляду або найпопулярніші сторінки). Інформація є анонімною і використовується для покращення роботи Lumeo.
+            </p>
+        </div>
+        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+    </div>
+
+    <div class="flex flex-col gap-4 mt-2">
+        <h3 class="text-xl font-semibold text-white">Завантажити копію моїх даних</h3>
+        <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed max-w-xl">
+            Отримайте архів із вашими персональними даними: історія переглядів, оцінки, збережені добірки тощо.
+        </p>
+        <button class="shadow-glass self-start mt-2 px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all text-sm font-medium">
+            Запитати дані
+        </button>
+    </div>
+    <div class="flex flex-col gap-4 mt-2">
+        <h3 class="text-xl font-semibold text-white">Видалити всі персональні дані</h3>
+        <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed max-w-xl">
+            Після підтвердження всі ваші дані (історія, налаштування, вподобання) будуть остаточно видалені з системи.
+        </p>
+        <button class="shadow-glass self-start mt-2 px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all text-sm font-medium">
+            Видалити назавжди
+        </button>
+    </div>
+
+</div>

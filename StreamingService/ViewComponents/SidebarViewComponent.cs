@@ -52,7 +52,7 @@ namespace StreamingService.ViewComponents
                 new SidebarItemViewModel
                 {
                     PageName = "Налаштування",
-                    PageUrl = "/settings",
+                    PageUrl = $"/settings/profile?returnUrl={HttpContext.Request.Path}",
                     InactiveIcon = "/images/ui/sidebar/settings_off.png",
                     ActiveIcon = "/images/ui/sidebar/settings.png",
                     IsActive = currentPath.StartsWith("/settings")

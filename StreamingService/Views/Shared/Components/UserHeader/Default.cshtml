@@ -1,23 +1,5 @@
 ﻿@model StreamingService.DTO.ViewModels.UserProfileHeaderViewModel
 
-@{
-    var subscriptionColorClass = Model?.SubscriptionLevel switch
-    {
-        "Premium" => "text-[#9333EA]",      // Фіолетовий
-        "Standard" => "text-[#DCF260]",     // Салатовий
-        "Basic" => "text-white",            // Білий
-        _ => "text-white/50"                // Сірий для Free
-    };
-
-    var subscriptionText = Model?.SubscriptionLevel switch
-    {
-        "Premium" => "Преміум",
-        "Standard" => "Стандарт",
-        "Basic" => "Базовий",
-        _ => "Безкоштовно"
-    };
-}
-
 <div class="flex items-center gap-4 ml-auto">
     @if (Model != null)
     {
@@ -69,8 +51,8 @@
                     <span class="font-medium text-lg leading-tight text-white truncate" title="@Model.DisplayName">
                         @Model.DisplayName
                     </span>
-                    <span class="font-semibold text-base leading-tight @subscriptionColorClass">
-                        @subscriptionText
+                    <span class="font-semibold text-base leading-tight @SubscriptionHelper.GetColorClass(Model?.SubscriptionLevel)">
+                        @SubscriptionHelper.GetDisplayName(Model?.SubscriptionLevel)
                     </span>
                 </div>
 
@@ -86,15 +68,15 @@
 
                 <div class="py-2 flex flex-col">
 
-                    <a href="/Account/Subscriptions" class="flex items-center gap-3 px-6 py-3 text-white hover:bg-white/20 transition-colors">
+                    <a href="/settings/subscriptions?returnUrl=@Context.Request.Path" class="flex items-center gap-3 px-6 py-3 text-white hover:bg-white/20 transition-colors">
                         <span class="font-medium text-lg">Плани та підписки</span>
                     </a>
 
-                    <a href="/Account/Settings" class="flex items-center gap-3 px-6 py-3 text-white hover:bg-white/20 transition-colors">
+                    <a href="/settings/profile?returnUrl=@Context.Request.Path" class="flex items-center gap-3 px-6 py-3 text-white hover:bg-white/20 transition-colors">
                         <span class="font-medium text-lg">Налаштування</span>
                     </a>
 
-                    <a href="/Account/Messages" class="flex items-center justify-between px-6 py-3 text-white hover:bg-white/20 transition-colors">
+                    <a href="/settings/notifications" class="flex items-center justify-between px-6 py-3 text-white hover:bg-white/20 transition-colors">
                         <div class="flex items-center gap-2">
                             <span class="font-medium text-lg">Повідомлення</span>
                         </div>
