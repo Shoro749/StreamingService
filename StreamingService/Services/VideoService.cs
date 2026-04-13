@@ -22,10 +22,22 @@ namespace StreamingService.Services
         public async Task<VideoViewModel?> GetPlaybackAsync(int userProfileId, int videoId, int? episodeId = null, bool isTrailer = false)
         {
             var subscription = await _repo.GetActiveSubscriptionWithLevelAsync(userProfileId);
-            if (subscription == null) return null;
+
+            if (!isTrailer && subscription == null) return null;
 
             var video = await _repo.GetVideoByIdAsync(videoId);
             if (video == null) return null;
+
+            if (!isTrailer)
+            {
+                 int userLevelId = subscription.SubscriptionPlan.SubscriptionLevel.Id;
+                 int requiredLevelId = video.MinAccess;
+                 
+                 if (userLevelId < requiredLevelId)
+                 {
+                     return null;
+                 }
+            }
 
             bool isMovie = !(video.VideoType?.IndexOf("series", StringComparison.OrdinalIgnoreCase) >= 0);
             
@@ -62,18 +74,14 @@ namespace StreamingService.Services
                 ?? episode.VideoEpisodeTranslations.FirstOrDefault()?.Title
                 ?? $"Episode {episode.EpisodeNumber}";
 
-            if (file == null)
-            {
-                // Контент вимагає вищого рівня підписки
-                return null;
-            }
+            if (file == null) return null;
 
             //string streamUrl = BuildStreamUrl(file.BlobContainer, file.BlobPath);
             string streamUrl = file.BlobPath;
 
             var progress = await _repo.GetViewProgressAsync(userProfileId, episode.Id);
             bool wasWatched = progress?.IsFullyWatched ?? false;
-            // Додаємо зчитування стартового часу (якщо не був повністю додивлений)
+
             double startFrom = (!wasWatched && progress != null) ? progress.PausedWatchTime : 0;
             
             (int? prevId, int? nextId) = isMovie ? (null, null) : await GetAdjacentEpisodesAsync(episode, videoId);

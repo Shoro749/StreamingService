@@ -13,25 +13,28 @@ namespace StreamingService.Controllers
             _videoService = videoService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Play(int id, int? episodeId = null)
-        {
-            int userProfileId = GetCurrentUserProfileId();
+        //[HttpGet]
+        //public async Task<IActionResult> Play(int id, int? episodeId = null)
+        //{
+        //    int userProfileId = GetCurrentUserProfileId();
 
-            var vm = await _videoService.GetPlaybackAsync(userProfileId, id, episodeId);
+        //    var vm = await _videoService.GetPlaybackAsync(userProfileId, id, episodeId);
 
-            if (vm == null)
-                return RedirectToAction("AccessDenied", new { videoId = id });
+        //    if (vm == null)
+        //    {
+        //        TempData["ErrorMessage"] = "Для перегляду цього відео потрібна підписка вищого рівня.";
+        //        return RedirectToAction("Details", "Movies", new { id = id });
+        //    }
 
-            return View(vm);
-        }
+        //    return View(vm);
+        //}
 
-        [HttpGet]
-        public IActionResult AccessDenied(int videoId)
-        {
-            ViewBag.VideoId = videoId;
-            return View();
-        }
+        // [HttpGet]
+        // public IActionResult AccessDenied(int videoId)
+        // {
+        //     ViewBag.VideoId = videoId;
+        //     return View();
+        // }
 
         private int GetCurrentUserProfileId()
         {

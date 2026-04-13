@@ -56,7 +56,10 @@ public class MoviesController : Controller
         var vm = await _videoService.GetPlaybackAsync(userProfileId, id, episodeId, isTrailer);
 
         if (vm == null)
-            return RedirectToAction("AccessDenied", new { videoId = id });
+        {
+            TempData["ErrorMessage"] = "Для перегляду цього відео потрібна підписка вищого рівня.";
+            return RedirectToAction("Details", "Movies", new { id = id });
+        }
 
         return View(vm);
     }
@@ -104,12 +107,12 @@ public class MoviesController : Controller
         return userId;
     }
 
-    [HttpGet]
-    public IActionResult AccessDenied(int videoId)
-    {
-        ViewBag.VideoId = videoId;
-        return View();
-    }
+    //[HttpGet]
+    //public IActionResult AccessDenied(int videoId)
+    //{
+    //    ViewBag.VideoId = videoId;
+    //    return View();
+    //}
 
     [HttpPost]
     [Route("api/history/save")]
