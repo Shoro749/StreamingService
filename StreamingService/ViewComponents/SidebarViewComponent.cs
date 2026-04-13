@@ -72,7 +72,6 @@ namespace StreamingService.ViewComponents
                 }
             };
 
-            // Дані для "продовжити перегляд" з Бази Даних
             ContinueWatchingViewModel? videoData = null;
 
             if (int.TryParse(UserClaimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
@@ -87,17 +86,12 @@ namespace StreamingService.ViewComponents
                     var title = video.Translations.FirstOrDefault(t => t.LocaleCode == "uk")?.Title 
                                 ?? video.Translations.FirstOrDefault()?.Title ?? "Без назви";
 
-                    // Шукаємо постер чи бекдроп
                     var backdrop = video.Images.Where(i => i.Type == "backdrop")
                         .Select(i => /*"/" + i.BlobContainer + "/" +*/ i.BlobPath)
                         .FirstOrDefault() ?? "/images/placeholder-banner.jpg";
 
-                    // Розраховуємо % прогресу
-                    int progressPercent = ev.Duration > 0 
-                        ? (int)Math.Round((double)latestHistory.PausedWatchTime / ev.Duration * 100) 
-                        : 0;
+                    int progressPercent = ev.Duration > 0 ? (int)Math.Round((double)latestHistory.PausedWatchTime / ev.Duration * 100) : 0;
 
-                    // Форматуємо тривалість
                     var timeSpan = TimeSpan.FromSeconds(ev.Duration);
                     string durationStr = timeSpan.Hours > 0 
                         ? $"{timeSpan.Hours}г {timeSpan.Minutes}хв" 
