@@ -17,14 +17,17 @@
                 <partial name="~/Views/Shared/Partials/Navigation/_HeaderApp.cshtml" />
             </header>
 
-            <main class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative p-6 md:px-12">
-                @RenderBody()
+            <main class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
+
+                <div class="p-6 md:px-12">
+                    @RenderBody()
+                </div>
 
                 <div class="mt-20">
                     <partial name="~/Views/Shared/Partials/Navigation/_Footer.cshtml" />
                 </div>
-            </main>
 
+            </main>
         </div>
     </div>
 
