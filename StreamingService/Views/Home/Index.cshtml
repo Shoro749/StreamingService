@@ -66,28 +66,36 @@
 
     </div>
 
-    <div class="absolute bottom-0 left-0 w-full z-20 leading-none pointer-events-none overflow-hidden">
-        <svg style="height: 250px;" class="relative block w-full h-24 md:h-40" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <div class="absolute bottom-0 left-0 w-full z-20 leading-none pointer-events-none">
+        <svg style="height: 250px;" class="relative block w-full h-24 md:h-40" overflow="visible" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
 
             <defs>
                 <linearGradient id="curve-gradient-wide" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stop-color="#22223A" stop-opacity="0" />
-
                     <stop offset="5%" stop-color="#22223A" stop-opacity="1" />
-
                     <stop offset="50%" stop-color="#D0F260" stop-opacity="1" />
-
                     <stop offset="95%" stop-color="#22223A" stop-opacity="1" />
-
                     <stop offset="100%" stop-color="#22223A" stop-opacity="0" />
                 </linearGradient>
+
+                <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#D0F260" stop-opacity="0.5" />
+                    <stop offset="100%" stop-color="#22223A" stop-opacity="0" />
+                </radialGradient>
+
+                <clipPath id="glow-mask">
+                    <path d="M-2,800 L-2,100 Q600,20 1202,100 L1202,800 Z" />
+                </clipPath>
             </defs>
 
-            <path d="M-2,122 L-2,100 Q600,20 1202,100 L1202,122 Z"
-                  fill="#22223A"></path>
+            <path d="M-2,800 L-2,100 Q600,20 1202,100 L1202,800 Z" fill="#22223A"></path>
 
-            <path d="M-2,100 Q600,20 1202,100 L1202,102 Q600,35 -2,102 Z"
-                  fill="url(#curve-gradient-wide)"></path>
+            <g clip-path="url(#glow-mask)">
+                <ellipse cx="600" cy="70" rx="800" ry="50" fill="url(#glow)"></ellipse>
+            </g>
+
+            <path d="M-2,100 Q600,20 1202,100 L1202,102 Q600,35 -2,102 Z" fill="url(#curve-gradient-wide)"></path>
+
         </svg>
     </div>
 
@@ -163,6 +171,13 @@
 
             <div class="mt-3 w-40 h-3 bg-[#0059FF]"></div>
 
+        </div>
+
+        <div class="absolute left-1/2 -translate-x-1/2 w-full max-w-[1920px] h-[1177px] pointer-events-none -z-10">
+            <div class="absolute left-[14%] right-[27%] top-0 bottom-[38%] bg-[#4DB6ED]/17 blur-[174px] rounded-full"></div>
+            <div class="absolute left-[25%] right-[36%] top-[38%] bottom-0 bg-[#FF9801]/17 blur-[174px] rounded-full"></div>
+            <div class="absolute left-[57%] right-0 top-[11%] bottom-0 bg-[#9747FF]/17 blur-[174px] rounded-full"></div>
+            <div class="absolute left-0 right-[62%] top-[23%] bottom-[15%] bg-[#DA1C5C]/17 blur-[174px] rounded-full"></div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5">
