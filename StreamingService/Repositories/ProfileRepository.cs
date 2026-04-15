@@ -90,26 +90,5 @@ namespace StreamingService.Repositories
 
             return user;
         }
-
-        public async Task<UserSettings?> GetUserSettingsAsync(int userId)
-        {
-            return await _context.Set<UserSettings>().FirstOrDefaultAsync(s => s.UserProfileId == userId);
-        }
-
-        public async Task UpdateUserSettingsAsync(UserSettings settings)
-        {
-            var existing = await _context.Set<UserSettings>().FirstOrDefaultAsync(s => s.UserProfileId == settings.UserProfileId);
-            if (existing != null)
-            {
-                existing.CollectViewingData = settings.CollectViewingData;
-                existing.SaveSearchHistory = settings.SaveSearchHistory;
-                existing.PersonalizedRecommendations = settings.PersonalizedRecommendations;
-                existing.UseCookies = settings.UseCookies;
-                existing.UsageAnalytics = settings.UsageAnalytics;
-                
-                _context.Set<UserSettings>().Update(existing);
-                await _context.SaveChangesAsync();
-            }
-        }
     }
 }

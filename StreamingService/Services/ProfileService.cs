@@ -100,15 +100,5 @@ namespace StreamingService.Services
         {
             return await _profileRepository.GetUserSettingsInfoAsync(userId);
         }
-
-        public async Task<UserSettings?> GetUserSettingsAsync(int userId)
-        {
-            return await _profileRepository.GetUserSettingsAsync(userId);
-        }
-
-        public async Task UpdateUserSettingsAsync(UserSettings settings)
-        {
-            await _profileRepository.UpdateUserSettingsAsync(settings);
-        }
     }
 }

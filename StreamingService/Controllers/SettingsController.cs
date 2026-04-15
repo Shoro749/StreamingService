@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using StreamingService.DTO.Enums;
-using StreamingService.DTO.ViewModels;
-using StreamingService.Extensions;
 using StreamingService.Services;
-using System.Collections.Generic;
 using System.Security.Claims;
-
 
 namespace StreamingService.Controllers;
 [Authorize]
@@ -14,10 +9,12 @@ namespace StreamingService.Controllers;
 public class SettingsController : Controller
 {
     private readonly ProfileService _profileService;
+    private readonly SettingsService _settingsService;
 
-    public SettingsController(ProfileService profileService)
+    public SettingsController(ProfileService profileService, SettingsService settingsService)
     {
         _profileService = profileService;
+        _settingsService = settingsService; 
     }
     // ==========================================
     // 1. НАЛАШТУВАННЯ КОРИСТУВАЧА
@@ -27,16 +24,14 @@ public class SettingsController : Controller
     [HttpGet("profile")]
     public async Task<IActionResult> Profile(string returnUrl = "/Home/Index")
     {
-        // Отримуємо ID поточного користувача
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         int userId = int.TryParse(userIdClaim, out var id) ? id : 0;
 
-        // Отримуємо дані користувача з бази
         var userInfo = await _profileService.GetProfileSettingsAsync(userId);
 
         ViewBag.ActiveTab = "profile";
         ViewBag.ReturnUrl = returnUrl;
-        return View(userInfo); // Передаємо дані у View
+        return View(userInfo);
     }
 
     [HttpGet("privacy")]
@@ -45,7 +40,13 @@ public class SettingsController : Controller
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         int userId = int.TryParse(userIdClaim, out var id) ? id : 0;
 
-        var settings = await _profileService.GetUserSettingsAsync(userId) ?? new Models.UserSettings { UserProfileId = userId };
+        var settings = await _settingsService.GetUserSettingsAsync(userId) ?? new Models.UserSettings { UserProfileId = userId };
+
+        if (settings == null && userId > 0)
+        {
+            settings = new Models.UserSettings { UserProfileId = userId };
+            await _settingsService.CreateUserSettingsAsync(settings);
+        }
 
         ViewBag.ActiveTab = "privacy";
         ViewBag.ReturnUrl = returnUrl;
@@ -60,7 +61,19 @@ public class SettingsController : Controller
         if (int.TryParse(userIdClaim, out var userId))
         {
             settings.UserProfileId = userId;
-            await _profileService.UpdateUserSettingsAsync(settings);
+
+            var existingSettings = await _settingsService.GetUserSettingsAsync(userId);
+
+            if (existingSettings == null)
+            {
+                await _settingsService.CreateUserSettingsAsync(settings);
+            }
+            else
+            {
+                await _settingsService.UpdateUserSettingsAsync(settings);
+            }
+
+            await _settingsService.UpdateUserSettingsAsync(settings);
         }
 
         return RedirectToAction(nameof(Privacy), new { returnUrl });
