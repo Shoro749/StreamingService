@@ -17,7 +17,7 @@
             <h2 class="text-base font-bold text-white font-montserrat">@(Model?.Username ?? "Користувач")</h2>
             <div>
                 <span class="@SubscriptionHelper.GetColorClass(Model?.SubscriptionLevel) font-semibold text-base">
-                    @SubscriptionHelper.GetDisplayName(Model?.SubscriptionLevel)
+                    @Model?.SubscriptionLevel
                 </span>
             </div>
         </div>
