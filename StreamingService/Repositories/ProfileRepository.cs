@@ -27,8 +27,7 @@ namespace StreamingService.Repositories
         {
             string normalizedUsername = username.ToLower();
 
-            return await _context.UserProfiles
-                .FirstOrDefaultAsync(p => p.Username.ToLower() == normalizedUsername);
+            return await _context.UserProfiles.FirstOrDefaultAsync(p => p.Username.ToLower() == normalizedUsername);
         }
 
         public async Task<UserProfileHeaderViewModel?> GetUserHeaderInfoAsync(int userId)
@@ -39,7 +38,7 @@ namespace StreamingService.Repositories
                 {
                     Username = u.Username,
                     Email = u.Email,
-                    AvatarUrl = u.AvatarUrl ?? GenerateDefaultAvatar(u.Username, u.Email),
+                    AvatarUrl = u.AvatarUrl,
                     SubscriptionLevel = u.UserSubscriptions
                         .Where(s => s.Status == "Active" && s.SubscriptionEnd > DateTime.UtcNow)
                         .OrderByDescending(s => s.SubscriptionEnd)
@@ -49,6 +48,14 @@ namespace StreamingService.Repositories
                         .Any(s => s.Status == "Active" && s.SubscriptionEnd > DateTime.UtcNow)
                 })
                 .FirstOrDefaultAsync();
+
+            if (user != null)
+            {
+                if (string.IsNullOrWhiteSpace(user.AvatarUrl))
+                {
+                    user.AvatarUrl = GenerateDefaultAvatar(user.Username, user.Email);
+                }
+            }
 
             return user;
         }
@@ -61,14 +68,13 @@ namespace StreamingService.Repositories
 
         public async Task<UserProfileSettingsViewModel?> GetUserSettingsInfoAsync(int userId)
         {
-            return await _context.UserProfiles
+            var user = await _context.UserProfiles
                 .Where(u => u.Id == userId)
                 .Select(u => new UserProfileSettingsViewModel
                 {
                     Username = u.Username,
                     Email = u.Email,
-                    AvatarUrl = u.AvatarUrl ?? GenerateDefaultAvatar(u.Username, u.Email),
-
+                    AvatarUrl = u.AvatarUrl,
                     SubscriptionLevel = u.UserSubscriptions
                         .Where(s => s.Status == "Active" && s.SubscriptionEnd > DateTime.UtcNow)
                         .OrderByDescending(s => s.SubscriptionEnd)
@@ -76,6 +82,34 @@ namespace StreamingService.Repositories
                         .FirstOrDefault() ?? "Free"
                 })
                 .FirstOrDefaultAsync();
+
+            if (user != null && string.IsNullOrWhiteSpace(user.AvatarUrl))
+            {
+                user.AvatarUrl = GenerateDefaultAvatar(user.Username, user.Email);
+            }
+
+            return user;
+        }
+
+        public async Task<UserSettings?> GetUserSettingsAsync(int userId)
+        {
+            return await _context.Set<UserSettings>().FirstOrDefaultAsync(s => s.UserProfileId == userId);
+        }
+
+        public async Task UpdateUserSettingsAsync(UserSettings settings)
+        {
+            var existing = await _context.Set<UserSettings>().FirstOrDefaultAsync(s => s.UserProfileId == settings.UserProfileId);
+            if (existing != null)
+            {
+                existing.CollectViewingData = settings.CollectViewingData;
+                existing.SaveSearchHistory = settings.SaveSearchHistory;
+                existing.PersonalizedRecommendations = settings.PersonalizedRecommendations;
+                existing.UseCookies = settings.UseCookies;
+                existing.UsageAnalytics = settings.UsageAnalytics;
+                
+                _context.Set<UserSettings>().Update(existing);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

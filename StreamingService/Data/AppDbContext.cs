@@ -51,6 +51,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<UserVideoList> UserVideoLists { get; set; }
 
     public virtual DbSet<UserVideoRating> UserVideoRatings { get; set; }
+    public virtual DbSet<UserSettings> UserSettings { get; set; }
 
     public virtual DbSet<UserSubscription> UsersSubscriptions { get; set; }
 
@@ -224,6 +225,10 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<UserProfile>(entity =>
         {
             entity.HasKey(e => e.Id);
+
+            entity.HasOne(u => u.Settings)
+                .WithOne(p => p.UserProfile)
+                .HasForeignKey<UserSettings>(p => p.UserProfileId);
         });
 
         modelBuilder.Entity<UserVideoList>(entity =>

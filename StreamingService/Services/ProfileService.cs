@@ -47,6 +47,7 @@ namespace StreamingService.Services
                         Email = email,
                         Username = name ?? "Google User",
                         AvatarUrl = picture,
+                        Settings = new UserSettings()
                     };
 
                     var result = await _profileRepository.AddDataAsync(newProfile);
@@ -79,6 +80,8 @@ namespace StreamingService.Services
                 return false;
             }
 
+            model.Settings = new UserSettings();
+
             return await _profileRepository.AddDataAsync(model);
         }
 
@@ -96,6 +99,16 @@ namespace StreamingService.Services
         public async Task<UserProfileSettingsViewModel?> GetProfileSettingsAsync(int userId)
         {
             return await _profileRepository.GetUserSettingsInfoAsync(userId);
+        }
+
+        public async Task<UserSettings?> GetUserSettingsAsync(int userId)
+        {
+            return await _profileRepository.GetUserSettingsAsync(userId);
+        }
+
+        public async Task UpdateUserSettingsAsync(UserSettings settings)
+        {
+            await _profileRepository.UpdateUserSettingsAsync(settings);
         }
     }
 }

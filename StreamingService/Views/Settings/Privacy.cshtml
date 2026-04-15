@@ -1,9 +1,13 @@
-﻿@{
+﻿@model StreamingService.Models.UserSettings
+@{
     Layout = "~/Views/Shared/Layouts/_SettingsLayout.cshtml";
     ViewData["Title"] = "Конфіденційність і дані";
 }
 
-<div class="flex flex-col gap-8 max-w-3xl">
+<form asp-action="Privacy" method="post" id="privacyForm" class="flex flex-col gap-8 max-w-3xl">
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="UserProfileId" />
 
     <div class="flex gap-6 justify-between items-start">
         <div class="flex flex-col gap-2 max-w-xl">
@@ -12,7 +16,13 @@
                 Коли ця функція увімкнена, платформа аналізує, які фільми, серіали чи шоу ви дивитеся, щоб краще розуміти ваші вподобання та пропонувати більш точні рекомендації.
             </p>
         </div>
-        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+        <label class="relative flex items-center cursor-pointer mt-1 flex-shrink-0">
+            <input type="checkbox" asp-for="CollectViewingData" class="sr-only peer toggle-auto-save">
+            <div class="w-12 h-6 bg-white/10 border border-white/20 rounded-full peer-checked:bg-[#D0F260]/50 peer-checked:border-[#D0F260] transition-colors duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-6 shadow-sm"></div>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-[#2C2C4C] opacity-0 peer-checked:opacity-100 transition-all duration-300 peer-checked:translate-x-6 z-10" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-gray-500 opacity-100 peer-checked:opacity-0 transition-all duration-300 z-10" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </label>
     </div>
 
     <div class="flex gap-6 justify-between items-start">
@@ -22,7 +32,13 @@
                 Зберігає останні введені вами запити у полі пошуку. Це допомагає швидше знаходити контент, який ви вже шукали раніше. Якщо вимкнути, усі попередні запити буде видалено.
             </p>
         </div>
-        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="false" />
+        <label class="relative flex items-center cursor-pointer mt-1 flex-shrink-0">
+            <input type="checkbox" asp-for="SaveSearchHistory" class="sr-only peer toggle-auto-save">
+            <div class="w-12 h-6 bg-white/10 border border-white/20 rounded-full peer-checked:bg-[#D0F260]/50 peer-checked:border-[#D0F260] transition-colors duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-6 shadow-sm"></div>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-[#2C2C4C] opacity-0 peer-checked:opacity-100 transition-all duration-300 peer-checked:translate-x-6 z-10" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-gray-500 opacity-100 peer-checked:opacity-0 transition-all duration-300 z-10" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </label>
     </div>
 
     <div class="flex gap-6 justify-between items-start">
@@ -32,7 +48,13 @@
                 Використовує ваші перегляди, оцінки та вподобані фільми, щоб створювати індивідуальні добірки та списки пропозицій.
             </p>
         </div>
-        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+        <label class="relative flex items-center cursor-pointer mt-1 flex-shrink-0">
+            <input type="checkbox" asp-for="PersonalizedRecommendations" class="sr-only peer toggle-auto-save">
+            <div class="w-12 h-6 bg-white/10 border border-white/20 rounded-full peer-checked:bg-[#D0F260]/50 peer-checked:border-[#D0F260] transition-colors duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-6 shadow-sm"></div>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-[#2C2C4C] opacity-0 peer-checked:opacity-100 transition-all duration-300 peer-checked:translate-x-6 z-10" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-gray-500 opacity-100 peer-checked:opacity-0 transition-all duration-300 z-10" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </label>
     </div>
 
     <div class="flex gap-6 justify-between items-start">
@@ -42,7 +64,13 @@
                 Cookie допомагають зберігати ваші налаштування, мовні параметри, вхід у систему та забезпечують стабільну роботу сайту. Деякі cookie є обов'язковими для функціонування платформи.
             </p>
         </div>
-        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+        <label class="relative flex items-center cursor-pointer mt-1 flex-shrink-0">
+            <input type="checkbox" asp-for="UseCookies" class="sr-only peer toggle-auto-save">
+            <div class="w-12 h-6 bg-white/10 border border-white/20 rounded-full peer-checked:bg-[#D0F260]/50 peer-checked:border-[#D0F260] transition-colors duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-6 shadow-sm"></div>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-[#2C2C4C] opacity-0 peer-checked:opacity-100 transition-all duration-300 peer-checked:translate-x-6 z-10" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-gray-500 opacity-100 peer-checked:opacity-0 transition-all duration-300 z-10" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </label>
     </div>
 
     <div class="flex gap-6 justify-between items-start">
@@ -52,7 +80,13 @@
                 Дозволяє збирати узагальнені дані про взаємодію з сайтом (наприклад, час перегляду або найпопулярніші сторінки). Інформація є анонімною і використовується для покращення роботи Lumeo.
             </p>
         </div>
-        <partial name="~/Views/Shared/Partials/UI/_ToggleSwitch.cshtml" model="true" />
+        <label class="relative flex items-center cursor-pointer mt-1 flex-shrink-0">
+            <input type="checkbox" asp-for="UsageAnalytics" class="sr-only peer toggle-auto-save">
+            <div class="w-12 h-6 bg-white/10 border border-white/20 rounded-full peer-checked:bg-[#D0F260]/50 peer-checked:border-[#D0F260] transition-colors duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-6 shadow-sm"></div>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-[#2C2C4C] opacity-0 peer-checked:opacity-100 transition-all duration-300 peer-checked:translate-x-6 z-10" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="absolute left-1 top-1 w-4 h-4 p-[2.5px] text-gray-500 opacity-100 peer-checked:opacity-0 transition-all duration-300 z-10" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </label>
     </div>
 
     <div class="flex flex-col gap-4 mt-2">
@@ -60,7 +94,7 @@
         <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed max-w-xl">
             Отримайте архів із вашими персональними даними: історія переглядів, оцінки, збережені добірки тощо.
         </p>
-        <button class="shadow-glass self-start mt-2 px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all text-sm font-medium">
+        <button type="button" class="shadow-glass self-start mt-2 px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all text-sm font-medium cursor-pointer">
             Запитати дані
         </button>
     </div>
@@ -69,9 +103,12 @@
         <p class="text-[#D3D3D3] text-xs font-montserrat leading-relaxed max-w-xl">
             Після підтвердження всі ваші дані (історія, налаштування, вподобання) будуть остаточно видалені з системи.
         </p>
-        <button class="shadow-glass self-start mt-2 px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all text-sm font-medium">
+        <button type="button" class="shadow-glass self-start mt-2 px-6 py-2.5 bg-[#FF0000]/10 hover:bg-[#FF0000]/30 border border-[#FF0000]/40 rounded-xl text-[#ff5c5c] hover:text-red-500 transition-all text-sm font-bold cursor-pointer">
             Видалити назавжди
         </button>
     </div>
+</form>
 
-</div>
+@section Scripts {
+    <script src="~/js/privacy-settings.js" asp-append-version="true"></script>
+}

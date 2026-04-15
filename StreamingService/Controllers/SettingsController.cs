@@ -40,11 +40,30 @@ public class SettingsController : Controller
     }
 
     [HttpGet("privacy")]
-    public IActionResult Privacy(string returnUrl = "/Home/Index")
+    public async Task<IActionResult> Privacy(string returnUrl = "/Home/Index")
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        int userId = int.TryParse(userIdClaim, out var id) ? id : 0;
+
+        var settings = await _profileService.GetUserSettingsAsync(userId) ?? new Models.UserSettings { UserProfileId = userId };
+
         ViewBag.ActiveTab = "privacy";
         ViewBag.ReturnUrl = returnUrl;
-        return View();
+        
+        return View(settings);
+    }
+
+    [HttpPost("privacy")]
+    public async Task<IActionResult> Privacy(Models.UserSettings settings, string returnUrl = "/Home/Index")
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(userIdClaim, out var userId))
+        {
+            settings.UserProfileId = userId;
+            await _profileService.UpdateUserSettingsAsync(settings);
+        }
+
+        return RedirectToAction(nameof(Privacy), new { returnUrl });
     }
 
     [HttpGet("devices")]
