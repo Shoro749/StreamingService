@@ -35,7 +35,7 @@ jobs:
 
       #  6. Публікація (publish folder)
       - name: Publish app
-        run: dotnet publish -c Release -o publish
+        run: dotnet publish ./StreamingService.csproj -c Release -o publish
       #fdgfdgdfg
       - name: Azure Login
         uses: azure/login@v2
