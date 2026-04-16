@@ -18,11 +18,25 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
       #  3. Відновлення залежностей
       - name: Restore dependencies
         run: dotnet restore
+
+      # Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install npm dependencies
+        run: npm install
+        working-directory: ./StreamingService
+
+      - name: Build Tailwind CSS
+        run: npm run css:build
+        working-directory: ./StreamingService
 
       #  4. Збірка
       - name: Build project
