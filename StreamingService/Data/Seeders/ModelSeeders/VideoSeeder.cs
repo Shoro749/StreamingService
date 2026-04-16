@@ -82,7 +82,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                     RatingSum = rand.Next(0, 1000),
                     SubscriptionLevel = subscriptionLevels[1],
                     AgeRating = "18+",
-                    VideoType = "Moive",
+                    VideoType = "Movie",
                     TrailerDuration = 150,
                     Trailerurl = "https://www.youtube.com/watch?v=OStkX1HsAM4"
                 }
