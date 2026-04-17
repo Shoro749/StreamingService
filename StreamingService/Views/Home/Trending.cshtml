@@ -15,9 +15,30 @@
     @if (Model != null && Model.Any())
     {
         <div class="flex flex-col gap-4">
-            @foreach (var video in Model)
+            @for (int i = 0; i < Model.Count; i++)
             {
-                <partial name="Partials/UI/_UpcomingRowCard" model="video" view-data='new ViewDataDictionary(ViewData) { { "IsUpcoming", true } }' />
+                var video = Model[i];
+                var place = i + 1;
+
+                <div class="relative w-full">
+
+                    @if (place <= 3)
+                    {
+                        var colorClass = place == 1 ? "text-[#D0F26080]" :
+                        place == 2 ? "text-[#FFFFFF80]" :
+                        "text-[#FF901280]";
+
+                        <div class="absolute -left-9 top-1/2 -translate-y-1/2 flex items-center justify-center font-geist font-extrabold text-8xl leading-none @colorClass"
+                             style="-webkit-text-stroke: 0.56px rgba(255, 255, 255, 0.4);">
+                            @place
+                        </div>
+                    }
+
+                    <div class="w-full">
+                        <partial name="Partials/UI/_UpcomingRowCard" model="video" view-data='new ViewDataDictionary(ViewData) { { "IsUpcoming", true } }' />
+                    </div>
+
+                </div>
             }
         </div>
     }
