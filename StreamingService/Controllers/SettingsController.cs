@@ -10,11 +10,13 @@ public class SettingsController : Controller
 {
     private readonly ProfileService _profileService;
     private readonly SettingsService _settingsService;
+    private readonly HistoryService _historyService;
 
-    public SettingsController(ProfileService profileService, SettingsService settingsService)
+    public SettingsController(ProfileService profileService, SettingsService settingsService, HistoryService historyService)
     {
         _profileService = profileService;
         _settingsService = settingsService; 
+        _historyService = historyService;
     }
     // ==========================================
     // 1. НАЛАШТУВАННЯ КОРИСТУВАЧА
@@ -88,33 +90,18 @@ public class SettingsController : Controller
     }
 
     [HttpGet("history")]
-    public IActionResult History(string returnUrl = "/Home/Index")
+    public async Task<IActionResult> History(string returnUrl = "/Home/Index")
     {
         ViewBag.ActiveTab = "history";
         ViewBag.ReturnUrl = returnUrl;
 
-        // Створюємо екземпляр Mock-сервісу для імітації бази даних
-        var mockService = new StreamingService.Services.MockVideoService();
-        var allVideos = mockService.GetAllVideos();
-
-        // Створюємо комбіновану історію, використовуючи існуючі фільми з Mock-файлу
-        var historyData = new List<StreamingService.DTO.ViewModels.HistoryItemViewModel>
-    {
-        new StreamingService.DTO.ViewModels.HistoryItemViewModel
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId))
         {
-            Video = allVideos.First(v => v.Id == 1),
-            ViewedDate = "вчора, 21:17",
-            DeviceName = "MacBook Pro — Safari",
-            ViewProgress = "100%"
-        },
-        new StreamingService.DTO.ViewModels.HistoryItemViewModel
-        {
-            Video = allVideos.First(v => v.Id == 5),
-            ViewedDate = "10 квітня, 14:22",
-            DeviceName = "Android — Lumeo App",
-            ViewProgress = "100%"
+            return RedirectToAction("Login", "Account");
         }
-    };
+
+        var historyData = await _historyService.GetUserHistoryAsync(userId, "uk");
 
         return View(historyData);
     }
