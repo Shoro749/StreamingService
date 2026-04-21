@@ -123,9 +123,9 @@ namespace StreamingService
                             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
                             identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
 
-                            if (!string.IsNullOrEmpty(picture))
+                            if (!string.IsNullOrEmpty(user.AvatarUrl))
                             {
-                                identity.AddClaim(new Claim("avatar_url", picture));
+                                identity.AddClaim(new Claim("avatar_url", user.AvatarUrl));
                             }
                         }
                     }

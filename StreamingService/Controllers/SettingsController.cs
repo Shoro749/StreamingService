@@ -251,6 +251,7 @@ public class SettingsController : Controller
 
         user.Username = model.Username;
         user.AvatarUrl = newAvatarPath;
+        user.Birthday = model.Birthday;
 
         await _profileService.UpdateUserProfileAsync(user);
 
