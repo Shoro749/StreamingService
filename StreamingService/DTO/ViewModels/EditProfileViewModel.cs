@@ -15,7 +15,7 @@ public class EditProfileViewModel
 
     public GenderType? Gender { get; set; }
 
-    public IFormFile AvatarFile { get; set; }
+    public IFormFile? AvatarFile { get; set; }
 
     public string CurrentAvatarUrl { get; set; }
 }

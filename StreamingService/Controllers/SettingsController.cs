@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.ViewModels;
 using StreamingService.DTO.ViewModels.Account;
+using StreamingService.Resources;
 using StreamingService.Services;
 using System.Security.Claims;
 
@@ -311,10 +312,22 @@ public class SettingsController : Controller
     // ==========================================
 
     [HttpGet("edit-password")]
-    public IActionResult EditPassword(string returnUrl = null)
+    public async Task<IActionResult> EditPassword(string returnUrl = null)
     {
         ViewBag.ReturnUrl = returnUrl;
-        return View(new ChangePasswordViewModel());
+
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId)) return RedirectToAction("Login", "Account");
+
+        var user = await _profileService.GetByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        var model = new ChangePasswordViewModel
+        {
+            HasPassword = !string.IsNullOrEmpty(user.PasswordHash)
+        };
+
+        return View(model);
     }
 
     [HttpPost("edit-password")]
@@ -328,15 +341,36 @@ public class SettingsController : Controller
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!int.TryParse(userIdClaim, out var userId)) return RedirectToAction("Login", "Account");
 
-        // TODO: 1. Дістати користувача з бази
-        // TODO: 2. Перевірити, чи збігається model.CurrentPassword з його поточним хешем у базі
-        // Якщо пароль невірний: 
-        // ModelState.AddModelError("CurrentPassword", "Невірний поточний пароль");
-        // return View(model);
+        var user = await _profileService.GetByIdAsync(userId);
 
-        // TODO: 3. Захешувати model.NewPassword і зберегти в базу
+        if (user == null) 
+        {
+            ModelState.AddModelError(string.Empty, "Користувача не знайдено.");
+            return View(model);
+        }
 
-        // До того, просто повертаємося на сторінку профілю
+        bool hasExistingPassword = !string.IsNullOrEmpty(user.PasswordHash);
+
+        if (hasExistingPassword)
+        {
+            if (string.IsNullOrEmpty(model.CurrentPassword))
+            {
+                ModelState.AddModelError(nameof(model.CurrentPassword), "Введіть поточний пароль");
+                model.HasPassword = true;
+                return View(model);
+            }
+
+            if (!PasswordHasher.VerifyPassword(model.CurrentPassword, user.PasswordHash))
+            {
+                ModelState.AddModelError("CurrentPassword", "Невірний поточний пароль.");
+                model.HasPassword = true;
+                return View(model);
+            }
+        }
+
+        user.PasswordHash = PasswordHasher.HashPassword(model.NewPassword);
+        await _profileService.UpdateUserProfileAsync(user);
+
         return RedirectToAction("Profile", new { returnUrl = returnUrl });
     }
 
