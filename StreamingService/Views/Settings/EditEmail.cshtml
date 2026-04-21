@@ -1,0 +1,49 @@
+﻿@using StreamingService.DTO.ViewModels.Account
+@model ChangeEmailViewModel
+
+@{
+    Layout = "~/Views/Shared/Layouts/_SettingsLayout.cshtml";
+    ViewData["Title"] = "Зміна пошти";
+}
+
+<div class="flex flex-col gap-8 max-w-3xl mt-4">
+
+    <form asp-action="EditEmail" method="post" class="flex flex-col gap-10">
+
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+        <input type="hidden" asp-for="CurrentEmail" />
+
+        <div class="shadow-glass bg-white/5 rounded-md p-8 flex flex-col gap-6">
+
+            <div class="flex flex-col gap-1 pb-4 border-b border-white/5">
+                <p class="text-white/50 text-sm font-semibold font-montserrat">Поточна адреса електронної пошти</p>
+                <p class="text-white text-base font-semibold font-montserrat">@Model.CurrentEmail</p>
+            </div>
+
+            <div class="flex flex-col gap-2 relative">
+                <label asp-for="NewEmail" class="text-white/70 text-sm font-semibold font-montserrat">Нова адреса електронної пошти <span class="text-[#DCF260]">*</span></label>
+                <input asp-for="NewEmail" class="bg-[#22223A]/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-[#DCF260] outline-none transition-colors" placeholder="Введіть нову пошту">
+                <span asp-validation-for="NewEmail" class="text-[#FF0000] text-xs absolute -bottom-5 left-0"></span>
+            </div>
+
+        </div>
+
+        <div class="flex flex-col gap-4">
+            <p class="text-[#D3D3D3]/70 text-xs">* Обов'язкове поле.</p>
+
+            <div class="flex flex-col-reverse sm:flex-row gap-4 pt-2">
+                <a href="@Url.Action("Profile", "Settings", new { returnUrl = ViewBag.ReturnUrl })" class="shadow-glass flex-1 sm:flex-none px-8 py-3 bg-white/5 hover:bg-white/10 rounded-sm text-white font-semibold text-sm transition-colors text-center">
+                    Скасувати
+                </a>
+                <button type="submit" class="shadow-glass flex-1 sm:flex-none px-8 py-3 bg-[#DCF260] hover:bg-[#c5dd4b] rounded-sm text-[#22223A] font-bold text-sm transition-colors">
+                    Зберегти
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

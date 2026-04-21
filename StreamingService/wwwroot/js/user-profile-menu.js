@@ -38,4 +38,22 @@
             }
         });
     }
+
+    const avatarInput = document.getElementById('avatarUploadInput');
+    const avatarPreview = document.getElementById('avatarPreview');
+
+    if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', function (e) {
+            const input = e.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    avatarPreview.src = event.target.result;
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        });
+    }
 });

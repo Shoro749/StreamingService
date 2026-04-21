@@ -100,5 +100,11 @@ namespace StreamingService.Services
         {
             return await _profileRepository.GetUserSettingsInfoAsync(userId);
         }
+
+        // Метод для збереження оновлених даних профілю (імені, аватарки тощо)
+        public async Task<bool> UpdateUserProfileAsync(UserProfile user)
+        {
+            return await _profileRepository.UpdateDataAsync(user);
+        }
     }
 }
