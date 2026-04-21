@@ -1,0 +1,86 @@
+﻿@using StreamingService.DTO.ViewModels
+@model EditProfileViewModel
+
+@{
+    Layout = "~/Views/Shared/Layouts/_SettingsLayout.cshtml";
+}
+
+<div class="flex flex-col gap-8 max-w-3xl">
+
+    <div>
+        <h1 class="text-2xl font-bold text-white font-montserrat mb-2">Редагування профілю</h1>
+        <p class="text-[#D3D3D3] text-sm">Оновіть свої особисті дані та фотографію профілю.</p>
+    </div>
+
+    <form asp-action="EditProfile" method="post" enctype="multipart/form-data" class="flex flex-col gap-10">
+
+        <input type="hidden" asp-for="ProfileId" />
+        <input type="hidden" asp-for="CurrentAvatarUrl" />
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+        <div class="flex items-center gap-8">
+            <div class="relative group cursor-pointer w-28 h-28 flex-shrink-0">
+                <img id="avatarPreview" src="@Model.CurrentAvatarUrl" alt="Avatar"
+                     class="w-full h-full rounded-full object-cover border border-white/10 shadow-lg transition-all group-hover:border-white/30">
+
+                <label class="absolute inset-0 flex flex-col items-center justify-center bg-[#22223A]/70 backdrop-blur-sm opacity-0 group-hover:opacity-100 rounded-full cursor-pointer transition-opacity duration-300">
+                    <svg class="w-6 h-6 text-white mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span class="text-white text-xs uppercase tracking-wider font-bold font-montserrat">Змінити</span>
+                    
+                    <input type="file" asp-for="AvatarFile" id="avatarUploadInput" accept="image/jpeg, image/png, image/webp" class="hidden">
+                </label>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <h3 class="text-white font-bold text-base font-montserrat">Фото профілю</h3>
+                <p class="text-white/50 text-xs max-w-xs leading-relaxed">
+                    Рекомендований розмір: 256x256 пікселів.<br />
+                    Дозволені формати: JPG, PNG, WEBP.
+                </p>
+            </div>
+        </div>
+
+        <div class="shadow-glass bg-white/5 rounded-md p-8 flex flex-col gap-6">
+
+            <div class="flex flex-col gap-2 relative">
+                <label asp-for="Username" class="text-white/70 text-sm font-semibold font-montserrat">Ім'я профілю <span class="text-[#DCF260]">*</span></label>
+                <input asp-for="Username" class="bg-[#22223A]/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-[#DCF260] outline-none transition-colors" placeholder="Наприклад, Олексій">
+                <span asp-validation-for="Username" class="text-[#FF0000] text-xs absolute -bottom-5 left-0"></span>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label asp-for="Birthday" class="text-white/70 text-sm font-semibold font-montserrat">Дата народження</label>
+                <input asp-for="Birthday" type="date" class="bg-[#22223A]/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-[#DCF260] outline-none transition-colors [color-scheme:dark]">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label asp-for="Gender" class="text-white/70 text-sm font-semibold font-montserrat">Стать</label>
+                <div class="relative">
+                    <select asp-for="Gender" class="w-full bg-[#22223A]/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-[#DCF260] outline-none transition-colors appearance-none cursor-pointer">
+                        <option value="" class="bg-[#22223A] text-white">Оберіть варіант</option>
+                        <option value="Male" class="bg-[#22223A] text-white">Чоловіча</option>
+                        <option value="Female" class="bg-[#22223A] text-white">Жіноча</option>
+                        <option value="PreferNotToSay" class="bg-[#22223A] text-white">Не повідомляти</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-white/50">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex flex-col-reverse sm:flex-row gap-4 pt-2">
+            <a href="@Url.Action("Profile", "Settings", new { returnUrl = ViewBag.ReturnUrl })" class="shadow-glass flex-1 sm:flex-none px-8 py-3 bg-white/5 hover:bg-white/10 rounded-sm text-white font-semibold text-sm transition-colors text-center">
+                Скасувати
+            </a>
+            <button type="submit" class="shadow-glass flex-1 sm:flex-none px-8 py-3 bg-[#DCF260] hover:bg-[#c5dd4b] rounded-sm text-[#22223A] font-bold text-sm transition-colors">
+                Зберегти зміни
+            </button>
+        </div>
+
+    </form>
+</div>
