@@ -89,6 +89,15 @@ namespace StreamingService
                 options.CorrelationCookie.SameSite = SameSiteMode.None;
                 options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
+                options.Events.OnRemoteFailure = context =>
+                {
+                    context.Response.Redirect("/Account/Login");
+                    
+                    context.HandleResponse(); 
+                    
+                    return Task.CompletedTask;
+                };
+
                 options.Events.OnCreatingTicket = async context =>
                 {
                     try
