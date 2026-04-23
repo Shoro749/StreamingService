@@ -65,7 +65,8 @@
                                             @item.Title
                                         </h2>
                                     </a>
-                                    <a href="@item.TrailerUrl" class="pointer-events-auto text-white/80 text-base font-lg font-montserrat hover:text-[#DCF260] hover:underline transition-colors">
+                                    
+                                    <a href="@Url.Action("Play", "Movies", new { id = item.Id, isTrailer = true })" class="pointer-events-auto text-white/80 text-base font-lg font-montserrat hover:text-[#DCF260] hover:underline transition-colors">
                                         Програти трейлер @item.TrailerDuration
                                     </a>
                                 </div>
