@@ -18,8 +18,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
             {
                 new Video
                 {
-                    RatingCount = rand.Next(0, 101),
-                    RatingSum = rand.Next(0, 1000),
+                    // 1+1 (Rating: 9.2)
+                    RatingCount = 150,
+                    RatingSum = 1380,
                     SubscriptionLevel = subscriptionLevels[0],
                     AgeRating = "12+",
                     TrailerDuration = 55,
@@ -28,8 +29,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 },
                 new Video
                 {
-                    RatingCount = rand.Next(0, 101),
-                    RatingSum = rand.Next(0, 1000),
+                    // Pirates (Rating: 8.7)
+                    RatingCount = 200,
+                    RatingSum = 1740,
                     SubscriptionLevel = subscriptionLevels[1],
                     AgeRating = "12+",
                     VideoType = "Movie",
@@ -38,8 +40,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 },
                 new Video
                 {
-                    RatingCount = rand.Next(0, 101),
-                    RatingSum = rand.Next(0, 1000),
+                    // Little Prince (Rating: 7.5)
+                    RatingCount = 120,
+                    RatingSum = 900,
                     SubscriptionLevel = subscriptionLevels[0],
                     AgeRating = "8+",
                     VideoType = "AnimatedMovie",
@@ -48,8 +51,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 },
                 new Video
                 {
-                    RatingCount = rand.Next(0, 101),
-                    RatingSum = rand.Next(0, 1000),
+                    // Breaking Bad (Rating: 9.0)
+                    RatingCount = 85,
+                    RatingSum = 765,
                     SubscriptionLevel = subscriptionLevels[1],
                     AgeRating = "18+",
                     VideoType = "Series",
@@ -58,8 +62,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 },
                 new Video
                 {
-                    RatingCount = rand.Next(0, 101),
-                    RatingSum = rand.Next(0, 1000),
+                    // Interstellar (Rating: 6.5)
+                    RatingCount = 300,
+                    RatingSum = 1950,
                     SubscriptionLevel = subscriptionLevels[1],
                     AgeRating = "12+",
                     VideoType = "Movie",
@@ -68,8 +73,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 },
                 new Video
                 {
-                    RatingCount = rand.Next(0, 101),
-                    RatingSum = rand.Next(0, 1000),
+                    // Hunter
+                    RatingCount = 0,
+                    RatingSum = 0,
                     SubscriptionLevel = subscriptionLevels[0],
                     AgeRating = "18+",
                     VideoType = "Movie",
@@ -78,8 +84,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                 },
                 new Video
                 {
-                    RatingCount = rand.Next(0, 101),
-                    RatingSum = rand.Next(0, 1000),
+                    // Cartuz
+                    RatingCount = 0,
+                    RatingSum = 0,
                     SubscriptionLevel = subscriptionLevels[1],
                     AgeRating = "18+",
                     VideoType = "Movie",
