@@ -12,9 +12,9 @@ namespace StreamingService.Data.Seeders.ModelSeeders
 
             var subscriptionLevels = new List<SubscriptionLevel>
             {
-                new SubscriptionLevel { Code = "Basic" },
-                new SubscriptionLevel { Code = "Standard" },
-                new SubscriptionLevel { Code = "Premium" }
+                new SubscriptionLevel { Code = "Безкоштовний" },
+                new SubscriptionLevel { Code = "Стандартний" },
+                new SubscriptionLevel { Code = "Преміум" }
             };
 
             await context.SubscriptionLevels.AddRangeAsync(subscriptionLevels);

@@ -78,7 +78,7 @@ namespace StreamingService.Data.Seeders.ModelSeeders
                     Video = videos[3],
                     LocaleCode = "uk",
                     IsOriginal = false,
-                    Title = "Во все тяжкие",
+                    Title = "Пуститися берега",
                     Description = "Учитель середньої школи стає на шлях злочинності."
                 },
 

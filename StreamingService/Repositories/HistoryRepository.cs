@@ -55,5 +55,33 @@ namespace StreamingService.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<UserEpisodesHistory>> GetAllHistoryAsync(int userId)
+        {
+            return await _context.UserEpisodesHistories
+                .Include(x => x.VideoEpisode)
+                    .ThenInclude(e => e.VideoSeason)
+                        .ThenInclude(s => s.Video)
+                .Where(x => x.UserProfileId == userId)
+                .OrderByDescending(x => x.LastWatchedAt)
+                .ToListAsync();
+        }
+
+        public async Task<bool> RemoveHistoryItemAsync(int userId, int videoId)
+        {
+            var entries = await _context.UserEpisodesHistories
+                .Include(h => h.VideoEpisode.VideoSeason)
+                .Where(x => x.UserProfileId == userId && x.VideoEpisode.VideoSeason.VideoId == videoId)
+                .ToListAsync();
+
+            if (entries.Any())
+            {
+                _context.UserEpisodesHistories.RemoveRange(entries);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
     }
 }

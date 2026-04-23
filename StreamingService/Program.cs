@@ -89,6 +89,15 @@ namespace StreamingService
                 options.CorrelationCookie.SameSite = SameSiteMode.None;
                 options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
+                options.Events.OnRemoteFailure = context =>
+                {
+                    context.Response.Redirect("/Account/Login");
+                    
+                    context.HandleResponse(); 
+                    
+                    return Task.CompletedTask;
+                };
+
                 options.Events.OnCreatingTicket = async context =>
                 {
                     try
@@ -123,9 +132,9 @@ namespace StreamingService
                             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
                             identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
 
-                            if (!string.IsNullOrEmpty(picture))
+                            if (!string.IsNullOrEmpty(user.AvatarUrl))
                             {
-                                identity.AddClaim(new Claim("avatar_url", picture));
+                                identity.AddClaim(new Claim("avatar_url", user.AvatarUrl));
                             }
                         }
                     }

@@ -11,13 +11,13 @@ namespace StreamingService.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly PricingService _pricingService;
+        //private readonly PricingService _pricingService;
         private readonly ProfileService _profileService;
         private readonly SubscriptionService _subscriptionService;
 
         public AccountController(PricingService pricingService, ProfileService profileService, SubscriptionService subscriptionService)
         {
-            _pricingService = pricingService;
+            //_pricingService = pricingService;
             _profileService = profileService;
             _subscriptionService = subscriptionService;
         }
@@ -126,6 +126,21 @@ namespace StreamingService.Controllers
             {
                 TempData["Error"] = "План не знайдено";
                 return RedirectToAction("Register", "Account");
+            }
+
+            if (plan.Id == 1)
+            {
+                var success = await _subscriptionService.ProcessSubscriptionAsync(userId, plan.Id, "Free");
+                
+                if (success)
+                {
+                    return RedirectToAction("Success", "Account", new { plan = plan.SubscriptionLevel?.Code ?? "Free" });
+                }
+                else
+                {
+                    TempData["Error"] = "Не вдалося активувати безкоштовний план. Спробуйте пізніше.";
+                    return RedirectToAction("Subscription", "Account");
+                }
             }
 
             var model = new AgreementViewModel

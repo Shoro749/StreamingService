@@ -150,7 +150,7 @@ namespace StreamingService.Repositories
                         .FirstOrDefault()
                         ?? "",
 
-                    AgeRating = "0+",
+                    AgeRating = v.AgeRating ?? "0+",
 
                     Genres = v.GenreVideos
                         .Select(g => g.Genre.GenreTranslations
@@ -199,7 +199,13 @@ namespace StreamingService.Repositories
                         })
                         .ToList(),
 
-                    Scenes = new List<SceneViewModel>()
+                    Scenes = v.Images
+                        .Where(i => i.Type == "scene")
+                        .Select(i => new SceneViewModel
+                        {
+                            SceneImageUrl = /*"/" + i.BlobContainer + "/" +*/ i.BlobPath,
+                        })
+                        .ToList()
                 });
         }
 

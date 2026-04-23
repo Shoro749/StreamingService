@@ -54,16 +54,33 @@ namespace StreamingService.Services
                     return result;
                 }
 
+                bool isUpdated = false;
+
                 if (string.IsNullOrEmpty(user.GoogleId))
                 {
                     user.GoogleId = googleId;
+                    isUpdated = true;
                 }
 
-                user.AvatarUrl = picture;
-                user.Username = name ?? user.Username;
+                if (string.IsNullOrEmpty(user.AvatarUrl) && !string.IsNullOrEmpty(picture))
+                {
+                    user.AvatarUrl = picture;
+                    isUpdated = true;
+                }
+                
+                if (string.IsNullOrEmpty(user.Username) && !string.IsNullOrEmpty(name))
+                {
+                    user.Username = name;
+                    isUpdated = true;
+                }
 
-                var updateResult = await _profileRepository.UpdateDataAsync(user);
-                return updateResult;
+                if (isUpdated)
+                {
+                    var updateResult = await _profileRepository.UpdateDataAsync(user);
+                    return updateResult;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -99,6 +116,12 @@ namespace StreamingService.Services
         public async Task<UserProfileSettingsViewModel?> GetProfileSettingsAsync(int userId)
         {
             return await _profileRepository.GetUserSettingsInfoAsync(userId);
+        }
+
+        // Метод для збереження оновлених даних профілю (імені, аватарки тощо)
+        public async Task<bool> UpdateUserProfileAsync(UserProfile user)
+        {
+            return await _profileRepository.UpdateDataAsync(user);
         }
     }
 }
