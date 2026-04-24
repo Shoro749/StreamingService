@@ -53,7 +53,9 @@ namespace StreamingService.Services
                         "Постійні оновлення контенту"
                     }
                 }
+
             };
+
         }
     }
 }
