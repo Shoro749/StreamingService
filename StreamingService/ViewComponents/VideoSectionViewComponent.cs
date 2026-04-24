@@ -72,10 +72,13 @@ public class VideoSectionViewComponent : ViewComponent
             "weeklyHits" => await _moviesService.GetWeeklyHitsAsync(locale, userId),
             _ => await _moviesService.GetPopularAsync(locale, userId, mediaType)
         };
+
+        VideoType? activeCategory = category ?? mediaType;
+
         // ФІЛЬТРУЄМО СПИСОК (залишаємо тільки потрібну категорію)       
-        if (category != null && videos != null)
+        if (activeCategory != null && videos != null)
         {
-            videos = videos.Where(v => v.VideoType == category).ToList();
+            videos = videos.Where(v => v.VideoType == activeCategory).ToList();
         }
         //ПРИБИРАЄМО ПУСТІ СЕКЦІЇ
         if (videos == null || !videos.Any())
@@ -84,7 +87,8 @@ public class VideoSectionViewComponent : ViewComponent
         }
         // ВИЗНАЧАЄМО ЗАГОЛОВОК СЕКЦІЇ ВІДПОВІДНО ДО ТИПУ ВІДЕО
         string currentTitle = title;
-        if (SectionTitles.TryGetValue((sectionId, category), out var foundTitle))
+        var normalizedSectionId = sectionId?.ToLowerInvariant() ?? "";
+        if (SectionTitles.TryGetValue((normalizedSectionId, activeCategory), out var foundTitle))
         {
             currentTitle = foundTitle;
         }
