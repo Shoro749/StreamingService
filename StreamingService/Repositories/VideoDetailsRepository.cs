@@ -115,7 +115,7 @@ namespace StreamingService.Repositories
 
                 AgeRating = video.AgeRating ?? "12+",
 
-                //TrailerUrl = video.TrailerUrl ?? "#",
+                TrailerUrl = video.Trailerurl ?? "#",
                 TrailerDuration = video.TrailerDuration.HasValue
                     ? $"{video.TrailerDuration.Value / 60}:{video.TrailerDuration.Value % 60:D2}"
                     : "2:30",
