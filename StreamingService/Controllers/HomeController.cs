@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+п»їusing Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StreamingService.DTO.Enums;
 using StreamingService.DTO.ViewModels;
@@ -63,11 +63,11 @@ namespace StreamingService.Controllers
                 {
                     Id = p.Id,
 
-                    Title = p.SubscriptionLevel?.Code ?? "Невідомо",
+                    Title = p.SubscriptionLevel?.Code ?? "РќРµРІС–РґРѕРјРѕ",
 
                     Price = p.Price.ToString(),
 
-                    ButtonText = (p.Id == 1) ? "Спробувати базовий" : (p.Id == 2) ? "Увімкнути магію кіно" : "Дивись без меж",
+                    ButtonText = (p.Id == 1) ? "РЎРїСЂРѕР±СѓРІР°С‚Рё Р±Р°Р·РѕРІРёР№" : (p.Id == 2) ? "РЈРІС–РјРєРЅСѓС‚Рё РјР°РіС–СЋ РєС–РЅРѕ" : "Р”РёРІРёСЃСЊ Р±РµР· РјРµР¶",
 
                     Features = string.IsNullOrEmpty(p.Features)
                         ? new List<string>()
@@ -76,6 +76,7 @@ namespace StreamingService.Controllers
                             .Select(f => f.Trim())
                             .ToList()
                 }).ToList(),
+
                 Studios = studios,
                 Features = features,
                 Questions = questions,
@@ -84,7 +85,8 @@ namespace StreamingService.Controllers
 
             return View(model);
         }
-        
+       
+
         public IActionResult Auth()
         {
             return View();
@@ -105,7 +107,7 @@ namespace StreamingService.Controllers
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
 
-            SetPageHeaders(category, "Каталог");
+            SetPageHeaders(category, "РљР°С‚Р°Р»РѕРі");
 
             if (_moviesService == null)
             {
@@ -132,7 +134,7 @@ namespace StreamingService.Controllers
             var locale = "uk";
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            SetPageHeaders(category, "Улюблене");
+            SetPageHeaders(category, "РЈР»СЋР±Р»РµРЅРµ");
 
             var favoriteVideos = await _favoritesService.GetUserFavoritesAsync(userId, UserVideoListType.Favorite, locale);
             favoriteVideos = FilterByCategory(favoriteVideos, category);
@@ -156,11 +158,11 @@ namespace StreamingService.Controllers
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
 
-            SetPageHeaders(category, "Незабаром");
+            SetPageHeaders(category, "РќРµР·Р°Р±Р°СЂРѕРј");
 
             //var groupedReleases = await _moviesService.GetUpcomingReleasesAsync(locale);
-            ////для фільтрації по категорії
-            //// --- початок ----
+            ////РґР»СЏ С„С–Р»СЊС‚СЂР°С†С–С— РїРѕ РєР°С‚РµРіРѕСЂС–С—
+            //// --- РїРѕС‡Р°С‚РѕРє ----
             //if (category != null && groupedReleases != null)
             //{
             //    var filteredGroupedReleases = new Dictionary<string, List<VideoCardViewModel>>();
@@ -190,7 +192,7 @@ namespace StreamingService.Controllers
                 ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")
                 : (int?)null;
 
-            SetPageHeaders(category, "У тренді");
+            SetPageHeaders(category, "РЈ С‚СЂРµРЅРґС–");
 
             var trendingVideos = await _moviesService.GetTrendingAsync(locale, userId, category);
 
@@ -258,8 +260,8 @@ namespace StreamingService.Controllers
 
                 ViewData["IsSearch"] = true;
                 ViewData["SearchQuery"] = query ?? "";
-                ViewData["Title"] = "Пошук";
-                ViewData["MenuTitle"] = "Результати";
+                ViewData["Title"] = "РџРѕС€СѓРє";
+                ViewData["MenuTitle"] = "Р РµР·СѓР»СЊС‚Р°С‚Рё";
 
                 return View("Catalog", emptyModel);
             }
@@ -286,8 +288,8 @@ namespace StreamingService.Controllers
             ViewData["SearchQuery"] = query ?? "";
             ViewData["SelectedGenreId"] = genreId;
             ViewData["SortBy"] = sortBy;
-            ViewData["Title"] = "Результати пошуку";
-            ViewData["MenuTitle"] = "Усі";
+            ViewData["Title"] = "Р РµР·СѓР»СЊС‚Р°С‚Рё РїРѕС€СѓРєСѓ";
+            ViewData["MenuTitle"] = "РЈСЃС–";
 
             return View("Catalog", catalogModel);
         }
@@ -323,7 +325,7 @@ namespace StreamingService.Controllers
             if (category == null)
             {
                 ViewData["Title"] = pageTitle;
-                ViewData["MenuTitle"] = "Усі";
+                ViewData["MenuTitle"] = "РЈСЃС–";
             }
             else
             {
