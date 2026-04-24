@@ -45,6 +45,8 @@ namespace StreamingService.Repositories
                         .Select(e => e.ReleaseDate.Year)
                         .FirstOrDefault(),
 
+                    TrailerUrl = f.Video.Trailerurl ?? "#",
+
                     Genres = f.Video.GenreVideos
                         .Select(gv => gv.Genre.GenreTranslations
                             .Where(gt => gt.LocaleCode == locale)
